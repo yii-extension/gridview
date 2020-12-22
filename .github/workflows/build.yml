@@ -91,6 +91,6 @@ jobs:
 
       - name: Upload coverage to codecov on Linux php 7.4
         if: matrix.os == 'ubuntu-latest' && matrix.php-version == '7.4'
-        uses: codecov/codecov-action@v1.0.7
+        uses: codecov/codecov-action@v1.1.1
         with:
           token: ${{secrets.CODECOV_TOKEN}}
