@@ -1,29 +1,36 @@
 {
-    "name": "yii-extension/_____",
+    "name": "yii-extension/gridview",
     "type": "library",
-    "description": "_____",
+    "description": "GridView for Yii3",
     "keywords": [
-        "_____"
+        "yii",
+        "gridview"
     ],
     "license": "BSD-3-Clause",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4"
+        "ext-json": "*",
+        "php": "^7.4|^8.0",
+        "yiisoft/active-record": "^3.0@dev",
+        "yiisoft/html": "^3.0@dev",
+        "yiisoft/router": "^3.0@dev",
+        "yiisoft/router-fastroute": "^3.0@dev",
+        "yiisoft/widget": "^3.0@dev"
     },
     "require-dev": {
-        "infection/infection": "^0.16.3",
-        "phan/phan": "^3.0.2",
-        "phpunit/phpunit": "^9.2"
+        "phpunit/phpunit": "^9.5",
+        "roave/infection-static-analysis-plugin": "^1.7",
+        "vimeo/psalm": "^4.3"
     },
     "autoload": {
         "psr-4": {
-            "Yii\\Extension\\_____\\": "src"
+            "Yii\\Extension\\GridView\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yii\\Extension\\_____\\Tests\\": "tests"
+            "Yii\\Extension\\GridView\\Tests\\": "tests"
         }
     },
     "extra": {
