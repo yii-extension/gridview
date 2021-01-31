@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Widget;
 
-use Yii\Extension\GridView\Widget;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
-use Yiisoft\Db\Data\Sort;
+use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\Html\Html;
 
 /**

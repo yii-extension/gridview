@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView;
+namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\DataProvider\DataProviderInterface;
 use Yii\Extension\GridView\Factory\GridViewFactory;
-use Yii\Extension\GridView\Widget\LinkPager;
 use Yii\Extension\GridView\Widget\LinkSorter;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Html\Html;
@@ -106,7 +105,9 @@ abstract class BaseListView extends Widget
      * - `{sorter}`: the sorter. See [[renderSorter()]].
      * - `{pager}`: the pager. See [[renderPager()]].
      */
-    public string $layout = "{summary}\n{items}\n{pager}";
+    public string $layout = "{items}\n{summary}\n{pager}";
+
+    public string $linkPagerClass = \Yii\Extension\GridView\Widget\Bulma\LinkPager::class;
 
     /**
      * Renders the data active record classes.
@@ -272,10 +273,9 @@ abstract class BaseListView extends Widget
         }
 
         /** @var $class LinkPager */
-        $pager = LinkPager::widget();
-        $pager->pagination = $pagination;
+        $pager = $this->linkPagerClass::widget();
 
-        return $pager->run();
+        return $pager->pagination($pagination)->run();
     }
 
     /**
@@ -285,12 +285,9 @@ abstract class BaseListView extends Widget
      */
     public function renderSorter(): string
     {
-        var_dump("aquix");
-        die;
-
         $sort = $this->dataProvider->getSort();
 
-        if ($sort === false || empty($sort->getAttributesOrder()) || $this->dataProvider->getCount() <= 0) {
+        if ($sort === null || empty($sort->getAttributeOrders()) || $this->dataProvider->getCount() <= 0) {
             return '';
         }
 
@@ -299,5 +296,13 @@ abstract class BaseListView extends Widget
         $sorter->sort = $sort;
 
         return $sorter->render();
+    }
+
+    public function withLinkPagerClass(string $value): self
+    {
+        $new = clone $this;
+        $new->linkPagerClass = $value;
+
+        return $new;
     }
 }

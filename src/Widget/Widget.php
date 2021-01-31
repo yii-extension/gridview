@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView;
+namespace Yii\Extension\GridView\Widget;
 
 use Yiisoft\Html\Html;
 use Yiisoft\Widget\Widget as BaseWidget;

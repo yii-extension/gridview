@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView;
+namespace Yii\Extension\GridView\Widget;
 
 use Closure;
 use JsonException;
@@ -107,8 +107,8 @@ final class GridView extends BaseListView
     public $rowOptions = [];
 
     /**
-     * @var Closure|null an anonymous function that is called once BEFORE rendering each data arClass. It should have the
-     * similar signature as {@see rowOptions}. The return result of the function will be rendered directly.
+     * @var Closure|null an anonymous function that is called once BEFORE rendering each data arClass. It should have
+     * the similar signature as {@see rowOptions}. The return result of the function will be rendered directly.
      */
     public ?Closure $beforeRow = null;
 
@@ -126,7 +126,7 @@ final class GridView extends BaseListView
     /**
      * @var bool whether to show the footer section of the grid table.
      */
-    public bool $showFooter = true;
+    public bool $showFooter = false;
 
     /**
      * @var bool whether to place footer after body in DOM if $showFooter is true.
@@ -134,7 +134,7 @@ final class GridView extends BaseListView
     public bool $placeFooterAfterBody = false;
 
     /**
-     * @var bool whether to show the grid view if [[dataProvider]] returns no data.
+     * @var bool whether to show the grid view if {@see dataProvider} returns no data.
      */
     public bool $showOnEmpty = true;
 
@@ -270,18 +270,6 @@ final class GridView extends BaseListView
      * @var bool whatever to apply filters on losing focus. Leaves an ability to manage filters via yiiGridView JS.
      */
     public bool $filterOnFocusOut = true;
-
-    /**
-     * @var string the layout that determines how different sections of the grid view should be organized.
-     * The following tokens will be replaced with the corresponding section contents:
-     *
-     * - `{summary}`: the summary section. See [[renderSummary()]].
-     * - `{errors}`: the filter arClass error summary. See [[renderErrors()]].
-     * - `{items}`: the list items. See [[renderItems()]].
-     * - `{sorter}`: the sorter. See [[renderSorter()]].
-     * - `{pager}`: the pager. See [[renderPager()]].
-     */
-    public string $layout = "{items}\n{summary}\n{pager}";
 
     public function run(): string
     {
@@ -562,6 +550,14 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->dataProvider = $value;
+
+        return $new;
+    }
+
+    public function withHeaderRowOptions(array $value): self
+    {
+        $new = clone $this;
+        $new->headerRowOptions = $value;
 
         return $new;
     }

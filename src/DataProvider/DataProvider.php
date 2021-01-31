@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\DataProvider;
 
-use Yii\Extension\GridView\Pagination;
-use Yii\Extension\GridView\Sort;
+use Yii\Extension\GridView\Helper\Pagination;
+use Yii\Extension\GridView\Helper\Sort;
 
 /**
  * DataProvider provides a base class that implements the {@see DataProviderInterface}.

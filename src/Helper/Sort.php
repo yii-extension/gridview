@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView;
+namespace Yii\Extension\GridView\Helper;
 
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
-use Yiisoft\String\Inflector;
+use Yiisoft\Strings\Inflector;
 
 use function array_merge;
 use function explode;

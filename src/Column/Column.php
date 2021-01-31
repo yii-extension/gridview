@@ -6,7 +6,7 @@ namespace Yii\Extension\GridView\Column;
 
 use Closure;
 use JsonException;
-use Yii\Extension\GridView\GridView;
+use Yii\Extension\GridView\Widget\GridView;
 use Yiisoft\Html\Html;
 
 /**
