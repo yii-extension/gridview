@@ -149,10 +149,6 @@ abstract class DataProvider implements DataProviderInterface
      */
     public function getTotalCount(): int
     {
-        if ($this->getPagination() === false) {
-            return $this->getCount();
-        }
-
         if ($this->totalCount === 0) {
             $this->totalCount = $this->prepareTotalCount();
         }
@@ -185,7 +181,7 @@ abstract class DataProvider implements DataProviderInterface
      *
      * @param Pagination $value the pagination to be used by this data provider.
      */
-    public function setPagination(Pagination $value): void
+    public function pagination(Pagination $value): void
     {
         $this->pagination = $value;
     }
@@ -205,7 +201,7 @@ abstract class DataProvider implements DataProviderInterface
      *
      * @param Sort $value the sort definition to be used by this data provider.
      */
-    public function withSort(Sort $value): void
+    public function sort(Sort $value): void
     {
         $this->sort = $value;
     }
@@ -218,7 +214,7 @@ abstract class DataProvider implements DataProviderInterface
      */
     public function refresh(): void
     {
-        $this->totalCount = 0;
+        $this->totalCount = null;
         $this->arClasses = [];
         $this->keys = [];
     }

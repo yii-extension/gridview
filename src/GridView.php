@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView\Widget;
+namespace Yii\Extension\GridView;
 
 use Closure;
 use JsonException;
 use Yii\Extension\GridView\Column\Column;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\ExceptionInvalidConfigException;
+use Yii\Extension\GridView\Widget\BaseListView;
 use Yiisoft\Html\Html;
 use Yiisoft\Json\Json;
 use Yiisoft\Router\FastRoute\UrlGenerator;
@@ -361,7 +362,7 @@ final class GridView extends BaseListView
             $tableFooterAfterBody,
         ]);
 
-        return Html::tag('table', implode("\n", $content), $this->tableOptions);
+        return Html::tag('table', implode("\n", $content), array_merge($this->tableOptions, ['encode' => false]));
     }
 
     /**
@@ -416,7 +417,7 @@ final class GridView extends BaseListView
             /* @var $column Column */
             $cells[] = $column->renderHeaderCell();
         }
-        $content = Html::tag('tr', implode('', $cells), $this->headerRowOptions);
+        $content = Html::tag('tr', implode('', $cells), array_merge($this->headerRowOptions, ['encode' => false]));
         if ($this->filterPosition === self::FILTER_POS_HEADER) {
             $content = $this->renderFilters() . $content;
         } elseif ($this->filterPosition === self::FILTER_POS_BODY) {
@@ -440,7 +441,7 @@ final class GridView extends BaseListView
             $cells[] = $column->renderFooterCell();
         }
 
-        $content = Html::tag('tr', implode('', $cells), $this->footerRowOptions);
+        $content = Html::tag('tr', implode('', $cells), array_merge($this->footerRowOptions, ['encode' => false]));
 
         if ($this->filterPosition === self::FILTER_POS_FOOTER) {
             $content .= $this->renderFilters();
@@ -464,7 +465,7 @@ final class GridView extends BaseListView
                 $cells[] = $column->renderFilterCell();
             }
 
-            return Html::tag('tr', implode('', $cells), $this->filterRowOptions);
+            return Html::tag('tr', implode('', $cells), array_merge($this->filterRowOptions, ['encode' => false]));
         }
 
         return '';
@@ -535,10 +536,10 @@ final class GridView extends BaseListView
 
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
 
-        return Html::tag('tr', implode('', $cells), $options);
+        return Html::tag('tr', implode('', $cells), array_merge($options, ['encode' => false]));
     }
 
-    public function withColumns(array $value): self
+    public function columns(array $value): self
     {
         $new = clone $this;
         $new->columns = $value;
@@ -546,7 +547,7 @@ final class GridView extends BaseListView
         return $new;
     }
 
-    public function withDataProvider($value): self
+    public function dataProvider($value): self
     {
         $new = clone $this;
         $new->dataProvider = $value;
@@ -554,7 +555,7 @@ final class GridView extends BaseListView
         return $new;
     }
 
-    public function withHeaderRowOptions(array $value): self
+    public function headerRowOptions(array $value): self
     {
         $new = clone $this;
         $new->headerRowOptions = $value;
@@ -562,10 +563,18 @@ final class GridView extends BaseListView
         return $new;
     }
 
-    public function withPageActive(int $value): self
+    public function pageActive(int $value): self
     {
         $new = clone $this;
-        $new->dataProvider->getPagination()->page = $value;
+        $new->dataProvider->getPagination()->setPage($value - 1);
+
+        return $new;
+    }
+
+    public function pageSize(int $value): self
+    {
+        $new = clone $this;
+        $new->dataProvider->getPagination()->setPageSize($value);
 
         return $new;
     }

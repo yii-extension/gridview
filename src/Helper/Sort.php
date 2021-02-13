@@ -425,7 +425,7 @@ final class Sort
             }
         }
 
-        return Html::a($label, $url, $options);
+        return Html::a($label, $url, array_merge($options, ['encode' => false]));
     }
 
     /**

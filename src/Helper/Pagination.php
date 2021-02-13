@@ -116,7 +116,7 @@ final class Pagination
      */
     public ?int $pageSize = 5;
 
-    public ?int $page = null;
+    public int $page = 0;
 
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -153,7 +153,7 @@ final class Pagination
     public function getPage($recalculate = false): int
     {
         if ($this->page === null || $recalculate) {
-            $page = 1 - 1;
+            $page = 1;
             $this->setPage($page, true);
         }
 
@@ -168,26 +168,20 @@ final class Pagination
      *
      * to validate the page number, both {@see validatePage} and this parameter must be true.
      */
-    public function setPage($value, $validatePage = false): void
+    public function setPage(int $value, bool $validatePage = false): void
     {
-        if ($value === null) {
-            $this->page = null;
-        } else {
-            $value = (int) $value;
-
-            if ($validatePage && $this->validatePage) {
-                $pageCount = $this->getPageCount();
-                if ($value >= $pageCount) {
-                    $value = $pageCount - 1;
-                }
+        if ($validatePage && $this->validatePage) {
+            $pageCount = $this->getPageCount();
+            if ($value >= $pageCount) {
+                $value = $pageCount - 1;
             }
-
-            if ($value < 0) {
-                $value = 0;
-            }
-
-            $this->page = $value;
         }
+
+        if ($value < 0) {
+            $value = 0;
+        }
+
+        $this->page = $value;
     }
 
     /**

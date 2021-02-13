@@ -6,7 +6,7 @@ namespace Yii\Extension\GridView\Column;
 
 use Closure;
 use JsonException;
-use Yii\Extension\GridView\Widget\GridView;
+use Yii\Extension\GridView\GridView;
 use Yiisoft\Html\Html;
 
 /**
@@ -85,7 +85,7 @@ class Column
      */
     public function renderHeaderCell(): string
     {
-        return Html::tag('th', $this->renderHeaderCellContent(), $this->headerOptions);
+        return Html::tag('th', $this->renderHeaderCellContent(), array_merge($this->headerOptions, ['encode' => false]));
     }
 
     /**
@@ -93,7 +93,7 @@ class Column
      */
     public function renderFooterCell(): string
     {
-        return Html::tag('td', $this->renderFooterCellContent(), $this->footerOptions);
+        return Html::tag('td', $this->renderFooterCellContent(), array_merge($this->footerOptions, ['encode' => false]));
     }
 
     /**
@@ -115,7 +115,7 @@ class Column
             $options = $this->contentOptions;
         }
 
-        return Html::tag('td', (string) $this->renderDataCellContent($arClass, $key, $index), $options);
+        return Html::tag('td', (string) $this->renderDataCellContent($arClass, $key, $index), array_merge($options, ['encode' => false]));
     }
 
     /**
@@ -123,7 +123,7 @@ class Column
      */
     public function renderFilterCell(): string
     {
-        return Html::tag('td', $this->renderFilterCellContent(), $this->filterOptions);
+        return Html::tag('td', $this->renderFilterCellContent(), array_merge($this->filterOptions, ['encode' => false]));
     }
 
     /**

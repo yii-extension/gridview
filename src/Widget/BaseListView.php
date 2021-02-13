@@ -146,7 +146,7 @@ abstract class BaseListView extends Widget
         $options = $this->options;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
-        return Html::tag($tag, $content, $options);
+        return Html::tag($tag, $content, array_merge($options, ['encode' => false]));
     }
 
     /**
@@ -202,6 +202,7 @@ abstract class BaseListView extends Widget
         }
 
         $summaryOptions = $this->summaryOptions;
+        $summaryOptions['encode'] = false;
         $tag = ArrayHelper::remove($summaryOptions, 'tag', 'div');
 
         if (($pagination = $this->dataProvider->getPagination()) !== null) {
@@ -268,14 +269,11 @@ abstract class BaseListView extends Widget
     {
         $pagination = $this->dataProvider->getPagination();
 
-        if ($pagination === null || $this->dataProvider->getCount() <= 0) {
+        if ($pagination === null || $this->dataProvider->getCount() < 0) {
             return '';
         }
 
-        /** @var $class LinkPager */
-        $pager = $this->linkPagerClass::widget();
-
-        return $pager->pagination($pagination)->run();
+        return LinkPager::widget()->frameworkCss('bootstrap')->pagination($pagination)->run();
     }
 
     /**
@@ -296,13 +294,5 @@ abstract class BaseListView extends Widget
         $sorter->sort = $sort;
 
         return $sorter->render();
-    }
-
-    public function withLinkPagerClass(string $value): self
-    {
-        $new = clone $this;
-        $new->linkPagerClass = $value;
-
-        return $new;
     }
 }
