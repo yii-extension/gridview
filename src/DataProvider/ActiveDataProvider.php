@@ -6,10 +6,9 @@ namespace Yii\Extension\GridView\DataProvider;
 
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\ActiveRecord\ActiveQueryInterface;
-use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -48,11 +47,11 @@ use function is_string;
 final class ActiveDataProvider extends DataProvider
 {
     /**
-     * @var QueryInterface|null the query that is used to fetch data active record class and {@see totalCount}
+     * @var QueryInterface the query that is used to fetch data active record class and {@see totalCount}
      *
      * if it is not explicitly set.
      */
-    private ?QueryInterface $query = null;
+    private QueryInterface $query;
 
     /**
      * @var string|callable the column that is used as the key of the data active record class.
@@ -70,11 +69,11 @@ final class ActiveDataProvider extends DataProvider
      */
     private $key;
 
-    public function __construct(QueryInterface $query)
+    public function __construct(QueryInterface $query, Pagination $pagination, Sort $sort)
     {
-        $this->query = $query;
+        parent::__construct($pagination, $sort);
 
-        parent::__construct();
+        $this->query = $query;
     }
 
     /**
@@ -163,23 +162,17 @@ final class ActiveDataProvider extends DataProvider
         return $query->all();
     }
 
-    public function withSort(Sort $value): void
+    public function sortParams(array $sortParams = []): void
     {
-        parent::withSort($value);
+        $arClass = $this->query->getARInstance();
+        $attributes = array_keys($arClass->getAttributes());
+        $sortAttribute = [];
 
-        if ($this->query instanceof ActiveQueryInterface && ($sort = $this->getSort()) !== null) {
-            /* @var $class ActiveRecordInterface */
-            $arClass = $this->query->getARInstance();
-
-            if (empty($sort->attributes)) {
-                foreach ($arClass->getAttributes() as $attribute) {
-                    $sort->attributes[$attribute] = [
-                        'asc' => [$attribute => SORT_ASC],
-                        'desc' => [$attribute => SORT_DESC],
-                    ];
-                }
-            }
+        foreach ($attributes as $attribute) {
+            $sortAttribute[$attribute] = [];
         }
+
+        $this->sort->attributes($sortAttribute)->params($sortParams)->enableMultiSort(true);
     }
 
     /**

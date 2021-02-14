@@ -19,19 +19,6 @@ use Yii\Extension\GridView\Helper\Sort;
 interface DataProviderInterface
 {
     /**
-     * Prepares the data active record classes and keys.
-     *
-     * This method will prepare the data active record classes and keys that can be retrieved via {@see getARClasses()}
-     * {@see getKeys()}.
-     *
-     * This method will be implicitly called by {@see getARClasses()} and {@see getKeys()} if it has not been called
-     * before.
-     *
-     * @param bool $forcePrepare whether to force data preparation even if it has been done before.
-     */
-    public function prepare(bool $forcePrepare = false): void;
-
-    /**
      * Returns the number of data active record classes in the current page.
      *
      * This is equivalent to `count($provider->getARClasses())`.

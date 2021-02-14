@@ -9,8 +9,15 @@ use Yii\Extension\GridView\Column\Column;
 use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Factory\Factory;
 
-final class GridViewFactory extends Factory
+final class GridViewFactory
 {
+    private Factory $factory;
+
+    public function __construct(Factory $factory)
+    {
+        $this->factory = $factory;
+    }
+
     /**
      * Creates a DataColumn defined by config passed
      *
@@ -25,12 +32,14 @@ final class GridViewFactory extends Factory
      */
     public function createColumnClass(array $config): Column
     {
-        $class = $this->create($config);
+        $columnClass = $this->factory->create($config);
 
-        if (!($class instanceof Column)) {
-            throw new RuntimeException(sprintf('The "%s" is not an instance of the "%s".', $class, Column::class));
+        if (!($columnClass instanceof Column)) {
+            throw new RuntimeException(
+                sprintf('The "%s" is not an instance of the "%s".', $columnClass, Column::class)
+            );
         }
 
-        return $class;
+        return $columnClass;
     }
 }

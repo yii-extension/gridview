@@ -15,16 +15,9 @@ use Yii\Extension\GridView\Helper\Sort;
  */
 abstract class DataProvider implements DataProviderInterface
 {
-    /**
-     * @var string an ID that uniquely identifies the data provider among all data providers.
-     * Generated automatically the following way in case it is not set:
-     *
-     * - First data provider ID is empty.
-     * - Second and all subsequent data provider IDs are: "dp-1", "dp-2", etc.
-     */
+    protected Sort $sort;
+    protected Pagination $pagination;
     private string $id;
-    private ?Sort $sort = null;
-    private Pagination $pagination;
     private array $keys = [];
     private array $arClasses = [];
     private int $totalCount = 0;
@@ -32,8 +25,11 @@ abstract class DataProvider implements DataProviderInterface
     private string $autoIdPrefix = 'dp';
     private static int $counter = 0;
 
-    public function __construct()
+    public function __construct(Pagination $pagination, Sort $sort)
     {
+        $this->pagination = $pagination;
+        $this->sort = $sort;
+
         if (isset($this->id)) {
             $this->id = $this->getId();
         }
@@ -49,11 +45,11 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * Prepares the keys associated with the currently available data active record class.
      *
-     * @param array $value the available data active record class.
+     * @param array $arClasses the available data active record class.
      *
      * @return array the keys.
      */
-    abstract protected function prepareKeys(array $value = []): array;
+    abstract protected function prepareKeys(array $arClasses = []): array;
 
     /**
      * Returns a value indicating the total number of data active record class in this data provider.
@@ -63,25 +59,38 @@ abstract class DataProvider implements DataProviderInterface
     abstract protected function prepareTotalCount(): int;
 
     /**
-     * Prepares the data active record class and keys.
+     * The prefix to the automatically generated widget IDs.
      *
-     * This method will prepare the data active record class and keys that can be retrieved via {@see getARClasses()}
-     * and {@see getKeys()}.
+     * @param string $value
      *
-     * This method will be implicitly called by {@see getArClasses} and {@see getKeys()} if it has not been called
-     * before.
+     * @return $this
      *
-     * @param bool $forcePrepare whether to force data preparation even if it has been done before.
+     * {@see getId()}
      */
-    public function prepare(bool $forcePrepare = false): void
+    public function autoIdPrefix(string $value): self
     {
-        if ($forcePrepare || $this->arClasses === []) {
-            $this->arClasses = $this->prepareARClass();
-        }
+        $this->autoIdPrefix = $value;
+        return $this;
+    }
 
-        if ($forcePrepare || $this->keys === []) {
-            $this->keys = $this->prepareKeys($this->arClasses);
-        }
+    /**
+     * Sets the data active record classes in the current page.
+     *
+     * @param array $value the active record clasess in the current page.
+     */
+    public function arClasses(array $value): void
+    {
+        $this->arClasses = $value;
+    }
+
+    /**
+     * Counter used to generate {@see id} for widgets.
+     *
+     * @param int $value
+     */
+    public static function counter(int $value): void
+    {
+        self::$counter = $value;
     }
 
     /**
@@ -97,39 +106,6 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * Sets the data active record classes in the current page.
-     *
-     * @param array $value the active record clasess in the current page.
-     */
-    public function arClasses(array $value): void
-    {
-        $this->arClasses = $value;
-    }
-
-    /**
-     * Returns the key values associated with the data active record classes.
-     *
-     * @return array the list of key values corresponding to {@see arClasses}. Each data active record class in
-     * {@see arClasses} is uniquely identified by the corresponding key value in this array.
-     */
-    public function getKeys(): array
-    {
-        $this->prepare();
-
-        return $this->keys;
-    }
-
-    /**
-     * Sets the key values associated with the data active record classes.
-     *
-     * @param array $value the list of key values corresponding to {@see arClasses}.
-     */
-    public function keys(array $value): void
-    {
-        $this->keys = $value;
-    }
-
-    /**
      * Returns the number of data active record classes in the current page.
      *
      * @return int the number of data active record classes in the current page.
@@ -137,6 +113,38 @@ abstract class DataProvider implements DataProviderInterface
     public function getCount(): int
     {
         return count($this->getARClasses());
+    }
+
+    /**
+     * @return string|null Id of the widget.
+     */
+    protected function getId(): ?string
+    {
+        if ($this->autoGenerate && $this->id === null) {
+            $this->id = $this->autoIdPrefix . ++self::$counter;
+        }
+
+        return $this->id;
+    }
+
+    /**
+     * Returns the pagination object used by this data provider.
+     *
+     * @return Pagination the pagination object. If this is false, it means the pagination is disabled.
+     */
+    public function getPagination(): Pagination
+    {
+        return $this->pagination;
+    }
+
+    /**
+     * Returns the sorting object used by this data provider.
+     *
+     * @return Sort|null the sorting object. If this is false, it means the sorting is disabled.
+     */
+    public function getSort(): ?Sort
+    {
+        return $this->sort;
     }
 
     /**
@@ -157,70 +165,16 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * Sets the total number of data active record classes.
+     * Returns the key values associated with the data active record classes.
      *
-     * @param int $value the total number of data active record classes.
+     * @return array the list of key values corresponding to {@see arClasses}. Each data active record class in
+     * {@see arClasses} is uniquely identified by the corresponding key value in this array.
      */
-    public function totalCount(int $value): void
+    public function getKeys(): array
     {
-        $this->totalCount = $value;
-    }
+        $this->prepare();
 
-    /**
-     * Returns the pagination object used by this data provider.
-     *
-     * @return Pagination the pagination object. If this is false, it means the pagination is disabled.
-     */
-    public function getPagination(): Pagination
-    {
-        return $this->pagination;
-    }
-
-    /**
-     * Sets the pagination for this data provider.
-     *
-     * @param Pagination $value the pagination to be used by this data provider.
-     *
-     * @return $this
-     */
-    public function pagination(Pagination $value): self
-    {
-        $this->pagination = $value;
-
-        return $this;
-    }
-
-    /**
-     * Returns the sorting object used by this data provider.
-     *
-     * @return Sort|null the sorting object. If this is false, it means the sorting is disabled.
-     */
-    public function getSort(): ?Sort
-    {
-        return $this->sort;
-    }
-
-    /**
-     * Sets the sort definition for this data provider.
-     *
-     * @param Sort $value the sort definition to be used by this data provider.
-     */
-    public function sort(Sort $value): void
-    {
-        $this->sort = $value;
-    }
-
-    /**
-     * Refreshes the data provider.
-     *
-     * After calling this method, if {@see getARClasses()}, {@see getKeys()} or {@see getTotalCount()} is called again,
-     * they will re-execute the query and return the latest data available.
-     */
-    public function refresh(): void
-    {
-        $this->totalCount = null;
-        $this->arClasses = [];
-        $this->keys = [];
+        return $this->keys;
     }
 
     /**
@@ -237,39 +191,57 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * Counter used to generate {@see id} for widgets.
+     * Sets the key values associated with the data active record classes.
      *
-     * @param int $value
+     * @param array $value the list of key values corresponding to {@see arClasses}.
      */
-    public static function counterId(int $value): void
+    public function keys(array $value): void
     {
-        self::$counter = $value;
+        $this->keys = $value;
     }
 
     /**
-     * The prefix to the automatically generated widget IDs.
+     * Refreshes the data provider.
      *
-     * @param string $value
-     *
-     * @return $this
-     *
-     * {@see getId()}
+     * After calling this method, if {@see getARClasses()}, {@see getKeys()} or {@see getTotalCount()} is called again,
+     * they will re-execute the query and return the latest data available.
      */
-    public function autoIdPrefix(string $value): self
+    public function refresh(): void
     {
-        $this->autoIdPrefix = $value;
-        return $this;
+        $this->totalCount = 0;
+        $this->arClasses = [];
+        $this->keys = [];
     }
 
     /**
-     * @return string|null Id of the widget.
+     * Sets the total number of data active record classes.
+     *
+     * @param int $value the total number of data active record classes.
      */
-    protected function getId(): ?string
+    public function totalCount(int $value): void
     {
-        if ($this->autoGenerate && $this->id === null) {
-            $this->id = $this->autoIdPrefix . ++self::$counter;
+        $this->totalCount = $value;
+    }
+
+    /**
+     * Prepares the data active record class and keys.
+     *
+     * This method will prepare the data active record class and keys that can be retrieved via {@see getARClasses()}
+     * and {@see getKeys()}.
+     *
+     * This method will be implicitly called by {@see getArClasses} and {@see getKeys()} if it has not been called
+     * before.
+     *
+     * @param bool $forcePrepare whether to force data preparation even if it has been done before.
+     */
+    private function prepare(bool $forcePrepare = false): void
+    {
+        if ($forcePrepare || $this->arClasses === []) {
+            $this->arClasses = $this->prepareARClass();
         }
 
-        return $this->id;
+        if ($forcePrepare || $this->keys === []) {
+            $this->keys = $this->prepareKeys($this->arClasses);
+        }
     }
 }

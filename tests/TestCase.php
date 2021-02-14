@@ -12,8 +12,6 @@ use Psr\Log\NullLogger;
 use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\CheckboxColumn;
 use Yii\Extension\GridView\Column\DataColumn;
-use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
-use Yii\Extension\GridView\DataProvider\DataProvider;
 use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
@@ -46,9 +44,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected ActionColumn $actionColumn;
     protected CheckBoxColumn $checkBoxColumn;
     protected DataColumn $dataColumn;
+    protected Pagination $pagination;
+    protected Sort $sort;
     private ContainerInterface $container;
-    private Pagination $pagination;
-    private Sort $sort;
 
     protected function setUp(): void
     {
@@ -64,8 +62,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         unset(
             $this->actionColumn,
             $this->checkBoxColumn,
-            $this->dataColumn,
             $this->container,
+            $this->dataColumn,
             $this->pagination,
             $this->sort,
         );
@@ -94,12 +92,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
     ): GridView {
         return GridView::widget()
             ->columns($columns)
-            ->dataProvider($this->createDataProvider())
             ->currentPage($currentPage)
             ->pageSize($pageSize);
     }
 
-    protected function createDataProvider(array $sortParams = []): DataProvider
+    protected function getArrayData(): array
     {
         $data = [
             ['id' => 1, 'username' => 'tests 1', 'total' => '10'],
@@ -113,11 +110,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ['id' => 9, 'username' => 'tests 9', 'total' => '90'],
         ];
 
-        $dataProvider = new ArrayDataProvider();
-        //$this->sort->attributes(['id', 'username'])->params($sortParams)->enableMultiSort(true);
-        $dataProvider = $dataProvider->allData($data)->pagination($this->pagination);
-
-        return $dataProvider;
+        return $data;
     }
 
     private function configContainer(): void

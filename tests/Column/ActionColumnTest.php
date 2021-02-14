@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Tests\Column;
 
-use Yii\Extension\GridView\Column\ActionColumn;
+use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
 use Yii\Extension\GridView\Tests\TestCase;
 use Yiisoft\Html\Html;
 
@@ -18,6 +18,11 @@ final class ActionColumnTest extends TestCase
     public function testActionColumnButtonCustom(): void
     {
         $gridView = $this->createGridView();
+
+        $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView->dataProvider($dataProvider);
 
         $actionColumn = $this->actionColumn
             ->buttons(

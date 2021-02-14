@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
-use Yii\Extension\GridView\DataProvider\DataProviderInterface;
+use Yii\Extension\Gridview\DataProvider\DataProviderInterface;
 use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;

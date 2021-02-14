@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\DataProvider;
 
+use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\Arrays\ArrayHelper;
 
@@ -47,6 +48,11 @@ final class ArrayDataProvider extends DataProvider
     /** @var string|callable */
     public $key;
     public array $allData;
+
+    public function __construct(Pagination $pagination, Sort $sort)
+    {
+        parent::__construct($pagination, $sort);
+    }
 
     /**
      * @var string|callable $key the column that is used as the key of the data.
