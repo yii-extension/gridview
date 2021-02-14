@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Helper;
 
+use JsonException;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
@@ -241,11 +242,15 @@ final class Sort
      * {@see attributeOrders}
      * {@see params}
      */
-    public function createUrl(string $attribute, bool $absolute = false)
+    public function createUrl(string $attribute, bool $absolute = false): string
     {
+        $action = '';
         $params[$this->sortParam] = $this->createSortParam($attribute);
+        $currentRoute = $this->urlMatcher->getCurrentRoute();
 
-        $action = $this->urlMatcher->getCurrentRoute()->getName();
+        if ($currentRoute !== null) {
+            $action = $currentRoute->getName();
+        }
 
         return $this->urlGenerator->generate($action, ['sort' => $this->createSortParam($attribute)]);
     }
@@ -396,7 +401,7 @@ final class Sort
      *
      * Note that it will not be HTML-encoded.
      *
-     * @throws InvalidConfigException if the attribute is unknown.
+     * @throws InvalidConfigException|JsonException if the attribute is unknown.
      *
      * @return string the generated hyperlink
      */
@@ -417,13 +422,13 @@ final class Sort
         if (isset($options['label'])) {
             $label = $options['label'];
             unset($options['label']);
+        } elseif (isset($this->attributes[$attribute]['label'])) {
+            $label = $this->attributes[$attribute]['label'];
         } else {
-            if (isset($this->attributes[$attribute]['label'])) {
-                $label = $this->attributes[$attribute]['label'];
-            } else {
-                $label = (new Inflector())->pascalCaseToId($attribute);
-            }
+            $label = (new Inflector())->pascalCaseToId($attribute);
         }
+
+        Html::addCssClass($options, ['link' => 'has-text-link']);
 
         return Html::a($label, $url, array_merge($options, ['encode' => false]));
     }

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
-use Yiisoft\Arrays\ArrayHelper;
+use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Helper\Pagination;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\View\WebView;
 use Yiisoft\Widget\Widget;
-use Yiisoft\Yii\DataView\Exception\InvalidConfigException;
 
 use function implode;
 
@@ -596,10 +596,8 @@ final class LinkPager extends Widget
 
             $links[] = $this->renderPageButton(
                 $this->firstPageLabel,
-                0,
+                1,
                 $linkAttributes,
-                $currentPage <= 0,
-                false,
             );
         }
 
@@ -610,9 +608,9 @@ final class LinkPager extends Widget
 
             $links[] = $this->renderPageButton(
                 $this->prevPageLabel,
-                $currentPage - 1 < 0 ? 0 : $currentPage - 1,
+                max($currentPage - 1, 1),
                 $prevPageLabelOptions,
-                $currentPage === 0,
+                $currentPage === 1,
             );
         }
 
@@ -622,7 +620,7 @@ final class LinkPager extends Widget
 
         for ($i = $beginPage; $i <= $endPage; ++$i) {
             $buttons[] = $this->renderPageButton(
-                (string) $i + 1,
+                (string) $i,
                 $i,
                 $this->buttonsContainerAttributes,
                 $this->disableCurrentPageButton && $i === $currentPage,
