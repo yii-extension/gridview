@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
-use Yii\Extension\Gridview\DataProvider\DataProviderInterface;
 use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yii\Extension\GridView\Widget\LinkSorter;
+use Yii\Extension\Gridview\DataProvider\DataProviderInterface;
 use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Html\Html;
-use Yiisoft\Router\UrlGeneratorInterface;
-use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\Translator\TranslatorInterface;
 
 /**
@@ -146,7 +144,7 @@ abstract class BaseListView extends Widget
      *
      * @return $this
      */
-    public function layout(string $layout)
+    public function layout(string $layout): self
     {
         $new = clone $this;
         $new->layout = $layout;
@@ -232,7 +230,7 @@ abstract class BaseListView extends Widget
      *
      * {@see emptyText}
      */
-    private function renderEmpty(): string
+    protected function renderEmpty(): string
     {
         if ($this->emptyText === '') {
             return '';
@@ -245,29 +243,15 @@ abstract class BaseListView extends Widget
     }
 
     /**
-     * Renders the pager.
-     *
-     * @return string the rendering result
-     */
-    private function renderPager(): string
-    {
-        $pagination = $this->dataProvider->getPagination();
-
-        if ($pagination === null || $this->dataProvider->getCount() < 0) {
-            return '';
-        }
-
-        return LinkPager::widget()->frameworkCss('bootstrap')->pagination($pagination)->run();
-    }
-
-    /**
      * Renders a section of the specified name. If the named section is not supported, false will be returned.
      *
      * @param string $name the section name, e.g., `{summary}`, `{items}`.
      *
+     * @throws InvalidConfigException|JsonException
+     *
      * @return string the rendering result of the section, or false if the named section is not supported.
      */
-    private function renderSection(string $name): string
+    protected function renderSection(string $name): string
     {
         switch ($name) {
             case '{summary}':
@@ -284,7 +268,27 @@ abstract class BaseListView extends Widget
     }
 
     /**
+     * Renders the pager.
+     *
+     * @throws JsonException|InvalidConfigException
+     *
+     * @return string the rendering result
+     */
+    private function renderPager(): string
+    {
+        $pagination = $this->dataProvider->getPagination();
+
+        if ($pagination === null || $this->dataProvider->getCount() < 0) {
+            return '';
+        }
+
+        return LinkPager::widget()->frameworkCss('bootstrap')->pagination($pagination)->run();
+    }
+
+    /**
      * Renders the sorter.
+     *
+     * @throws InvalidConfigException
      *
      * @return string the rendering result
      */

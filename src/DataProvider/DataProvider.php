@@ -17,7 +17,7 @@ abstract class DataProvider implements DataProviderInterface
 {
     protected Sort $sort;
     protected Pagination $pagination;
-    private string $id;
+    private ?string $id = null;
     private array $keys = [];
     private array $arClasses = [];
     private int $totalCount = 0;
@@ -118,9 +118,9 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * @return string|null Id of the widget.
      */
-    protected function getId(): ?string
+    protected function getId(): string
     {
-        if ($this->autoGenerate && $this->id === null) {
+        if ($this->autoGenerate) {
             $this->id = $this->autoIdPrefix . ++self::$counter;
         }
 

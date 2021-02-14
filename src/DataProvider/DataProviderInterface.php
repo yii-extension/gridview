@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\DataProvider;
 
+use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 
@@ -11,7 +12,7 @@ use Yii\Extension\GridView\Helper\Sort;
  * DataProviderInterface is the interface that must be implemented by data provider classes.
  *
  * Data providers are components that sort and paginate data, and provide them to widgets such as
- * {@see Yiisoft\Yii\DataView\GridView}, {@see Yiisoft\Yii\DataView\ListView}.
+ * {@see GridView}.
  *
  * For more details and usage information on DataProviderInterface, see the
  * [guide article on data providers](guide:output-data-providers).

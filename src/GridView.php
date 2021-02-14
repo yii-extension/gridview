@@ -366,7 +366,7 @@ final class GridView extends BaseListView
     public function headerRowOptions(array $headerRowOptions): self
     {
         $new = clone $this;
-        $new->headerRowOptions = $value;
+        $new->headerRowOptions = $headerRowOptions;
 
         return $new;
     }
@@ -382,7 +382,7 @@ final class GridView extends BaseListView
     public function notShowHeader(): self
     {
         $new = clone $this;
-        $new->showHeader = $showHeader;
+        $new->showHeader = false;
 
         return $new;
     }
@@ -429,7 +429,7 @@ final class GridView extends BaseListView
     public function showFooter(): self
     {
         $new = clone $this;
-        $new->showFooter = $true;
+        $new->showFooter = true;
 
         return $new;
     }
@@ -445,6 +445,15 @@ final class GridView extends BaseListView
         $new->tableOptions = $tableOptions;
 
         return $new;
+    }
+
+    protected function renderSection(string $name): string
+    {
+        if ($name == '{errors}') {
+            return $this->renderErrors();
+        } else {
+            return parent::renderSection($name);
+        }
     }
 
     /**
@@ -482,6 +491,58 @@ final class GridView extends BaseListView
         ]);
 
         return Html::tag('table', implode("\n", $content), array_merge($this->tableOptions, ['encode' => false]));
+    }
+
+    /**
+     * Creates a {@see DataColumn} object based on a string in the format of "attribute:format:label".
+     *
+     * @param string $text the column specification string
+     *
+     * @throws InvalidConfigException if the column specification is invalid
+     *
+     * @return DataColumn the column instance
+     */
+    private function createDataColumn($text): DataColumn
+    {
+        if (!preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
+            throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
+        }
+
+        $dataColumn = new DataColumn();
+        $dataColumn->grid = $this;
+        $dataColumn->attribute = $matches[1];
+        $dataColumn->format = isset($matches[3]) ? $matches[3] : 'text';
+        $dataColumn->label = isset($matches[5]) ? $matches[5] : '';
+
+        return $dataColumn;
+    }
+
+    /**
+     * Returns the options for the grid view JS widget.
+     *
+     * @return array the options
+     */
+    private function getClientOptions(): array
+    {
+        return [];
+    }
+
+    /**
+     * This function tries to guess the columns to show from the given data if {@see columns} are not explicitly
+     * specified.
+     */
+    private function guessColumns(): void
+    {
+        $arClasses = $this->dataProvider->getARClasses();
+        $arClass = reset($arClasses);
+
+        if (is_array($arClass) || is_object($arClass)) {
+            foreach ($arClass as $name => $value) {
+                if ($value === null || is_scalar($value) || is_callable([$value, '__toString'])) {
+                    $this->columns[] = (string) $name;
+                }
+            }
+        }
     }
 
     /**
@@ -549,65 +610,13 @@ final class GridView extends BaseListView
     }
 
     /**
-     * Creates a {@see DataColumn} object based on a string in the format of "attribute:format:label".
-     *
-     * @param string $text the column specification string
-     *
-     * @throws InvalidConfigException if the column specification is invalid
-     *
-     * @return DataColumn the column instance
-     */
-    private function createDataColumn($text): DataColumn
-    {
-        if (!preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
-            throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
-        }
-
-        $dataColumn = new DataColumn();
-        $dataColumn->grid = $this;
-        $dataColumn->attribute = $matches[1];
-        $dataColumn->format = isset($matches[3]) ? $matches[3] : 'text';
-        $dataColumn->label = isset($matches[5]) ? $matches[5] : '';
-
-        return $dataColumn;
-    }
-
-    /**
-     * Returns the options for the grid view JS widget.
-     *
-     * @return array the options
-     */
-    private function getClientOptions(): array
-    {
-        return [];
-    }
-
-    /**
-     * This function tries to guess the columns to show from the given data if {@see columns} are not explicitly
-     * specified.
-     */
-    private function guessColumns(): void
-    {
-        $arClasses = $this->dataProvider->getARClasses();
-        $arClass = reset($arClasses);
-
-        if (is_array($arClass) || is_object($arClass)) {
-            foreach ($arClass as $name => $value) {
-                if ($value === null || is_scalar($value) || is_callable([$value, '__toString'])) {
-                    $this->columns[] = (string) $name;
-                }
-            }
-        }
-    }
-
-    /**
      * Renders the caption element.
      *
      * @throws JsonException
      *
      * @return string the rendered caption element or `` if no caption element should be rendered.
      */
-    public function renderCaption(): string
+    private function renderCaption(): string
     {
         if (!empty($this->caption)) {
             return Html::tag('caption', $this->caption, $this->captionOptions);
@@ -673,15 +682,6 @@ final class GridView extends BaseListView
         }
 
         return '';
-    }
-
-    private function renderSection(string $name): string
-    {
-        if ($name == '{errors}') {
-            return $this->renderErrors();
-        } else {
-            return parent::renderSection($name);
-        }
     }
 
     /**

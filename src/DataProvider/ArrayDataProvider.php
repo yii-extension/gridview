@@ -6,7 +6,7 @@ namespace Yii\Extension\GridView\DataProvider;
 
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Arrays\ArraySorter;
 
 /**
  * ArrayDataProvider implements a data provider based on a data array.
@@ -49,16 +49,13 @@ final class ArrayDataProvider extends DataProvider
     public $key;
     public array $allData;
 
-    public function __construct(Pagination $pagination, Sort $sort)
-    {
-        parent::__construct($pagination, $sort);
-    }
-
     /**
      * @var string|callable $key the column that is used as the key of the data.
      *
      * This can be either a column name, or a callable that returns the key value of a given data model.
      * If this is not set, the index of the data array will be used.
+     *
+     * @return $this
      *
      * {@see getKeys()}
      */
@@ -74,6 +71,8 @@ final class ArrayDataProvider extends DataProvider
      * more elements.
      *
      * The array elements must use zero-based integer keys.
+     *
+     * @return $this
      */
     public function allData(array $allData): self
     {
@@ -129,14 +128,14 @@ final class ArrayDataProvider extends DataProvider
         return is_array($this->allData) ? count($this->allData) : 0;
     }
 
-    protected function sortModels(array $arClass, Sort $sort): array
+    protected function sortModels(array $arClasses, Sort $sort): array
     {
         $orders = $sort->getOrders();
 
         if (!empty($orders)) {
-            ArrayHelper::multisort($models, array_keys($orders), array_values($orders), $sort->sortFlags);
+            ArraySorter::multisort($arClasses, array_keys($orders), array_values($orders));
         }
 
-        return $models;
+        return $arClasses;
     }
 }

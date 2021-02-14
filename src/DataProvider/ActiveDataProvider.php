@@ -193,6 +193,6 @@ final class ActiveDataProvider extends DataProvider
 
         $query = clone $this->query;
 
-        return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*');
+        return (int) $query->limit(-1)->offset(-1)->orderBy([])->count();
     }
 }
