@@ -228,10 +228,9 @@ class DataColumn extends Column
         return null;
     }
 
-    protected function renderDataCellContent($arClass, $key, int $index): string
+    protected function renderDataCellContent($arClass, $key, int $index): ?string
     {
         if ($this->content === null) {
-            //return $this->grid->formatter->format($this->getDataCellValue($arClass, $key, $index), $this->format);
             return $this->getDataCellValue($arClass, $key, $index);
         }
 

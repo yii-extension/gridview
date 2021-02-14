@@ -110,7 +110,7 @@ class CheckboxColumn extends Column
         return Html::checkbox($this->getHeaderCheckBoxName(), false, ['class' => 'select-on-check-all']);
     }
 
-    protected function renderDataCellContent($arClass, $key, int $index): string
+    protected function renderDataCellContent($arClass, $key, int $index): ?string
     {
         if ($this->content !== null) {
             return parent::renderDataCellContent($arClass, $key, $index);

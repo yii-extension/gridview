@@ -12,8 +12,6 @@ final class ActionColumnTest extends TestCase
 {
     public function testActionColumnDefaultButtons(): void
     {
-        d($this->createGridView()->render());
-        die;
         $this->assertSame(['view', 'update', 'delete'], array_keys($this->actionColumn->getButtons()));
     }
 

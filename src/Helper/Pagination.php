@@ -133,7 +133,7 @@ final class Pagination
         return $this;
     }
 
-    public function totalCount(int $totalCount)
+    public function totalCount(int $totalCount): self
     {
         $this->totalCount = $totalCount;
 

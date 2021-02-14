@@ -69,7 +69,7 @@ class RadioButtonColumn extends Column
         }
     }
 
-    protected function renderDataCellContent($arClass, $key, $index): string
+    protected function renderDataCellContent($arClass, $key, $index): ?string
     {
         if ($this->content !== null) {
             return parent::renderDataCellContent($arClass, $key, $index);

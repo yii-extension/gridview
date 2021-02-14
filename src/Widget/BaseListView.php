@@ -130,7 +130,7 @@ abstract class BaseListView extends Widget
         return $this->pagination;
     }
 
-    public function getSort(): Sort
+    public function getSort(): ?Sort
     {
         return $this->dataProvider->getSort();
     }
@@ -266,9 +266,9 @@ abstract class BaseListView extends Widget
      *
      * @param string $name the section name, e.g., `{summary}`, `{items}`.
      *
-     * @return string|bool the rendering result of the section, or false if the named section is not supported.
+     * @return string the rendering result of the section, or false if the named section is not supported.
      */
-    private function renderSection(string $name)
+    private function renderSection(string $name): string
     {
         switch ($name) {
             case '{summary}':
@@ -280,7 +280,7 @@ abstract class BaseListView extends Widget
             case '{sorter}':
                 return $this->renderSorter();
             default:
-                return false;
+                return '';
         }
     }
 

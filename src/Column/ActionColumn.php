@@ -269,7 +269,7 @@ final class ActionColumn extends Column
      * @param string $iconName The part of Bootstrap glyphicon class that makes it unique
      * @param array $additionalOptions Array of additional options
      *
-     * @return string
+     * @return void
      */
     private function createDefaultButton(string $name, string $iconName, array $additionalOptions = []): void
     {

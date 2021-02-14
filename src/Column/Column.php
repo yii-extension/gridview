@@ -167,15 +167,15 @@ class Column
      * @param int $index the zero-based index of the data arClass among the arClasss array returned by
      * {@see GridView::dataProvider}.
      *
-     * @return string the rendering result
+     * @return string|null the rendering result
      */
-    protected function renderDataCellContent($arClass, $key, int $index): string
+    protected function renderDataCellContent($arClass, $key, int $index): ?string
     {
         if ($this->content !== null) {
             return call_user_func($this->content, $arClass, $key, $index, $this);
         }
 
-        return $this->grid->emptyCell;
+        return $this->grid->getEmptyCell();
     }
 
     /**

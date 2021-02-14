@@ -255,7 +255,7 @@ final class GridView extends BaseListView
      *
      * This is mainly used by {@see Html::error()} when rendering an error message next to every filter input field.
      */
-    public function filterErrorOptions(array $filterErrorOptions)
+    public function filterErrorOptions(array $filterErrorOptions): self
     {
         $new = clone $this;
         $new->filterErrorOptions = $filterErrorOptions;
@@ -318,7 +318,7 @@ final class GridView extends BaseListView
      *
      * @return $this;
      */
-    public function filterOnFocusOut(bool $filterOnFocusOut)
+    public function filterOnFocusOut(bool $filterOnFocusOut): self
     {
         $new = clone $this;
         $new->filterOnFocusOut = $filterOnFocusOut;
@@ -369,6 +369,11 @@ final class GridView extends BaseListView
         $new->headerRowOptions = $value;
 
         return $new;
+    }
+
+    public function getEmptyCell(): string
+    {
+        return $this->emptyCell;
     }
 
     /**
@@ -434,7 +439,7 @@ final class GridView extends BaseListView
      *
      * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
-    public function tableOptions(array $tableOptions)
+    public function tableOptions(array $tableOptions): self
     {
         $new = clone $this;
         $new->tableOptions = $tableOptions;
