@@ -40,10 +40,9 @@ abstract class BaseListView extends Widget
     private array $summaryOptions = ['class' => 'summary'];
     private bool $showOnEmpty = false;
 
-    public function __construct(GridViewFactory $gridViewFactory, Pagination $pagination, TranslatorInterface $translator)
+    public function __construct(GridViewFactory $gridViewFactory, TranslatorInterface $translator)
     {
         $this->gridViewFactory = $gridViewFactory;
-        $this->pagination = $pagination;
         $this->translator = $translator;
     }
 
@@ -127,7 +126,7 @@ abstract class BaseListView extends Widget
 
     public function getPagination(): Pagination
     {
-        return $this->pagination;
+        return $this->dataProvider->getPagination();
     }
 
     public function getSort(): ?Sort
@@ -307,6 +306,7 @@ abstract class BaseListView extends Widget
     private function renderSummary(): string
     {
         $count = $this->dataProvider->getCount();
+        $pagination = $this->getPagination();
 
         if ($count <= 0) {
             return '';
@@ -316,17 +316,17 @@ abstract class BaseListView extends Widget
         $summaryOptions['encode'] = false;
         $tag = ArrayHelper::remove($summaryOptions, 'tag', 'div');
 
-        if ($this->pagination) {
+        if ($pagination) {
             $totalCount = $this->dataProvider->getTotalCount();
-            $begin = ($this->pagination->getOffset() + 1);
+            $begin = ($pagination->getOffset() + 1);
             $end = $begin + $count - 1;
 
             if ($begin > $end) {
                 $begin = $end;
             }
 
-            $page = $this->pagination->getCurrentPage();
-            $pageCount = $this->pagination->getTotalPages();
+            $page = $pagination->getCurrentPage();
+            $pageCount = $pagination->getTotalPages();
         } else {
             $begin = $page = $pageCount = 1;
             $end = $totalCount = $count;

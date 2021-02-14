@@ -67,10 +67,11 @@ final class GridView extends BaseListView
             throw new InvalidConfigException('The "dataProvider" property must be set.');
         }
 
-        $this->pagination->currentPage($this->currentPage);
+        $pagination = $this->getPagination();
+        $pagination->currentPage($this->currentPage);
 
         if ($this->pageSize > 0) {
-            $this->pagination->pageSize($this->pageSize);
+            $pagination->pageSize($this->pageSize);
         }
 
         if ($this->emptyText !== '') {
