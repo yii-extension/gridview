@@ -29,7 +29,7 @@ class SerialColumn extends Column
 
     protected function renderDataCellContent($arClass, $key, $index): string
     {
-        $pagination = $this->grid->dataProvider->getPagination();
+        $pagination = $this->grid->getPagination();
 
         if ($pagination !== null) {
             return (string) ($pagination->getOffset() + $index + 1);

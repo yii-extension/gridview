@@ -6,6 +6,7 @@ namespace Yii\Extension\GridView\DataProvider;
 
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
+use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\ActiveRecord\ActiveQueryInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -145,8 +146,8 @@ final class ActiveDataProvider extends DataProvider
         $query = clone $this->query;
 
         if (($pagination = $this->getPagination()) !== null) {
-            $pagination->totalCount = $this->getTotalCount();
-            if ($pagination->totalCount === 0) {
+            $pagination->totalCount($this->getTotalCount());
+            if ($pagination->getTotalCount() === 0) {
                 return [];
             }
 

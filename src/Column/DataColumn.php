@@ -151,11 +151,9 @@ class DataColumn extends Column
             $label = Html::encode($label);
         }
 
-        if (
-            $this->attribute !== null &&
-            $this->enableSorting &&
-            ($sort = $this->grid->dataProvider->getSort()) !== null && $sort->hasAttribute($this->attribute)
-        ) {
+        $sort = $this->grid->getSort();
+
+        if ($this->attribute !== null && $this->enableSorting && $sort !== null && $sort->hasAttribute($this->attribute)) {
             return $sort->link($this->attribute, array_merge($this->sortLinkOptions, ['label' => $label]));
         }
 
@@ -164,36 +162,7 @@ class DataColumn extends Column
 
     protected function getHeaderCellLabel(): string
     {
-        $provider = $this->grid->dataProvider;
-
-        if ($this->label === null) {
-            if ($provider instanceof ActiveDataProvider && $provider->query instanceof ActiveQueryInterface) {
-                /* @var $modelClass Model */
-                $modelClass = $provider->query->modelClass;
-                $arClass = $modelClass::instance();
-                $label = $arClass->getAttributeLabel($this->attribute);
-            } elseif ($provider instanceof ArrayDataProvider && $provider->modelClass !== null) {
-                /* @var $modelClass Model */
-                $modelClass = $provider->modelClass;
-                $arClass = $modelClass::instance();
-                $label = $arClass->getAttributeLabel($this->attribute);
-            } elseif ($this->grid->filterModel !== null && $this->grid->filterModel instanceof Model) {
-                $label = $this->grid->filterModel->getAttributeLabel($this->filterAttribute);
-            } else {
-                $arClasses = $provider->getARClasses();
-                if (($arClass = reset($arClasses)) instanceof Model) {
-                    /* @var $arClass Model */
-                    $label = $arClass->getAttributeLabel($this->attribute);
-                } else {
-                    //$label = Inflector::camel2words($this->attribute);
-                    $label = $this->attribute;
-                }
-            }
-        } else {
-            $label = $this->label;
-        }
-
-        return $label;
+        return $this->label !== '' ? $this->label : (new Inflector())->toPascalCase($this->attribute) ;
     }
 
     protected function renderFilterCellContent(): string

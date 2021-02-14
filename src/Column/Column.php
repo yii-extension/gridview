@@ -50,11 +50,7 @@ class Column
      */
     public array $options = [];
 
-    /**
-     * @var array the HTML attributes for the header cell tag.
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
-     */
-    public array $headerOptions = [];
+    protected array $headerOptions = [];
 
     /**
      * @var array|Closure the HTML attributes for the data cell tag. This can either be an array of
@@ -193,5 +189,33 @@ class Column
     protected function renderFilterCellContent(): string
     {
         return $this->grid->emptyCell;
+    }
+
+    /**
+     * @param array $headerOptions the HTML attributes for the header cell tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function headerOptions(array $headerOptions): self
+    {
+        $new = clone $this;
+        $new->headerOptions = $headerOptions;
+
+        return $new;
+    }
+
+    /**
+     * @param GridView $grid the grid view object that owns this column.
+     *
+     * @return $this
+     */
+    public function grid(GridView $grid): self
+    {
+        $new = clone $this;
+        $new->grid = $grid;
+
+        return $this;
     }
 }

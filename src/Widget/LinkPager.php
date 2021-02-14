@@ -489,8 +489,8 @@ final class LinkPager extends Widget
     {
         $buttons = [];
         $pagination = $this->pagination;
-        $currentPage = $pagination->getPage() + 1;
-        $pageCount = $pagination->getPageCount();
+        $currentPage = $pagination->getCurrentPage();
+        $pageCount = $pagination->getTotalPages();
 
         if ($pageCount < 2 && $this->hideOnSinglePage) {
             return '';
@@ -582,8 +582,8 @@ final class LinkPager extends Widget
         $buttons = [];
         $links = [];
         $pagination = $this->pagination;
-        $currentPage = $pagination->getPage();
-        $pageCount = $pagination->getPageCount();
+        $currentPage = $pagination->getCurrentPage();
+        $pageCount = $pagination->getTotalPages();
 
         if ($pageCount < 2 && $this->hideOnSinglePage) {
             return '';
@@ -719,8 +719,8 @@ final class LinkPager extends Widget
      */
     private function getPageRange(): array
     {
-        $currentPage = $this->pagination->getPage();
-        $pageCount = $this->pagination->getPageCount();
+        $currentPage = $this->pagination->getCurrentPage();
+        $pageCount = $this->pagination->getTotalPages();
 
         $beginPage = max(1, $currentPage - (int) ($this->maxButtonCount / 2));
 
@@ -768,8 +768,8 @@ final class LinkPager extends Widget
     private function createLinks(bool $absolute = false): array
     {
         $pagination = $this->pagination;
-        $currentPage = $pagination->getPage();
-        $pageCount = $pagination->getPageCount();
+        $currentPage = $pagination->getCurrentPage();
+        $pageCount = $pagination->getTotalPages();
 
         $links = [self::REL_SELF => $this->createUrl($currentPage, null, $absolute)];
 

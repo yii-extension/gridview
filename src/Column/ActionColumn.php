@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
-use Yiisoft\ActiveRecord\ActiveRecordInterface;
+use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 
@@ -32,41 +32,35 @@ use function is_array;
  */
 final class ActionColumn extends Column
 {
-    public array $headerOptions = ['class' => 'action-column'];
+    protected array $headerOptions = ['class' => 'action-column'];
+    private string $template = '{view} {update} {delete}';
+    private array $buttons = [];
+    private array $visibleButtons = [];
+    private array $buttonOptions = [];
+    private string $primaryKey = 'id';
+    /** @var callable */
+    private $urlCreator;
+    private UrlGeneratorInterface $urlGenerator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+
+        $this->loadDefaultButtons();
+    }
 
     /**
-     * @var string the ID of the controller that should handle the actions specified here. If not set, it will use the
-     * currently active controller. This property is mainly used by {@see urlGenerator} to create URLs for different
-     * actions. The value of this property will be prefixed to each action name to form the route of the action.
-     */
-    public string $controller;
-
-    /**
-     * @var string the template used for composing each cell in the action column. Tokens enclosed within curly brackets
-     * are treated as controller action IDs (also called *button names* in the context of action column). They will be
-     * replaced by the corresponding button rendering callbacks specified in {@see buttons}. For example, the token
-     * `{view}` will be replaced by the result of the callback `buttons['view']`. If a callback cannot be found, the
-     * token will be replaced with an empty string.
-     *
-     * As an example, to only have the view, and update button you can add the ActionColumn to your GridView columns as
-     * follows:
+     * @param array $buttons button rendering callbacks. The array keys are the button names (without curly brackets),
+     * and the values are the corresponding button rendering callbacks. The callbacks should use the following
+     * signature:
      *
      * ```php
-     *     ['__class' => ActionColumn::class, 'template' => '{view} {update} {delete}'],
-     * ```
-     *
-     * {@see buttons}
-     */
-    public string $template = '{view} {update} {delete}';
-
-    /**
-     * @var array button rendering callbacks. The array keys are the button names (without curly brackets), and the
-     * values are the corresponding button rendering callbacks. The callbacks should use the following signature:
-     *
-     * ```php
-     * function ($url, $arClass, $key) {
-     *     // return the button HTML code
-     * }
+     * [
+     *     buttons() => [
+     *         'action' => function ($url, $arClass, $key) {
+     *             // return the button HTML code
+     *         }
+     *     ],
      * ```
      *
      * where `$url` is the URL that the column creates for the button, `$arClass` is the arClass object being rendered
@@ -77,24 +71,130 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     'update' => function ($url, $arClass, $key) {
-     *         return $arClass->status === 'editable' ? Html::a('Update', $url) : '';
-     *     },
+     *     buttons() = [
+     *         'update' => function ($url, $arClass, $key) {
+     *             return $arClass->status === 'editable' ? Html::a('Update', $url) : '';
+     *         },
+     *     ],
      * ],
      * ```
+     *
+     * @return $this
      */
-    public array $buttons = [];
+    public function buttons(array $buttons)
+    {
+        $this->buttons = $buttons;
+
+        return $this;
+    }
 
     /**
-     * @var array visibility conditions for each button. The array keys are the button names (without curly brackets),
-     * and the values are the boolean true/false or the anonymous function. When the button name is not specified in
-     * this array it will be shown by default.
+     * @param array $buttonOptions HTML options to be applied to the default button, see {@see loadDefaultButton()}.
+     *
+     * @return self
+     */
+    public function buttonOptions(array $buttonOptions): self
+    {
+        $this->buttonOptions = $buttonOptions;
+
+        return $this;
+    }
+
+    public function getButtons(): array
+    {
+        return $this->buttons;
+    }
+
+    /**
+     * Indicates which is the primaryKey of the data to be used to generate the url automatically.
+     *
+     * @param string $primaryKey by default the primaryKey is `id`.
+     *
+     * @return self
+     */
+    public function primaryKey(string $primaryKey): self
+    {
+        $this->primaryKey = $primaryKey;
+
+        return $this;
+    }
+
+    /**
+     * @param string $template the template used for composing each cell in the action column. Tokens enclosed within
+     * curly brackets are treated as controller action IDs (also called *button names* in the context of action column).
+     * They will be replaced by the corresponding button rendering callbacks specified in {@see buttons}. For example,
+     * the token `{view}` will be replaced by the result of the callback `buttons['view']`. If a callback cannot be
+     * found, the token will be replaced with an empty string.
+     *
+     * As an example, to only have the view, and update button you can add the ActionColumn to your GridView columns as
+     * follows:
+     *
+     * ```php
+     * [
+     *     '__class' => ActionColumn::class,
+     *     'template()' => ['{view} {update} {delete}'],
+     * ],
+     * ```
+     *
+     * @return $this
+     *
+     * {@see buttons}
+     */
+    public function template(string $template): self
+    {
+        $result = preg_match_all('/{([\w\-\/]+)}/', $template, $matches);
+
+        if ($result > 0 && is_array($matches) && !empty($matches[1])) {
+            $this->buttons = array_intersect_key($this->buttons, array_flip($matches[1]));
+        }
+
+        $this->template = $template;
+
+        return $this;
+    }
+
+    /**
+     * @param callable $urlCreator a callback that creates a button URL using the specified model information.
+     *
+     * The signature of the callback should be the same as that of {@see createUrl()}. It can accept additional
+     * parameter, which refers to the column instance itself:
+     * ```php
+     * [
+     *     'urlCreator()' => [
+     *         'action' => function (string $action, ActiveRecord $model, mixed $key, int $index) {
+     *             return string;
+     *         }
+     *     ],
+     * }
+     * ```
+     *
+     * If this property is not set, button URLs will be created using {@see createUrl()}.
+     *
+     * @return $this
+     */
+    public function urlCreator(callable $urlCreator): self
+    {
+        $this->urlCreator = $urlCreator;
+
+        return $this;
+    }
+
+    /**
+     * @var array $visibleButtons visibility conditions for each button. The array keys are the button names (without
+     * curly brackets), and the values are the boolean true/false or the anonymous function. When the button name is not
+     * specified in this array it will be shown by default.
      *
      * The callbacks must use the following signature:
      *
      * ```php
-     * function ($arClass, $key, $index) {
-     *     return $arClass->status === 'editable';
+     * [
+     *     visibleButtons() => [
+     *         update => [
+     *             function ($arClass, $key, $index) {
+     *                 return $arClass->status === 'editable';
+     *             }
+     *         ],
+     *     ],
      * }
      * ```
      *
@@ -102,112 +202,19 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     'update' => true,
+     *     visibleButtons() => [
+     *         'update' => true,
+     *     ],
      * ],
      * ```
-     */
-    public array $visibleButtons = [];
-
-    /**
-     * @var callable a callback that creates a button URL using the specified arClass information. The signature of the
-     * callback should be the same as that of {@see createUrl()} it can accept additional parameter, which refers to
-     * the column instance itself:
      *
-     * ```php
-     * function (string $action, mixed $arClass, mixed $key, integer $index, ActionColumn $this) {
-     *     //return string;
-     * }
-     * ```
-     *
-     * If this property is not set, button URLs will be created using {@see createUrl()}.
+     * @return $this
      */
-    public $urlCreator;
-
-    /**
-     * @var array html options to be applied to the {@see initDefaultButton()|default button}.
-     */
-    public array $buttonOptions = [];
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    public function visibleButtons(array $visibleButtons): self
     {
-        $this->urlGenerator = $urlGenerator;
+        $this->visibleButtons = $visibleButtons;
 
-        $this->initDefaultButtons();
-    }
-
-    /**
-     * Initializes the default button rendering callbacks.
-     */
-    private function initDefaultButtons(): void
-    {
-        $this->initDefaultButton('view', 'eye-open');
-        $this->initDefaultButton('update', 'pencil');
-        $this->initDefaultButton('delete', 'trash', [
-            'data-confirm' => 'Are you sure you want to delete this item?',
-            'data-method' => 'post',
-        ]);
-    }
-
-    /**
-     * Initializes the default button rendering callback for single button.
-     *
-     * @param string $name Button name as it's written in template
-     * @param string $iconName The part of Bootstrap glyphicon class that makes it unique
-     * @param array $additionalOptions Array of additional options
-     */
-    private function initDefaultButton(string $name, string $iconName, array $additionalOptions = [])
-    {
-        if (!isset($this->buttons[$name]) && strpos($this->template, '{' . $name . '}') !== false) {
-            $this->buttons[$name] = function ($url) use ($name, $iconName, $additionalOptions) {
-                switch ($name) {
-                    case 'view':
-                        $title = 'View';
-                        break;
-                    case 'update':
-                        $title = 'Update';
-                        break;
-                    case 'delete':
-                        $title = 'Delete';
-                        break;
-                    default:
-                        $title = ucfirst($name);
-                }
-
-                $options = array_merge([
-                    'title' => $title,
-                    'aria-label' => $title,
-                    'data-pjax' => '0',
-                    'encode' => false,
-                ], $additionalOptions, $this->buttonOptions);
-
-                $icon = Html::tag('span', '', ['class' => "glyphicon glyphicon-$iconName", ['encode' => false]]);
-
-                return Html::a($icon, $url, $options);
-            };
-        }
-    }
-
-    /**
-     * Creates a URL for the given action and arClass. This method is called for each button and each row.
-     *
-     * @param string $action the button name (or action ID)
-     * @param ActiveRecordInterface $arClass the data arClass
-     * @param mixed $key the key associated with the data arClass
-     * @param int $index the current row index
-     *
-     * @return string the created URL
-     */
-    public function createUrl(string $action, ActiveRecordInterface $arClass, $key, int $index): string
-    {
-        if (is_callable($this->urlCreator)) {
-            return call_user_func($this->urlCreator, $action, $arClass, $key, $index, $this);
-        }
-
-        $params = is_array($key) ? $key : ['id' => (string) $key];
-
-        return $this->urlGenerator->generate($action, $params);
+        return $this;
     }
 
     protected function renderDataCellContent($arClass, $key, int $index): string
@@ -230,5 +237,92 @@ final class ActionColumn extends Column
 
             return '';
         }, $this->template);
+    }
+
+    /**
+     * Initializes the default button rendering callbacks.
+     */
+    private function loadDefaultButtons(): void
+    {
+        $defaultButtons = ([
+            ['view','&#128065;', []],
+            ['update', '&#128393;', []],
+            [
+                'delete',
+                '&#128465;',
+                [
+                    'data-confirm' => 'Are you sure you want to delete this item?',
+                    'data-method' => 'post',
+                ],
+            ],
+        ]);
+
+        foreach ($defaultButtons as $defaultButton) {
+            $this->createDefaultButton($defaultButton[0], $defaultButton[1], $defaultButton[2]);
+        }
+    }
+
+    /**
+     * Initializes the default button rendering callback for single button.
+     *
+     * @param string $name Button name as it's written in template
+     * @param string $iconName The part of Bootstrap glyphicon class that makes it unique
+     * @param array $additionalOptions Array of additional options
+     *
+     * @return string
+     */
+    private function createDefaultButton(string $name, string $iconName, array $additionalOptions = []): void
+    {
+        if (!isset($this->buttons[$name]) && strpos($this->template, '{' . $name . '}') !== false) {
+            $this->buttons[$name] = function ($url) use ($name, $iconName, $additionalOptions): string {
+                switch ($name) {
+                    case 'view':
+                        $title = 'View';
+                        break;
+                    case 'update':
+                        $title = 'Update';
+                        break;
+                    case 'delete':
+                        $title = 'Delete';
+                        break;
+                }
+
+                $options = array_merge(
+                    [
+                        'title' => $title,
+                        'aria-label' => $title,
+                        'data-name' => $name,
+                        'encode' => false,
+                    ],
+                    $additionalOptions,
+                    $this->buttonOptions
+                );
+
+                $icon = Html::tag('span', $iconName, ['encode' => false]);
+
+                return Html::a($icon, $url, $options);
+            };
+        }
+    }
+
+    /**
+     * Creates a URL for the given action and arClass. This method is called for each button and each row.
+     *
+     * @param string $action the button name (or action ID)
+     * @param ActiveRecord|array $arClass the data arClass
+     * @param mixed $key the key associated with the data arClass
+     * @param int $index the current row index
+     *
+     * @return string the created URL
+     */
+    private function createUrl(string $action, $arClass, $key, int $index): string
+    {
+        if (is_callable($this->urlCreator)) {
+            return call_user_func($this->urlCreator, $action, $arClass, $key, $index, $this);
+        }
+
+        $params = is_array($key) ? $key : [$this->primaryKey => $key];
+
+        return $this->urlGenerator->generate($action, $params);
     }
 }

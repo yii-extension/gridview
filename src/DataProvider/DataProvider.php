@@ -180,10 +180,14 @@ abstract class DataProvider implements DataProviderInterface
      * Sets the pagination for this data provider.
      *
      * @param Pagination $value the pagination to be used by this data provider.
+     *
+     * @return $this
      */
-    public function pagination(Pagination $value): void
+    public function pagination(Pagination $value): self
     {
         $this->pagination = $value;
+
+        return $this;
     }
 
     /**
