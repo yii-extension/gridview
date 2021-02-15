@@ -55,12 +55,12 @@ interface DataProviderInterface
     public function getKeys(): array;
 
     /**
-     * @return Sort|null the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort the sorting object.
      */
-    public function getSort(): ?Sort;
+    public function getSort(): Sort;
 
     /**
-     * @return Pagination|null pagination object. If this is false, it means the pagination is disabled.
+     * @return Pagination pagination object.
      */
-    public function getPagination(): ?Pagination;
+    public function getPagination(): Pagination;
 }

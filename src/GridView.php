@@ -8,8 +8,9 @@ use Closure;
 use JsonException;
 use Yii\Extension\GridView\Column\Column;
 use Yii\Extension\GridView\Column\DataColumn;
-use Yii\Extension\GridView\ExceptionInvalidConfigException;
+use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Widget\BaseListView;
+use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Html\Html;
 use Yiisoft\Json\Json;
 use Yiisoft\Router\FastRoute\UrlGenerator;
@@ -63,7 +64,7 @@ final class GridView extends BaseListView
 
     protected function run(): string
     {
-        if ($this->dataProvider === null) {
+        if (!isset($this->dataProvider)) {
             throw new InvalidConfigException('The "dataProvider" property must be set.');
         }
 
@@ -376,6 +377,16 @@ final class GridView extends BaseListView
         return $this->emptyCell;
     }
 
+    public function getFilterErrorOptions(): array
+    {
+        return $this->filterErrorOptions;
+    }
+
+    public function getfilterModel(): ?ActiveRecord
+    {
+        return $this->filterModel;
+    }
+
     /**
      * Whether not show the header section of the grid table.
      */
@@ -656,7 +667,7 @@ final class GridView extends BaseListView
      */
     private function renderErrors(): string
     {
-        if ($this->filterModel instanceof Model && $this->filterModel->hasErrors()) {
+        if ($this->filterModel instanceof ActiveRecord && $this->filterModel->hasErrors()) {
             return Html::errorSummary($this->filterModel, $this->filterErrorSummaryOptions);
         }
 

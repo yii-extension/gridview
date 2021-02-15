@@ -15,7 +15,7 @@ use Yii\Extension\GridView\Helper\Sort;
  */
 abstract class DataProvider implements DataProviderInterface
 {
-    private ?string $id = null;
+    private string $id = '';
     private array $keys = [];
     private array $arClasses = [];
     private int $totalCount = 0;
@@ -113,7 +113,7 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * @return string|null Id of the widget.
+     * @return string Id of the widget.
      */
     protected function getId(): string
     {
@@ -127,7 +127,7 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * Returns the pagination object used by this data provider.
      *
-     * @return Pagination the pagination object. If this is false, it means the pagination is disabled.
+     * @return Pagination the pagination object.
      */
     public function getPagination(): Pagination
     {
@@ -141,7 +141,7 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * Returns the sorting object used by this data provider.
      *
-     * @return Sort the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort the sorting object.
      */
     public function getSort(): Sort
     {

@@ -33,7 +33,8 @@ final class LinkSorter extends Widget
     private string $attribute = '';
     private string $frameworkCss = self::BOOTSTRAP;
     private array $linkOptions = [];
-    private array $options = ['class' => 'sorter'];
+    private array $options = [];
+    private Inflector $inflector;
     private Sort $sort;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -224,20 +225,20 @@ final class LinkSorter extends Widget
 
         if ($direction !== null) {
             $sorterClass = $direction === SORT_DESC ? 'desc' : 'asc';
-            if (isset($options['class'])) {
-                $options['class'] .= ' ' . $sorterClass;
+            if (isset($this->options['class'])) {
+                $this->options['class'] .= ' ' . $sorterClass;
             } else {
-                $options['class'] = $sorterClass;
+                $this->options['class'] = $sorterClass;
             }
         }
 
         $url = $this->createUrl($this->attribute);
 
-        $options['data-sort'] = $this->createSorterParam($this->attribute);
+        $this->options['data-sort'] = $this->createSorterParam($this->attribute);
 
-        if (isset($options['label'])) {
-            $label = $this->inflector->toHumanReadable($options['label']);
-            unset($options['label']);
+        if (isset($this->options['label'])) {
+            $label = $this->inflector->toHumanReadable($this->options['label']);
+            unset($this->options['label']);
         } elseif (isset($attributes[$this->attribute]['label'])) {
             $label = $this->inflector->toHumanReadable($attributes[$this->attribute]['label']);
         } else {
@@ -245,9 +246,9 @@ final class LinkSorter extends Widget
         }
 
         if ($this->frameworkCss === self::BULMA) {
-            Html::addCssClass($options, ['link' => 'has-text-link']);
+            Html::addCssClass($this->options, ['link' => 'has-text-link']);
         }
 
-        return Html::a($label, $url, array_merge($options, ['encode' => false]));
+        return Html::a($label, $url, array_merge($this->options, ['encode' => false]));
     }
 }

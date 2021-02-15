@@ -177,17 +177,17 @@ class DataColumn extends Column
             return $this->filter;
         }
 
-        $arClass = $this->grid->filterModel;
+        $arClass = $this->grid->getFilterModel();
 
         if (
             $this->filter !== false &&
-            $arClass instanceof Model &&
+            $arClass instanceof ActiveRecord &&
             $this->filterAttribute !== null &&
             $arClass->isAttributeActive($this->filterAttribute)
         ) {
             if ($arClass->hasErrors($this->filterAttribute)) {
                 Html::addCssClass($this->filterOptions, 'has-error');
-                $error = ' ' . Html::error($arClass, $this->filterAttribute, $this->grid->filterErrorOptions);
+                $error = ' ' . Html::error($arClass, $this->filterAttribute, $this->grid->getFilterErrorOptions());
             } else {
                 $error = '';
             }

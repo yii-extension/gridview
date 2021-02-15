@@ -143,7 +143,7 @@ class Column
      */
     protected function getHeaderCellLabel(): string
     {
-        return $this->grid->emptyCell;
+        return $this->grid->getEmptyCell();
     }
 
     /**
@@ -156,7 +156,7 @@ class Column
      */
     protected function renderFooterCellContent(): string
     {
-        return trim($this->footer) !== '' ? $this->footer : $this->grid->emptyCell;
+        return trim($this->footer) !== '' ? $this->footer : $this->grid->getEmptyCell();
     }
 
     /**
@@ -188,7 +188,7 @@ class Column
      */
     protected function renderFilterCellContent(): string
     {
-        return $this->grid->emptyCell;
+        return $this->grid->getEmptyCell();
     }
 
     /**

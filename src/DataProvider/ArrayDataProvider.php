@@ -45,6 +45,7 @@ final class ArrayDataProvider extends DataProvider
     /** @var string|callable */
     private $key;
     private array $allData;
+    private Sort $sort;
 
     public function __construct()
     {

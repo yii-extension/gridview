@@ -8,7 +8,7 @@ use JsonException;
 use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yii\Extension\Gridview\DataProvider\DataProviderInterface;
+use Yii\Extension\GridView\DataProvider\DataProviderInterface;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Html\Html;

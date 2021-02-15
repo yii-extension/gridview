@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
-use Yiisoft\Db\Connection\InvalidConfigException;
+use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yiisoft\Html\Html;
 
 /**
