@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
-use Yiisoft\ActiveRecord\ActiveRecord;
+use Yii\Extension\GridView\Widget\LinkSorter;
 use Yiisoft\ActiveRecord\ActiveQueryInterface;
+use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Html\Html;
 use Yiisoft\Strings\Inflector;
@@ -141,8 +142,8 @@ class DataColumn extends Column
 
     protected function renderHeaderCellContent(): string
     {
-        if ($this->header !== null || ($this->label === null && $this->attribute === null)) {
-            //return parent::renderHeaderCellContent();
+        if ($this->header !== '' || ($this->label === '' && $this->attribute === '')) {
+            return parent::renderHeaderCellContent();
         }
 
         $label = $this->getHeaderCellLabel();
@@ -154,7 +155,12 @@ class DataColumn extends Column
         $sort = $this->grid->getSort();
 
         if ($this->attribute !== null && $this->enableSorting && $sort !== null && $sort->hasAttribute($this->attribute)) {
-            return $sort->link($this->attribute, array_merge($this->sortLinkOptions, ['label' => $label]));
+            return LinkSorter::widget()
+                ->attributes($this->attribute)
+                ->frameworkCss($this->grid->getFrameworkCss())
+                ->linkOptions(array_merge($this->sortLinkOptions, ['label' => $label]))
+                ->sort($sort)
+                ->render();
         }
 
         return $label;

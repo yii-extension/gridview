@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Helper;
 
-use JsonException;
-use Yii\Extension\GridView\Exception\InvalidConfigException;
-use Yiisoft\Html\Html;
-use Yiisoft\Router\UrlGeneratorInterface;
-use Yiisoft\Router\UrlMatcherInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Strings\Inflector;
 
 use function array_merge;
 use function explode;
-use function implode;
 use function is_array;
 use function is_iterable;
 use function is_scalar;
@@ -23,9 +18,8 @@ use function substr;
 /**
  * Sort represents information relevant to sorting.
  *
- * When data needs to be sorted according to one or several attributes,
- * we can use Sort to represent the sorting information and generate
- * appropriate hyperlinks that can lead to sort actions.
+ * When data needs to be sorted according to one or several attributes, we can use Sort to represent the sorting
+ * information and generate appropriate hyperlinks that can lead to sort actions.
  *
  * A typical usage example is as follows,
  *
@@ -42,41 +36,27 @@ use function substr;
  *                  'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
  *             ]
  *         ]
- *     )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+ *     )->params(['sort' => 'age,-name'])->multisort(true);
  * }
  * ```
  *
- * In the above, we declare two {@see attributes]] that support sorting: `name` and `age`.
+ * In the above, we declare two {@see attributes} that support sorting: `name` and `age`.
  *
  * For more details and usage information on Sort, see the [guide article on sorting](guide:output-sorting).
  *
  * @property array $attributeOrders Sort directions indexed by attribute names. Sort direction can be either `SORT_ASC`
  * for ascending order or `SORT_DESC` for descending order. Note that the type of this property differs in getter and
  * setter. See {@see getAttributeOrders()} and {@see attributeOrders()} for details.
- * @property array $orders The columns (keys) and their corresponding sort directions (values). This can be passed to
- * {@see \Yiisoft\Db\Query\Query::orderBy()]] to construct a DB query. This property is read-only.
  */
 final class Sort
 {
-    /**
-     * @var array|null the currently requested sort order as computed by {@see getAttributeOrders}.
-     */
-    private ?array $attributeOrders = null;
-    private bool $enableMultiSort = false;
-    public array $attributes = [];
-    private string $sortParam = 'sort';
+    private array $attributeOrders = [];
+    private array $attributes = [];
     private array $defaultOrder = [];
-    private string $separator = ',';
     private array $params = [];
-
-    private UrlGeneratorInterface $urlGenerator;
-    private UrlMatcherInterface $urlMatcher;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, UrlMatcherInterface $urlMatcher)
-    {
-        $this->urlGenerator = $urlGenerator;
-        $this->urlMatcher = $urlMatcher;
-    }
+    private bool $multisort = false;
+    private string $separator = ',';
+    private string $sortParam = 'sort';
 
     /**
      * @param array $value list of attributes that are allowed to be sorted. Its syntax can be described using the
@@ -104,7 +84,7 @@ final class Sort
      *         'desc' => ['age' => SORT_DESC],
      *     ],
      *     'default' => SORT_ASC,
-     *     'label' => Inflector::camel2words('age'),
+     *     'label' => (new Inflector())->toHumanReadable('age');,
      * ]
      * ```
      *
@@ -124,12 +104,13 @@ final class Sort
      * - The `default` element specifies by which direction the attribute should be sorted if it is not currently sorted
      *   (the default value is ascending order).
      * - The `label` element specifies what label should be used when calling {@see link()} to create a sort link.
-     *   If not set, {@see Inflector::toWords()} will be called to get a label. Note that it will not be HTML-encoded.
+     *   If not set, {@see Inflector::toHumanReadable()} will be called to get a label. Note that it will not be
+     *   HTML-encoded.
      *
      * Note that if the Sort object is already created, you can only use the full format to configure every attribute.
      * Each attribute must include these elements: `asc` and `desc`.
      *
-     * @return self
+     * @return $this
      */
     public function attributes(array $value = []): self
     {
@@ -161,8 +142,11 @@ final class Sort
      *
      * @param array $attributeOrders sort directions indexed by attribute names. Sort direction can be either `SORT_ASC`
      * for ascending order or `SORT_DESC` for descending order.
-     * @param bool $validate whether to validate given attribute orders against {@see attributes} and {enableMultiSort}.
+     * @param bool $validate whether to validate given attribute orders against {@see attributes}.
+     *
      * If validation is enabled incorrect entries will be removed.
+     *
+     * {@see multiSort}.
      */
     public function attributeOrders(array $attributeOrders = [], bool $validate = true): void
     {
@@ -173,7 +157,7 @@ final class Sort
             foreach ($attributeOrders as $attribute => $order) {
                 if (isset($this->attributes[$attribute])) {
                     $this->attributeOrders[$attribute] = $order;
-                    if (!$this->enableMultiSort) {
+                    if (!$this->multisort) {
                         break;
                     }
                 }
@@ -182,82 +166,10 @@ final class Sort
     }
 
     /**
-     * Creates the sort variable for the specified attribute.
-     *
-     * The newly created sort variable can be used to create a URL that will lead to sorting by the specified attribute.
-     *
-     * @param string $attribute the attribute name.
-     *
-     * @throws InvalidConfigException if the specified attribute is not defined in {@see attributes}
-     *
-     * @return string the value of the sort variable.
-     */
-    public function createSortParam(string $attribute): string
-    {
-        if (!isset($this->attributes[$attribute])) {
-            throw new InvalidConfigException("Unknown attribute: $attribute");
-        }
-
-        $definition = $this->attributes[$attribute];
-
-        $directions = $this->getAttributeOrders();
-
-        if (isset($directions[$attribute])) {
-            $direction = $directions[$attribute] === SORT_DESC ? SORT_ASC : SORT_DESC;
-            unset($directions[$attribute]);
-        } else {
-            $direction = $definition['default'] ?? SORT_ASC;
-        }
-
-        if ($this->enableMultiSort) {
-            $directions = array_merge([$attribute => $direction], $directions);
-        } else {
-            $directions = [$attribute => $direction];
-        }
-
-        $sorts = [];
-
-        foreach ($directions as $attribute => $direction) {
-            $sorts[] = $direction === SORT_DESC ? '-' . $attribute : $attribute;
-        }
-
-        return implode($this->separator, $sorts);
-    }
-
-    /**
-     * Creates a URL for sorting the data by the specified attribute.
-     *
-     * This method will consider the current sorting status given by {@see attributeOrders}.
-     *
-     * For example, if the current page already sorts the data by the specified attribute in ascending order,
-     * then the URL created will lead to a page that sorts the data by the specified attribute in descending order.
-     *
-     * @param string $attribute the attribute name
-     * @param bool $absolute whether to create an absolute URL. Defaults to `false`.
-     *
-     * @throws InvalidConfigException if the attribute is unknown
-     *
-     * @return string the URL for sorting. False if the attribute is invalid.
-     *
-     * {@see attributeOrders}
-     * {@see params}
-     */
-    public function createUrl(string $attribute, bool $absolute = false): string
-    {
-        $action = '';
-        $params[$this->sortParam] = $this->createSortParam($attribute);
-        $currentRoute = $this->urlMatcher->getCurrentRoute();
-
-        if ($currentRoute !== null) {
-            $action = $currentRoute->getName();
-        }
-
-        return $this->urlGenerator->generate($action, ['sort' => $this->createSortParam($attribute)]);
-    }
-
-    /**
      * @param array $value the order that should be used when the current request does not specify any order.
-     * The array keys are attribute names and the array values are the corresponding sort directions. For example,
+     * The array keys are attribute names and the array values are the corresponding sort directions.
+     *
+     * For example:
      *
      * ```php
      * [
@@ -266,9 +178,9 @@ final class Sort
      * ]
      * ```
      *
-     * {@see attributeOrders}
-     *
      * @return $this
+     *
+     * {@see attributeOrders}
      */
     public function defaultOrder(array $value): self
     {
@@ -282,13 +194,23 @@ final class Sort
      *
      * Defaults to `false`, which means each time the data can only be sorted by one attribute.
      *
-     * @return self
+     * @return $this
      */
-    public function enableMultiSort(bool $value): self
+    public function multiSort(): self
     {
-        $this->enableMultiSort = $value;
+        $this->multisort = true;
 
         return $this;
+    }
+
+    public function isMultiSort(): bool
+    {
+        return $this->multisort;
+    }
+
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 
     /**
@@ -316,9 +238,7 @@ final class Sort
      */
     public function getAttributeOrders(bool $recalculate = false): array
     {
-        if ($this->attributeOrders === null || $recalculate) {
-            $this->attributeOrders = [];
-
+        if ($this->attributeOrders === [] || $recalculate) {
             if (isset($this->params[$this->sortParam])) {
                 foreach ($this->parseSortParam($this->params[$this->sortParam]) as $attribute) {
                     $descending = false;
@@ -329,7 +249,7 @@ final class Sort
 
                     if (isset($this->attributes[$attribute])) {
                         $this->attributeOrders[$attribute] = $descending ? SORT_DESC : SORT_ASC;
-                        if (!$this->enableMultiSort) {
+                        if (!$this->multisort) {
                             return $this->attributeOrders;
                         }
                     }
@@ -350,7 +270,7 @@ final class Sort
      * @param bool $recalculate whether to recalculate the sort directions.
      *
      * @return array the columns (keys) and their corresponding sort directions (values). This can be passed to
-     * {@see \Yiisoft\Db\Query\Query::orderBy()} to construct a DB query.
+     * {@see Query::orderBy()} to construct a DB query.
      */
     public function getOrders(bool $recalculate = false): array
     {
@@ -373,6 +293,16 @@ final class Sort
         return $orders;
     }
 
+    public function getSeparator(): string
+    {
+        return $this->separator;
+    }
+
+    public function getSortParam(): string
+    {
+        return $this->sortParam;
+    }
+
     /**
      * Returns a value indicating whether the sort definition supports sorting by the named attribute.
      *
@@ -386,57 +316,9 @@ final class Sort
     }
 
     /**
-     * Generates a hyperlink that links to the sort action to sort by the specified attribute.
-     *
-     * Based on the sort direction, the CSS class of the generated hyperlink will be appended with "asc" or "desc".
-     *
-     * @param string $attribute the attribute name by which the data should be sorted by.
-     * @param array $options additional HTML attributes for the hyperlink tag.
-     *
-     * There is one special attribute `label` which will be used as the label of the hyperlink.
-     *
-     * If this is not set, the label defined in {@see attributes} will be used.
-     *
-     * If no label is defined, {@see Inflector::pascalCaseToId} will be called to get a label.
-     *
-     * Note that it will not be HTML-encoded.
-     *
-     * @throws InvalidConfigException|JsonException if the attribute is unknown.
-     *
-     * @return string the generated hyperlink
-     */
-    public function link(string $attribute, array $options = []): string
-    {
-        if (($direction = $this->getAttributeOrder($attribute)) !== null) {
-            $class = $direction === SORT_DESC ? 'desc' : 'asc';
-            if (isset($options['class'])) {
-                $options['class'] .= ' ' . $class;
-            } else {
-                $options['class'] = $class;
-            }
-        }
-
-        $url = $this->createUrl($attribute);
-        $options['data-sort'] = $this->createSortParam($attribute);
-
-        if (isset($options['label'])) {
-            $label = $options['label'];
-            unset($options['label']);
-        } elseif (isset($this->attributes[$attribute]['label'])) {
-            $label = $this->attributes[$attribute]['label'];
-        } else {
-            $label = (new Inflector())->pascalCaseToId($attribute);
-        }
-
-        Html::addCssClass($options, ['link' => 'has-text-link']);
-
-        return Html::a($label, $url, array_merge($options, ['encode' => false]));
-    }
-
-    /**
      * @param string $value the character used to separate different attributes that need to be sorted by.
      *
-     * @return self
+     * @return $this
      */
     public function separator(string $value): self
     {
@@ -449,9 +331,9 @@ final class Sort
      * @param string $value the name of the parameter that specifies which attributes to be sorted in which direction.
      * Defaults to `sort`.
      *
-     * {@see params}
+     * @return $this
      *
-     * @return self
+     * {@see params}
      */
     public function sortParam(string $value): self
     {
@@ -469,7 +351,7 @@ final class Sort
      * The array element indexed by {@see sortParam} is considered to be the current sort directions. If the element
      * does not exist, the {@see defaultOrder|default order} will be used.
      *
-     * @return self
+     * @return $this
      *
      * {@see sortParam}
      * {@see defaultOrder}
@@ -500,7 +382,7 @@ final class Sort
      *
      * @return array the valid sort attributes.
      */
-    protected function parseSortParam(string $param): array
+    private function parseSortParam(string $param): array
     {
         return is_scalar($param) ? explode($this->separator, $param) : [];
     }

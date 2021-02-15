@@ -15,8 +15,6 @@ use Yii\Extension\GridView\Helper\Sort;
  */
 abstract class DataProvider implements DataProviderInterface
 {
-    protected Sort $sort;
-    protected Pagination $pagination;
     private ?string $id = null;
     private array $keys = [];
     private array $arClasses = [];
@@ -24,12 +22,11 @@ abstract class DataProvider implements DataProviderInterface
     private bool $autoGenerate = true;
     private string $autoIdPrefix = 'dp';
     private static int $counter = 0;
+    private Pagination $pagination;
+    private Sort $sort;
 
-    public function __construct(Pagination $pagination, Sort $sort)
+    public function __construct()
     {
-        $this->pagination = $pagination;
-        $this->sort = $sort;
-
         if (isset($this->id)) {
             $this->id = $this->getId();
         }
@@ -134,16 +131,24 @@ abstract class DataProvider implements DataProviderInterface
      */
     public function getPagination(): Pagination
     {
+        if (!isset($this->pagination)) {
+            $this->pagination = new Pagination();
+        }
+
         return $this->pagination;
     }
 
     /**
      * Returns the sorting object used by this data provider.
      *
-     * @return Sort|null the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort the sorting object. If this is false, it means the sorting is disabled.
      */
-    public function getSort(): ?Sort
+    public function getSort(): Sort
     {
+        if (!isset($this->sort)) {
+            $this->sort = new Sort();
+        }
+
         return $this->sort;
     }
 

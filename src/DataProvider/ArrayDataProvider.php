@@ -29,30 +29,35 @@ use Yiisoft\Arrays\ArraySorter;
  *
  * ```php
  * $query = new Query($db);
- * $provider = (new ArrayDataProvider())
- *     ->allData($query->from('post')->all()),
- *     ->sort() => (new sort())->attributes(['id', 'username'])->params($sortParams)->enableMultiSort(true),
- *     ->pagination() => $pagination;
+ * $provider = (new ArrayDataProvider())->allData($query->from('post')->all());
  *
  * // get the posts in the current page
  * $posts = $provider->getModels();
  * ```
  *
- * Note: if you want to use the sorting feature, you must configure the [[sort]] property
- * so that the provider knows which columns can be sorted.
+ * Note: if you want to use the sorting feature, you must configure the {@see sort} property so that the provider knows
+ * which columns can be sorted.
  *
  * For more details and usage information on ArrayDataProvider, see the [guide article on data providers](guide:output-data-providers).
  */
 final class ArrayDataProvider extends DataProvider
 {
     /** @var string|callable */
-    public $key;
-    public array $allData;
+    private $key;
+    private array $allData;
+
+    public function __construct()
+    {
+        $this->sort = $this->getSort();
+
+        parent::__construct();
+    }
 
     /**
      * @var string|callable $key the column that is used as the key of the data.
      *
      * This can be either a column name, or a callable that returns the key value of a given data model.
+     *
      * If this is not set, the index of the data array will be used.
      *
      * @return $this
@@ -89,11 +94,7 @@ final class ArrayDataProvider extends DataProvider
             return [];
         }
 
-        $sort = $this->getSort();
-
-        if ($sort !== null) {
-            $arClass = $this->sortModels($arClass, $sort);
-        }
+        $arClass = $this->sortModels($arClass);
 
         $pagination = $this->getPagination();
         $pagination->totalCount($this->getTotalCount());
@@ -128,9 +129,9 @@ final class ArrayDataProvider extends DataProvider
         return is_array($this->allData) ? count($this->allData) : 0;
     }
 
-    protected function sortModels(array $arClasses, Sort $sort): array
+    protected function sortModels(array $arClasses): array
     {
-        $orders = $sort->getOrders();
+        $orders = $this->sort->getOrders();
 
         if (!empty($orders)) {
             ArraySorter::multisort($arClasses, array_keys($orders), array_values($orders));

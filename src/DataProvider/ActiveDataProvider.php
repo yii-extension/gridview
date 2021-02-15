@@ -11,6 +11,7 @@ use Yiisoft\ActiveRecord\ActiveQueryInterface;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Strings\Inflector;
 
 use function array_keys;
 use function call_user_func;
@@ -68,12 +69,14 @@ final class ActiveDataProvider extends DataProvider
      * @see getKeys()
      */
     private $key;
+    private Sort $sort;
 
-    public function __construct(QueryInterface $query, Pagination $pagination, Sort $sort)
+    public function __construct(QueryInterface $query)
     {
-        parent::__construct($pagination, $sort);
-
         $this->query = $query;
+        $this->sort = $this->getSort();
+
+        parent::__construct();
     }
 
     /**
@@ -153,11 +156,7 @@ final class ActiveDataProvider extends DataProvider
             $query->limit($pagination->getLimit())->offset($pagination->getOffset());
         }
 
-        $sort = $this->getSort();
-
-        if ($sort !== null) {
-            $query->addOrderBy($sort->getOrders());
-        }
+        $query->addOrderBy($this->sort->getOrders());
 
         return $query->all();
     }
@@ -169,10 +168,14 @@ final class ActiveDataProvider extends DataProvider
         $sortAttribute = [];
 
         foreach ($attributes as $attribute) {
-            $sortAttribute[$attribute] = [];
+            $sortAttribute[$attribute] = [
+                'asc' => [$attribute => SORT_ASC],
+                'desc' => [$attribute => SORT_DESC],
+                'label' => (new Inflector())->toHumanReadable($attribute),
+            ];
         }
 
-        $this->sort->attributes($sortAttribute)->params($sortParams)->enableMultiSort(true);
+        $this->sort->attributes($sortAttribute)->params($sortParams)->multiSort();
     }
 
     /**

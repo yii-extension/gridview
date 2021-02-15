@@ -90,7 +90,7 @@ final class LinkPager extends Widget
      *
      * @return string
      */
-    public function run(): string
+    protected function run(): string
     {
         $html = '';
         $this->buildWidget();

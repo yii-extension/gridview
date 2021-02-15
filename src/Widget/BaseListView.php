@@ -25,6 +25,12 @@ use Yiisoft\Translator\TranslatorInterface;
  */
 abstract class BaseListView extends Widget
 {
+    public const BOOTSTRAP = 'bootstrap';
+    public const BULMA = 'bulma';
+    private const FRAMEWORKCSS = [
+        self::BOOTSTRAP,
+        self::BULMA,
+    ];
     protected string $emptyText = 'No results found.';
     protected array $options = [];
     protected DataProviderInterface $dataProvider;
@@ -32,6 +38,7 @@ abstract class BaseListView extends Widget
     protected TranslatorInterface $translator;
     protected Pagination $pagination;
     private array $emptyTextOptions = ['class' => 'empty'];
+    private string $frameworkCss = self::BOOTSTRAP;
     private string $layout = "{items}\n{summary}\n{pager}";
     private string $summary = 'Showing <b>{begin, number}-{end, number}</b> of <b>{totalCount, number}</b> ' .
         '{totalCount, plural, one{item} other{items}}';
@@ -117,9 +124,27 @@ abstract class BaseListView extends Widget
         return $new;
     }
 
+    public function frameworkCss(string $frameworkCss): self
+    {
+        if (!in_array($frameworkCss, self::FRAMEWORKCSS)) {
+            $frameworkCss = implode('", "', self::FRAMEWORKCSS);
+            throw new InvalidConfigException("Invalid framework css. Valid values are: \"$frameworkCss\".");
+        }
+
+        $new = clone $this;
+        $new->frameworkCss = $frameworkCss;
+
+        return $new;
+    }
+
     public function getDataProvider(): DataProviderInterface
     {
         return $this->dataProvider;
+    }
+
+    public function getFrameworkCss(): string
+    {
+        return $this->frameworkCss;
     }
 
     public function getPagination(): Pagination
@@ -282,7 +307,7 @@ abstract class BaseListView extends Widget
             return '';
         }
 
-        return LinkPager::widget()->frameworkCss('bootstrap')->pagination($pagination)->run();
+        return LinkPager::widget()->frameworkCss($this->frameworkCss)->pagination($pagination)->render();
     }
 
     /**
@@ -300,11 +325,7 @@ abstract class BaseListView extends Widget
             return '';
         }
 
-        /* @var $class LinkSorter */
-        $sorter = LinkSorter::widget();
-        $sorter->sort = $sort;
-
-        return $sorter->render();
+        return LinkSorter::widget()->sort($sort)->frameworkCss($this->frameworkCss)->render();
     }
 
     private function renderSummary(): string
