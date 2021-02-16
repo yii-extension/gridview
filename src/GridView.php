@@ -11,6 +11,7 @@ use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Widget\BaseListView;
 use Yiisoft\ActiveRecord\ActiveRecord;
+use Yiisoft\Form\FormModel;
 use Yiisoft\Html\Html;
 use Yiisoft\Json\Json;
 use Yiisoft\Router\FastRoute\UrlGenerator;
@@ -39,7 +40,7 @@ final class GridView extends BaseListView
     public const FILTER_POS_FOOTER = 'footer';
     public const FILTER_POS_BODY = 'body';
     protected array $options = ['class' => 'grid-view'];
-    private ?ActiveRecord $filterModel = null;
+    private FormModel $filterModel;
     private ?Closure $afterRow = null;
     private ?Closure $beforeRow = null;
     private array $captionOptions = [];
@@ -50,7 +51,7 @@ final class GridView extends BaseListView
     private array $footerRowOptions = [];
     private array $headerRowOptions = [];
     private array $rowOptions = [];
-    private array $tableOptions = ['class' => 'table table-striped table-bordered'];
+    private array $tableOptions = ['class' => 'table'];
     private bool $filterOnFocusOut = true;
     private bool $placeFooterAfterBody = false;
     private bool $showFooter = false;
@@ -295,7 +296,7 @@ final class GridView extends BaseListView
     }
 
     /**
-     * @param ActiveRecord|null the arClass that keeps the user-entered filter data. When this property is set, the grid
+     * @param FormModel|null the arClass that keeps the user-entered filter data. When this property is set, the grid
      * view will enable column-based filtering. Each data column by default will display a text field at the top that
      * users can fill in to filter the data.
      *
@@ -305,7 +306,7 @@ final class GridView extends BaseListView
      *
      * When this property is not set (null) the filtering feature is disabled.
      */
-    public function filterModel(?ActiveRecord $filterModel): self
+    public function filterModel(FormModel $filterModel): self
     {
         $new = clone $this;
         $new->filterModel = $filterModel;
@@ -382,7 +383,7 @@ final class GridView extends BaseListView
         return $this->filterErrorOptions;
     }
 
-    public function getfilterModel(): ?ActiveRecord
+    public function getfilterModel(): FormModel
     {
         return $this->filterModel;
     }
@@ -630,7 +631,7 @@ final class GridView extends BaseListView
     private function renderCaption(): string
     {
         if (!empty($this->caption)) {
-            return Html::tag('caption', $this->caption, $this->captionOptions);
+            return Html::tag('caption', $this->caption, array_merge($this->captionOptions, ['encode' => false]));
         }
 
         return '';

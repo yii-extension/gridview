@@ -10,7 +10,9 @@ use Yiisoft\ActiveRecord\ActiveQueryInterface;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Html\Html;
+use Yiisoft\Form\FormModel;
 use Yiisoft\Strings\Inflector;
+use Yiisoft\Form\Widget\TextInput;
 
 /**
  * DataColumn is the default column type for the {@see GridView} widget.
@@ -125,20 +127,13 @@ class DataColumn extends Column
      *
      * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
-    public array $filterInputOptions = ['class' => 'form-control', 'id' => null];
+    public array $filterInputOptions = ['id' => null];
 
     /**
      * @var string|null the attribute name of the {@see GridView::filterModel} associated with this column. If not set,
      * will have the same value as {@see attribute}.
      */
-    public ?string $filterAttribute = null;
-
-    public function __construct()
-    {
-        if ($this->filterAttribute === null) {
-            $this->filterAttribute = $this->attribute;
-        }
-    }
+    public string $filterAttribute = '';
 
     protected function renderHeaderCellContent(): string
     {
@@ -154,10 +149,13 @@ class DataColumn extends Column
 
         $sort = $this->grid->getSort();
 
-        if ($this->attribute !== null && $this->enableSorting && $sort !== null && $sort->hasAttribute($this->attribute)) {
+        if ($this->attribute !== '' && $this->enableSorting && $sort->hasAttribute($this->attribute)) {
             return LinkSorter::widget()
                 ->attributes($this->attribute)
                 ->frameworkCss($this->grid->getFrameworkCss())
+                ->pagination($this->grid->getPagination())
+                ->requestAttributes($this->grid->getRequestAttributes())
+                ->requestQueryParams($this->grid->getRequestQueryParams())
                 ->linkOptions(array_merge($this->sortLinkOptions, ['label' => $label]))
                 ->sort($sort)
                 ->render();
@@ -173,6 +171,10 @@ class DataColumn extends Column
 
     protected function renderFilterCellContent(): string
     {
+        if ($this->filterAttribute === '') {
+            $this->filterAttribute = $this->attribute;
+        }
+
         if (is_string($this->filter)) {
             return $this->filter;
         }
@@ -181,8 +183,8 @@ class DataColumn extends Column
 
         if (
             $this->filter !== false &&
-            $arClass instanceof ActiveRecord &&
-            $this->filterAttribute !== null &&
+            $arClass instanceof FormModel &&
+            $this->filterAttribute !== '' &&
             $arClass->isAttributeActive($this->filterAttribute)
         ) {
             if ($arClass->hasErrors($this->filterAttribute)) {
@@ -202,9 +204,16 @@ class DataColumn extends Column
                     0 => $this->grid->formatter->booleanFormat[0],
                 ], $options) . $error;
             }
+
             $options = array_merge(['maxlength' => true], $this->filterInputOptions);
 
-            return Html::activeTextInput($arClass, $this->filterAttribute, $options) . $error;
+            if ($this->grid->getFrameworkCss() === 'bulma') {
+                Html::AddCssClass($options, ['input' => 'input']);
+            } else {
+                Html::AddCssClass($options, ['input' => 'form-control']);
+            }
+
+            return TextInput::widget()->config($arClass, $this->filterAttribute, $options)->render();
         }
 
         return parent::renderFilterCellContent();

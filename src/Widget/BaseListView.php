@@ -27,16 +27,16 @@ abstract class BaseListView extends Widget
 {
     public const BOOTSTRAP = 'bootstrap';
     public const BULMA = 'bulma';
-    private const FRAMEWORKCSS = [
-        self::BOOTSTRAP,
-        self::BULMA,
-    ];
     protected string $emptyText = 'No results found.';
     protected array $options = [];
     protected DataProviderInterface $dataProvider;
     protected GridViewFactory $gridViewFactory;
     protected TranslatorInterface $translator;
     protected Pagination $pagination;
+    private const FRAMEWORKCSS = [
+        self::BOOTSTRAP,
+        self::BULMA,
+    ];
     private array $emptyTextOptions = ['class' => 'empty'];
     private string $frameworkCss = self::BOOTSTRAP;
     private string $layout = "{items}\n{summary}\n{pager}";
@@ -44,6 +44,8 @@ abstract class BaseListView extends Widget
         '{totalCount, plural, one{item} other{items}}';
     private array $summaryOptions = ['class' => 'summary'];
     private bool $showOnEmpty = false;
+    private array $requestAttributes = [];
+    private array $requestQueryParams = [];
 
     public function __construct(GridViewFactory $gridViewFactory, TranslatorInterface $translator)
     {
@@ -152,6 +154,16 @@ abstract class BaseListView extends Widget
         return $this->dataProvider->getPagination();
     }
 
+    public function getRequestAttributes(): array
+    {
+        return $this->requestAttributes;
+    }
+
+    public function getRequestQueryParams(): array
+    {
+        return $this->requestQueryParams;
+    }
+
     public function getSort(): ?Sort
     {
         return $this->dataProvider->getSort();
@@ -173,6 +185,22 @@ abstract class BaseListView extends Widget
     {
         $new = clone $this;
         $new->layout = $layout;
+
+        return $new;
+    }
+
+    public function requestAttributes(array $requestAttributes): self
+    {
+        $new = clone $this;
+        $new->requestAttributes = $requestAttributes;
+
+        return $new;
+    }
+
+    public function requestQueryParams(array $requestQueryParams): self
+    {
+        $new = clone $this;
+        $new->requestQueryParams = $requestQueryParams;
 
         return $new;
     }
@@ -307,7 +335,12 @@ abstract class BaseListView extends Widget
             return '';
         }
 
-        return LinkPager::widget()->frameworkCss($this->frameworkCss)->pagination($pagination)->render();
+        return LinkPager::widget()
+            ->frameworkCss($this->frameworkCss)
+            ->requestAttributes($this->requestAttributes)
+            ->requestQueryParams($this->requestQueryParams)
+            ->pagination($pagination)
+            ->render();
     }
 
     /**

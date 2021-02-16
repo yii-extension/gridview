@@ -6,6 +6,7 @@ namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
+use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
@@ -34,7 +35,14 @@ final class LinkSorter extends Widget
     private string $frameworkCss = self::BOOTSTRAP;
     private array $linkOptions = [];
     private array $options = [];
+    private string $pageAttribute = 'page';
+    private string $pageSizeAttribute = 'pagesize';
+    private array $requestAttributes = [];
+    private array $requestQueryParams = [];
+    private string $sortParams = 'sort';
+    private bool $urlAbsolute = false;
     private Inflector $inflector;
+    private Pagination $pagination;
     private Sort $sort;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -116,6 +124,53 @@ final class LinkSorter extends Widget
         return $new;
     }
 
+    public function pageAttribute(string $pageAttribute): self
+    {
+        $new = clone $this;
+        $new->pageAttribute = $pageAttribute;
+
+        return $new;
+    }
+
+    /**
+     * @param Pagination $pagination the pagination object that this pager is associated with.
+     *
+     * @return $this
+     *
+     * You must set this property in order to make LinkPager work.
+     */
+    public function pagination(Pagination $pagination): self
+    {
+        $new = clone $this;
+        $new->pagination = $pagination;
+
+        return $new;
+    }
+
+    public function pageSize(string $pageSize): self
+    {
+        $new = clone $this;
+        $new->pageSize = $pageSize;
+
+        return $new;
+    }
+
+    public function requestAttributes(array $requestAttributes): self
+    {
+        $new = clone $this;
+        $new->requestAttributes = $requestAttributes;
+
+        return $new;
+    }
+
+    public function requestQueryParams(array $requestQueryParams): self
+    {
+        $new = clone $this;
+        $new->requestQueryParams = $requestQueryParams;
+
+        return $new;
+    }
+
     public function sort(Sort $sort): self
     {
         $new = clone $this;
@@ -190,7 +245,19 @@ final class LinkSorter extends Widget
     private function createUrl(string $attribute, bool $absolute = false): string
     {
         $action = '';
-        $params[$this->sort->getSortParam()] = $this->createSorterParam($attribute);
+        $page = $this->pagination->getCurrentPage();
+        $pageSize = $this->pagination->getPageSize();
+
+        $linkPagerAttributes = [$this->pageAttribute => $page, $this->pageSizeAttribute => $pageSize];
+        $linkSorterQueryParams[$this->sort->getSortParam()] = $this->createSorterParam($attribute);
+
+        $params = array_merge(
+            $linkPagerAttributes,
+            $this->requestAttributes,
+            $this->requestQueryParams,
+            $linkSorterQueryParams,
+            $this->requestQueryParams,
+        );
 
         $currentRoute = $this->urlMatcher->getCurrentRoute();
 
@@ -198,7 +265,7 @@ final class LinkSorter extends Widget
             $action = $currentRoute->getName();
         }
 
-        return $this->urlGenerator->generate($action, ['sort' => $this->createSorterParam($attribute)]);
+        return $this->urlGenerator->generate($action, $params);
     }
 
     /**

@@ -59,13 +59,16 @@ final class LinkPager extends Widget
     private string $lastPageLabel = '';
     private string $nextPageLabel = 'Next Page';
     private string $prevPageLabel = 'Previous';
-    public array $attributesRequest = [];
     public bool $disableCurrentPageButton = false;
     private string $frameworkCss = self::BOOTSTRAP;
     private bool $hideOnSinglePage = true;
-    public array $queryParamsRequest = [];
     private int $maxButtonCount = 10;
+    private string $pageAttribute = 'page';
+    private string $pageSizeAttribute = 'pagesize';
     private bool $registerLinkTags = false;
+    private array $requestAttributes = [];
+    private array $requestQueryParams = [];
+    private bool $urlAbsolute = false;
     private Pagination $pagination;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -123,14 +126,6 @@ final class LinkPager extends Widget
     {
         $new = clone $this;
         $new->activePageCssClass = $activePageCssClass;
-
-        return $new;
-    }
-
-    public function attributesRequest(array $attributesRequest): self
-    {
-        $new = clone $this;
-        $new->attributesRequest = $attributesRequest;
 
         return $new;
     }
@@ -352,10 +347,18 @@ final class LinkPager extends Widget
         return $new;
     }
 
-    public function queryParamsRequest(array $queryParamsRequest): self
+    public function pageAttribute(string $pageAttribute): self
     {
         $new = clone $this;
-        $new->queryParamsRequest = $queryParamsRequest;
+        $new->pageAttribute = $pageAttribute;
+
+        return $new;
+    }
+
+    public function pageSize(string $pageSize): self
+    {
+        $new = clone $this;
+        $new->pageSize = $pageSize;
 
         return $new;
     }
@@ -371,6 +374,19 @@ final class LinkPager extends Widget
     {
         $new = clone $this;
         $new->ulAttributes = $ulAttributes;
+
+        return $new;
+    }
+
+    /**
+     * The generated urls will be absolute.
+     *
+     * @return $this
+     */
+    public function urlAbsolute(): self
+    {
+        $new = clone $this;
+        $new->urlAbsolute = true;
 
         return $new;
     }
@@ -428,6 +444,22 @@ final class LinkPager extends Widget
     {
         $new = clone $this;
         $new->prevPageLabel = $prevPageLabel;
+
+        return $new;
+    }
+
+    public function requestAttributes(array $requestAttributes): self
+    {
+        $new = clone $this;
+        $new->requestAttributes = $requestAttributes;
+
+        return $new;
+    }
+
+    public function requestQueryParams(array $requestQueryParams): self
+    {
+        $new = clone $this;
+        $new->requestQueryParams = $requestQueryParams;
 
         return $new;
     }
@@ -744,18 +776,21 @@ final class LinkPager extends Widget
      * {@see params}
      * {@see forcePageParam}
      */
-    private function createUrl(int $page, int $pageSize = null, bool $absolute = false): string
+    private function createUrl(int $page): string
     {
         $currentRoute = $this->urlMatcher->getCurrentRoute();
+        $pageSize = $this->pagination->getPageSize();
         $url = '';
 
-        $params = array_merge(['page' => $page], $this->attributesRequest, $this->queryParamsRequest);
+        $linkPagerAttributes = [$this->pageAttribute => $page, $this->pageSizeAttribute => $pageSize];
+
+        $params = array_merge($linkPagerAttributes, $this->requestAttributes, $this->requestQueryParams);
 
         if ($currentRoute !== null) {
             $action = $currentRoute->getName();
             $url = $this->urlGenerator->generate($action, $params);
 
-            if ($absolute === true) {
+            if ($this->urlAbsolute === true) {
                 $url = $this->urlGenerator->generateAbsolute($action, $params);
             }
         }
@@ -763,22 +798,22 @@ final class LinkPager extends Widget
         return $url;
     }
 
-    private function createLinks(bool $absolute = false): array
+    private function createLinks(): array
     {
         $pagination = $this->pagination;
         $currentPage = $pagination->getCurrentPage();
         $pageCount = $pagination->getTotalPages();
 
-        $links = [self::REL_SELF => $this->createUrl($currentPage, null, $absolute)];
+        $links = [self::REL_SELF => $this->createUrl($currentPage)];
 
         if ($pageCount === 1) {
-            $links[self::LINK_FIRST] = $this->createUrl(1, null, $absolute);
-            $links[self::LINK_LAST] = $this->createUrl($pageCount, null, $absolute);
+            $links[self::LINK_FIRST] = $this->createUrl(1);
+            $links[self::LINK_LAST] = $this->createUrl($pageCount);
             if ($currentPage > 1) {
-                $links[self::LINK_PREV] = $this->createUrl($currentPage, null, $absolute);
+                $links[self::LINK_PREV] = $this->createUrl($currentPage);
             }
             if ($currentPage < $pageCount) {
-                $links[self::LINK_NEXT] = $this->createUrl($currentPage, null, $absolute);
+                $links[self::LINK_NEXT] = $this->createUrl($currentPage);
             }
         }
 
