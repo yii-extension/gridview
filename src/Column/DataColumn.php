@@ -43,15 +43,6 @@ class DataColumn extends Column
     public string $attribute = '';
 
     /**
-     * @var string label to be displayed in the {@see header|header cell} and also to be used as the sorting
-     * link label when sorting is enabled for this column.
-     * If it is not set and the active record classes provided by the GridViews data provider are instances
-     * of {@see ActiveRecord}, the label will be determined using {@see AtiveRecord::getAttributeLabel()}.
-     * Otherwise {@see Inflector::camel2words()} will be used to get a label.
-     */
-    public string $label = '';
-
-    /**
      * @var bool whether the header label should be HTML-encoded.
      *
      * {@see label}
@@ -137,11 +128,11 @@ class DataColumn extends Column
 
     protected function renderHeaderCellContent(): string
     {
-        if ($this->header !== '' || ($this->label === '' && $this->attribute === '')) {
+        if ($this->label === '' && $this->attribute === '') {
             return parent::renderHeaderCellContent();
         }
 
-        $label = $this->getHeaderCellLabel();
+        $label = $this->label;
 
         if ($this->encodeLabel) {
             $label = Html::encode($label);

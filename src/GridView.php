@@ -39,12 +39,15 @@ final class GridView extends BaseListView
     public const FILTER_POS_HEADER = 'header';
     public const FILTER_POS_FOOTER = 'footer';
     public const FILTER_POS_BODY = 'body';
+    protected string $layout = "{header}\n{toolbar}\n{items}\n{summary}\n{pager}";
     protected array $options = ['class' => 'grid-view'];
-    private FormModel $filterModel;
     private ?Closure $afterRow = null;
     private ?Closure $beforeRow = null;
-    private array $captionOptions = [];
+    private ?FormModel $filterModel = null;
+    private string $header = '';
+    private array $headerOptions = [];
     private array $columns = [];
+    private string $dataColumnClass = DataColumn::class;
     private array $filterErrorOptions = ['class' => 'help-block'];
     private array $filterErrorSummaryOptions = ['class' => 'error-summary'];
     private array $filterRowOptions = ['class' => 'filters'];
@@ -56,10 +59,8 @@ final class GridView extends BaseListView
     private bool $placeFooterAfterBody = false;
     private bool $showFooter = false;
     private bool $showHeader = true;
-    private int $currentPage = 0;
-    private int $pageSize = 0;
-    private string $caption = '';
-    private string $dataColumnClass = DataColumn::class;
+    private array $toolbar = [];
+    private array $toolbarOptions = [];
     private string $emptyCell = '&nbsp;';
     private string $filterPosition = self::FILTER_POS_BODY;
 
@@ -67,13 +68,6 @@ final class GridView extends BaseListView
     {
         if (!isset($this->dataProvider)) {
             throw new InvalidConfigException('The "dataProvider" property must be set.');
-        }
-
-        $pagination = $this->getPagination();
-        $pagination->currentPage($this->currentPage);
-
-        if ($this->pageSize > 0) {
-            $pagination->pageSize($this->pageSize);
         }
 
         if ($this->emptyText !== '') {
@@ -126,32 +120,32 @@ final class GridView extends BaseListView
     }
 
     /**
-     * @param string $caption the caption of the grid table.
+     * @param string $header the header of the grid table.
      *
      * @return $this
      *
-     * {@see captionOptions}
+     * {@see headerOptions}
      */
-    public function caption(string $caption)
+    public function header(string $header)
     {
         $new = clone $this;
-        $new->caption = $caption;
+        $new->header = $header;
 
         return $new;
     }
 
     /**
-     * @param array $captionOptions the HTML attributes for the caption element.
+     * @param array $headerOptions the HTML attributes for the caption element.
      *
      * @return $this
      *
      * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      * {@see caption}
      */
-    public function captionOptions(array $captionOptions): self
+    public function headerOptions(array $headerOptions): self
     {
         $new = clone $this;
-        $new->captionOptions = $captionOptions;
+        $new->headerOptions = $headerOptions;
 
         return $new;
     }
@@ -214,14 +208,6 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->columns = $value;
-
-        return $new;
-    }
-
-    public function currentPage(int $currentPage): self
-    {
-        $new = clone $this;
-        $new->currentPage = $currentPage;
 
         return $new;
     }
@@ -399,14 +385,6 @@ final class GridView extends BaseListView
         return $new;
     }
 
-    public function pageSize(int $pageSize): self
-    {
-        $new = clone $this;
-        $new->pageSize = $pageSize;
-
-        return $new;
-    }
-
     /**
      * Whether to place footer after body in DOM if $showFooter is true.
      */
@@ -459,12 +437,33 @@ final class GridView extends BaseListView
         return $new;
     }
 
+    public function toolbar(array $toolbar): self
+    {
+        $new = clone $this;
+        $new->toolbar = $toolbar;
+
+        return $new;
+    }
+
+    public function toolbarOptions(array $toolbarOptions): self
+    {
+        $new = clone $this;
+        $new->toolbarOptions = $toolbarOptions;
+
+        return $new;
+    }
+
     protected function renderSection(string $name): string
     {
-        if ($name == '{errors}') {
-            return $this->renderErrors();
-        } else {
-            return parent::renderSection($name);
+        switch ($name) {
+            case '{header}':
+                return $this->renderHeader();
+            case '{toolbar}':
+                return $this->renderToolbar();
+            case '{errors}':
+                return $this->renderErrors();
+            default:
+                return parent::renderSection($name);
         }
     }
 
@@ -477,7 +476,6 @@ final class GridView extends BaseListView
      */
     protected function renderItems(): string
     {
-        $caption = $this->renderCaption();
         $columnGroup = $this->renderColumnGroup();
         $tableHeader = $this->showHeader ? $this->renderTableHeader() : false;
         $tableBody = $this->renderTableBody();
@@ -494,7 +492,6 @@ final class GridView extends BaseListView
         }
 
         $content = array_filter([
-            $caption,
             $columnGroup,
             $tableHeader,
             $tableFooter,
@@ -628,10 +625,10 @@ final class GridView extends BaseListView
      *
      * @return string the rendered caption element or `` if no caption element should be rendered.
      */
-    private function renderCaption(): string
+    private function renderHeader(): string
     {
-        if (!empty($this->caption)) {
-            return Html::tag('caption', $this->caption, array_merge($this->captionOptions, ['encode' => false]));
+        if (!empty($this->header)) {
+            return Html::tag('header', $this->header, array_merge($this->headerOptions, ['encode' => false]));
         }
 
         return '';
@@ -810,5 +807,18 @@ final class GridView extends BaseListView
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
 
         return Html::tag('tr', implode('', $cells), array_merge($options, ['encode' => false]));
+    }
+
+    private function renderToolbar(): string
+    {
+        $toolbar = '';
+
+        foreach ($this->toolbar as $item) {
+            $content = $item['content'] ?? '';
+            $options = $item['options'] ?? [];
+            $toolbar .= Html::tag('div', $content, $options);
+        }
+
+        return Html::tag('div', $toolbar, array_merge($this->toolbarOptions, ['encode' => false]));
     }
 }

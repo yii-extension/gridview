@@ -103,7 +103,7 @@ class CheckboxColumn extends Column
      */
     protected function renderHeaderCellContent(): string
     {
-        if ($this->header !== null || !$this->multiple) {
+        if ($this->label !== null || !$this->multiple) {
             return parent::renderHeaderCellContent();
         }
 

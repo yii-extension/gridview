@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
-use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 
@@ -20,7 +19,7 @@ use function is_array;
  * 'columns' => [
  *     // ...
  *     [
- *         '__class' => ActionColumn::className(),
+ *         '__class' => ActionColumn::class,
  *         // you may configure additional properties here
  *     ],
  * ]
@@ -32,14 +31,14 @@ use function is_array;
  */
 final class ActionColumn extends Column
 {
-    protected array $headerOptions = ['class' => 'action-column'];
-    private string $template = '{view} {update} {delete}';
+    protected array $headerOptions = [];
     private array $buttons = [];
-    private array $visibleButtons = [];
     private array $buttonOptions = [];
     private string $primaryKey = 'id';
+    private string $template = '{view} {update} {delete}';
     /** @var callable */
     private $urlCreator;
+    private array $visibleButtons = [];
     private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(UrlGeneratorInterface $urlGenerator)
@@ -57,7 +56,7 @@ final class ActionColumn extends Column
      * ```php
      * [
      *     buttons() => [
-     *         'action' => function ($url, $arClass, $key) {
+     *         'action' => function (string $url, $arClass, int $key) {
      *             // return the button HTML code
      *         }
      *     ],
@@ -72,7 +71,7 @@ final class ActionColumn extends Column
      * ```php
      * [
      *     buttons() = [
-     *         'update' => function ($url, $arClass, $key) {
+     *         'update' => function (string $url, $arClass, $key) {
      *             return $arClass->status === 'editable' ? Html::a('Update', $url) : '';
      *         },
      *     ],
@@ -81,7 +80,7 @@ final class ActionColumn extends Column
      *
      * @return $this
      */
-    public function buttons(array $buttons)
+    public function buttons(array $buttons): self
     {
         $this->buttons = $buttons;
 
@@ -161,7 +160,7 @@ final class ActionColumn extends Column
      * ```php
      * [
      *     'urlCreator()' => [
-     *         'action' => function (string $action, ActiveRecord $model, mixed $key, int $index) {
+     *         'action' => function (string $action, $arClass, mixed $key, int $index) {
      *             return string;
      *         }
      *     ],
@@ -190,7 +189,7 @@ final class ActionColumn extends Column
      * [
      *     visibleButtons() => [
      *         update => [
-     *             function ($arClass, $key, $index) {
+     *             function ($arClass, $key, int $index) {
      *                 return $arClass->status === 'editable';
      *             }
      *         ],
@@ -285,6 +284,8 @@ final class ActionColumn extends Column
                     case 'delete':
                         $title = 'Delete';
                         break;
+                    default:
+                        $title = '';
                 }
 
                 $options = array_merge(
@@ -309,7 +310,7 @@ final class ActionColumn extends Column
      * Creates a URL for the given action and arClass. This method is called for each button and each row.
      *
      * @param string $action the button name (or action ID)
-     * @param ActiveRecord|array $arClass the data arClass
+     * @param object|array $arClass the data arClass
      * @param mixed $key the key associated with the data arClass
      * @param int $index the current row index
      *

@@ -22,11 +22,6 @@ class Column
     public GridView $grid;
 
     /**
-     * @var string the header cell content. Note that it will not be HTML-encoded.
-     */
-    public string $header = '';
-
-    /**
      * @var string the footer cell content. Note that it will not be HTML-encoded.
      */
     public string $footer = '';
@@ -50,7 +45,7 @@ class Column
      */
     public array $options = [];
 
-    protected array $headerOptions = [];
+    protected array $labelOptions = [];
 
     /**
      * @var array|Closure the HTML attributes for the data cell tag. This can either be an array of
@@ -77,11 +72,20 @@ class Column
     public array $filterOptions = [];
 
     /**
+     * @var string label to be displayed in the {@see header|header cell} and also to be used as the sorting
+     * link label when sorting is enabled for this column.
+     * If it is not set and the active record classes provided by the GridViews data provider are instances
+     * of {@see ActiveRecord}, the label will be determined using {@see AtiveRecord::getAttributeLabel()}.
+     * Otherwise {@see Inflector::camel2words()} will be used to get a label.
+     */
+    public string $label = '';
+
+    /**
      * Renders the header cell.
      */
     public function renderHeaderCell(): string
     {
-        return Html::tag('th', $this->renderHeaderCellContent(), array_merge($this->headerOptions, ['encode' => false]));
+        return Html::tag('th', $this->renderHeaderCellContent(), array_merge($this->labelOptions, ['encode' => false]));
     }
 
     /**
@@ -111,6 +115,10 @@ class Column
             $options = $this->contentOptions;
         }
 
+        if ($this->label !== '') {
+            $options = array_merge($options, ['data-label' => $this->label]);
+        }
+
         return Html::tag('td', (string) $this->renderDataCellContent($arClass, $key, $index), array_merge($options, ['encode' => false]));
     }
 
@@ -132,7 +140,7 @@ class Column
      */
     protected function renderHeaderCellContent(): string
     {
-        return trim($this->header) !== '' ? $this->header : $this->getHeaderCellLabel();
+        return trim($this->label) !== '' ? $this->label : $this->getHeaderCellLabel();
     }
 
     /**
@@ -192,16 +200,16 @@ class Column
     }
 
     /**
-     * @param array $headerOptions the HTML attributes for the header cell tag.
+     * @param array $labelOptions the HTML attributes for the header cell tag.
      *
      * @return $this
      *
      * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
-    public function headerOptions(array $headerOptions): self
+    public function labelOptions(array $labelOptions): self
     {
         $new = clone $this;
-        $new->headerOptions = $headerOptions;
+        $new->labelOptions = $labelOptions;
 
         return $new;
     }

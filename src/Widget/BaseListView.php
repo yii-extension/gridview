@@ -27,7 +27,9 @@ abstract class BaseListView extends Widget
 {
     public const BOOTSTRAP = 'bootstrap';
     public const BULMA = 'bulma';
+    protected string $frameworkCss = self::BOOTSTRAP;
     protected string $emptyText = 'No results found.';
+    protected string $layout = "{items}\n{summary}\n{pager}";
     protected array $options = [];
     protected DataProviderInterface $dataProvider;
     protected GridViewFactory $gridViewFactory;
@@ -37,15 +39,17 @@ abstract class BaseListView extends Widget
         self::BOOTSTRAP,
         self::BULMA,
     ];
+    private int $currentPage = 0;
+    private bool $encloseByContainer = false;
+    private array $encloseByContainerOptions = [];
     private array $emptyTextOptions = ['class' => 'empty'];
-    private string $frameworkCss = self::BOOTSTRAP;
-    private string $layout = "{items}\n{summary}\n{pager}";
+    private int $pageSize = Pagination::DEFAULT_PAGE_SIZE;
+    private array $requestAttributes = [];
+    private array $requestQueryParams = [];
+    private bool $showOnEmpty = false;
     private string $summary = 'Showing <b>{begin, number}-{end, number}</b> of <b>{totalCount, number}</b> ' .
         '{totalCount, plural, one{item} other{items}}';
     private array $summaryOptions = ['class' => 'summary'];
-    private bool $showOnEmpty = false;
-    private array $requestAttributes = [];
-    private array $requestQueryParams = [];
 
     public function __construct(GridViewFactory $gridViewFactory, TranslatorInterface $translator)
     {
@@ -62,11 +66,19 @@ abstract class BaseListView extends Widget
 
     protected function run(): string
     {
+        $pagination = $this->getPagination();
+        $pagination->currentPage($this->currentPage);
+
+        if ($this->pageSize > 0) {
+            $pagination->pageSize($this->pageSize);
+        }
+
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
             $content = preg_replace_callback('/{\\w+}/', function ($matches) {
+
                 $content = $this->renderSection($matches[0]);
 
-                return $content === false ? $matches[0] : $content;
+                return $content;
             }, $this->layout);
         } else {
             $content = $this->renderEmpty();
@@ -75,7 +87,40 @@ abstract class BaseListView extends Widget
         $options = $this->options;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
-        return Html::tag($tag, $content, array_merge($options, ['encode' => false]));
+        $html = Html::tag($tag, $content, array_merge($options, ['encode' => false]));
+
+        if ($this->encloseByContainer) {
+            $html =
+                Html::beginTag('div', $this->encloseByContainerOptions)  . "\n" .
+                    Html::tag($tag, $content, array_merge($options, ['encode' => false])) . "\n" .
+                Html::endTag('div') . "\n";
+        }
+
+        return $html;
+    }
+
+    public function currentPage(int $currentPage): self
+    {
+        $new = clone $this;
+        $new->currentPage = $currentPage;
+
+        return $new;
+    }
+
+    public function encloseByContainer(): self
+    {
+        $new = clone $this;
+        $new->encloseByContainer = true;
+
+        return $new;
+    }
+
+    public function encloseByContainerOptions(array $encloseByContainerOptions): self
+    {
+        $new = clone $this;
+        $new->encloseByContainerOptions = $encloseByContainerOptions;
+
+        return $new;
     }
 
     /**
@@ -189,6 +234,14 @@ abstract class BaseListView extends Widget
         return $new;
     }
 
+    public function pageSize(int $pageSize): self
+    {
+        $new = clone $this;
+        $new->pageSize = $pageSize;
+
+        return $new;
+    }
+
     public function requestAttributes(array $requestAttributes): self
     {
         $new = clone $this;
@@ -296,7 +349,7 @@ abstract class BaseListView extends Widget
     }
 
     /**
-     * Renders a section of the specified name. If the named section is not supported, false will be returned.
+     * Renders a section of the specified name. If the named section is not supported, empty string will be returned.
      *
      * @param string $name the section name, e.g., `{summary}`, `{items}`.
      *

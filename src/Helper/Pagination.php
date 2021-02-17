@@ -16,8 +16,9 @@ use RuntimeException;
  */
 final class Pagination
 {
+    public const DEFAULT_PAGE_SIZE = 10;
     private int $currentPage = 1;
-    private int $pageSize = 10;
+    private int $pageSize = self::DEFAULT_PAGE_SIZE;
     private int $totalCount = 0;
     private string $pageParam = 'page';
     private string $pageSizeParam = 'per-page';
