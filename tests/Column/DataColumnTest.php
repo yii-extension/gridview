@@ -14,6 +14,8 @@ final class DataColumnTest extends TestCase
 {
     public function testAttribute(): void
     {
+        GridView::counter(0);
+
         $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
         $dataProvider->allData($this->getArrayData());
 
@@ -26,6 +28,8 @@ final class DataColumnTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
         <table class="table">
         <thead>
         <tr><th>Id</th><th>Username</th></tr>
@@ -41,8 +45,10 @@ final class DataColumnTest extends TestCase
         <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
         <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFilter(): void
@@ -180,6 +186,8 @@ final class DataColumnTest extends TestCase
 
     public function testAttributeStringFormat(): void
     {
+        GridView::counter(0);
+
         $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
         $dataProvider->allData($this->getArrayData());
 
@@ -187,6 +195,8 @@ final class DataColumnTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
         <table class="table">
         <thead>
         <tr><th>Id</th><th>Username</th></tr>
@@ -202,8 +212,10 @@ final class DataColumnTest extends TestCase
         <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
         <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testLabel(): void
