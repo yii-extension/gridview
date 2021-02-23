@@ -6,9 +6,9 @@ namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
+use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\Strings\Inflector;
@@ -41,6 +41,7 @@ final class LinkSorter extends Widget
     private array $requestQueryParams = [];
     private string $sortParams = 'sort';
     private bool $urlAbsolute = false;
+    private Html $html;
     private Inflector $inflector;
     private Pagination $pagination;
     private Sort $sort;
@@ -48,10 +49,12 @@ final class LinkSorter extends Widget
     private UrlMatcherInterface $urlMatcher;
 
     public function __construct(
+        Html $html,
         Inflector $inflector,
         UrlGeneratorInterface $urlGenerator,
         UrlMatcherInterface $urlMatcher
     ) {
+        $this->html = $html;
         $this->inflector = $inflector;
         $this->urlGenerator = $urlGenerator;
         $this->urlMatcher = $urlMatcher;
@@ -313,9 +316,9 @@ final class LinkSorter extends Widget
         }
 
         if ($this->frameworkCss === self::BULMA) {
-            Html::addCssClass($this->options, ['link' => 'has-text-link']);
+            $this->html->addCssClass($this->options, ['link' => 'has-text-link']);
         }
 
-        return Html::a($label, $url, array_merge($this->options, ['encode' => false]));
+        return $this->html->a($label, $url, $this->options);
     }
 }

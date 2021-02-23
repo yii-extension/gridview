@@ -13,6 +13,7 @@ use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\CheckboxColumn;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\GridView;
+use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\Aliases\Aliases;
@@ -42,8 +43,9 @@ use Yiisoft\Widget\WidgetFactory;
 class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected ActionColumn $actionColumn;
-    protected CheckBoxColumn $checkBoxColumn;
+    protected CheckboxColumn $checkboxColumn;
     protected DataColumn $dataColumn;
+    protected Html $html;
     protected Pagination $pagination;
     protected Sort $sort;
     private ContainerInterface $container;
@@ -64,6 +66,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->checkBoxColumn,
             $this->container,
             $this->dataColumn,
+            $this->html,
             $this->pagination,
             $this->sort,
         );
@@ -122,6 +125,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->actionColumn = $this->container->get(ActionColumn::class);
         $this->checkboxColumn = $this->container->get(CheckboxColumn::class);
         $this->dataColumn = $this->container->get(DataColumn::class);
+        $this->html = $this->container->get(Html::class);
         $this->pagination = $this->container->get(Pagination::class);
         $this->sort = $this->container->get(Sort::class);
     }

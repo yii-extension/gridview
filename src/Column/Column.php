@@ -7,7 +7,8 @@ namespace Yii\Extension\GridView\Column;
 use Closure;
 use JsonException;
 use Yii\Extension\GridView\GridView;
-use Yiisoft\Html\Html;
+use Yii\Extension\GridView\Helper\Html;
+use Yiisoft\Router\UrlGeneratorInterface;
 
 /**
  * Column is the base class of all {@see GridView} column classes.
@@ -16,76 +17,187 @@ use Yiisoft\Html\Html;
  */
 class Column
 {
-    /**
-     * @var GridView the grid view object that owns this column.
-     */
-    public GridView $grid;
+    protected $content;
+    protected array $contentOptions = [];
+    protected array $filterOptions = [];
+    protected string $footer = '';
+    protected array $footerOptions = [];
+    protected Html $html;
+    /** @psalm-suppress PropertyNotSetInConstructor */
+    protected GridView $grid;
+    protected string $label = '';
+    protected array $labelOptions = [];
+    protected array $options = [];
+    protected UrlGeneratorInterface $urlGenerator;
+    protected bool $visible = true;
+
+    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
+    {
+        $this->html = $html;
+        $this->urlGenerator = $urlGenerator;
+    }
 
     /**
-     * @var string the footer cell content. Note that it will not be HTML-encoded.
-     */
-    public string $footer = '';
-
-    /**
-     * @var callable This is a callable that will be used to generate the content of each cell.
+     * @param callable This is a callable that will be used to generate the content of each cell.
+     *
      * The signature of the function should be the following: `function ($arClass, $key, $index, $column)`.
+     *
      * Where `$arClass`, `$key`, and `$index` refer to the arClass, key and index of the row currently being rendered
      * and `$column` is a reference to the {@see Column} object.
-     */
-    public $content;
-
-    /**
-     * @var bool whether this column is visible. Defaults to true.
-     */
-    public bool $visible = true;
-
-    /**
-     * @var array the HTML attributes for the column group tag.
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
-     */
-    public array $options = [];
-
-    protected array $labelOptions = [];
-
-    /**
-     * @var array|Closure the HTML attributes for the data cell tag. This can either be an array of
-     * attributes or an anonymous function ([[Closure]]) that returns such an array.
-     * The signature of the function should be the following: `function ($arClass, $key, $index, $column)`.
-     * Where `$arClass`, `$key`, and `$index` refer to the arClass, key and index of the row currently being rendered
-     * and `$column` is a reference to the [[Column]] object.
-     * A function may be used to assign different attributes to different rows based on the data in that row.
      *
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @return $this
      */
-    public $contentOptions = [];
+    public function content(callable $content): self
+    {
+        $new = clone $this;
+        $new->content = $content;
+
+        return $new;
+    }
 
     /**
-     * @var array the HTML attributes for the footer cell tag.
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @param array the HTML attributes for the data cell tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
-    public array $footerOptions = [];
+    public function contentOptions(array $contentOptions): self
+    {
+        $new = clone $this;
+        $new->contentOptions = $contentOptions;
+
+        return $new;
+    }
 
     /**
-     * @var array the HTML attributes for the filter cell tag.
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
+     * @param array the HTML attributes for the filter cell tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
-    public array $filterOptions = [];
+    public function filterOptions(array $filterOptions): self
+    {
+        $new = clone $this;
+        $new->filterOptions = $filterOptions;
+
+        return $new;
+    }
 
     /**
-     * @var string label to be displayed in the {@see header|header cell} and also to be used as the sorting
-     * link label when sorting is enabled for this column.
-     * If it is not set and the active record classes provided by the GridViews data provider are instances
-     * of {@see ActiveRecord}, the label will be determined using {@see AtiveRecord::getAttributeLabel()}.
-     * Otherwise {@see Inflector::camel2words()} will be used to get a label.
+     * @param string the footer cell content. Note that it will not be HTML-encoded.
+     *
+     * @return $this
      */
-    public string $label = '';
+    public function footer(string $footer)
+    {
+        $new = clone $this;
+        $new->footer = $footer;
+
+        return $new;
+    }
+
+    /**
+     * @param array the HTML attributes for the footer cell tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function footerOptions(array $footerOptions)
+    {
+        $new = clone $this;
+        $new->footerOptions = $footerOptions;
+
+        return $new;
+    }
+
+    /**
+     * @param GridView $grid the grid view object that owns this column.
+     *
+     * @return $this
+     */
+    public function grid(GridView $grid): self
+    {
+        $new = clone $this;
+        $new->grid = $grid;
+
+        return $new;
+    }
+
+    public function isVisible(): bool
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @param string label to be displayed in the {@see header|header cell} and also to be used as the sorting link
+     * label when sorting is enabled for this column.
+     *
+     * If it is not set and the active record classes provided by the GridViews data provider are instances of the model
+     * data, the label will be determined using Otherwise {@see Inflector::toHumanReadable()} will be used to get a
+     * label.
+     *
+     * @return $this
+     */
+    public function label(string $label): self
+    {
+        $new = clone $this;
+        $new->label = $label;
+
+        return $new;
+    }
+
+    /**
+     * @param array $labelOptions the HTML attributes for the header cell tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function labelOptions(array $labelOptions): self
+    {
+        $new = clone $this;
+        $new->labelOptions = $labelOptions;
+
+        return $new;
+    }
+
+    /**
+     * @param bool whether this column is visible. Defaults to true.
+     *
+     * @return $this
+     */
+    public function notVisible(): self
+    {
+        $new = clone $this;
+        $new->visible = false;
+
+        return $new;
+    }
+
+    /**
+     * @param array the HTML attributes for the column group tag.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function options(array $options)
+    {
+        $new = clone $this;
+        $new->options = $options;
+
+        return $new;
+    }
 
     /**
      * Renders the header cell.
      */
     public function renderHeaderCell(): string
     {
-        return Html::tag('th', $this->renderHeaderCellContent(), array_merge($this->labelOptions, ['encode' => false]));
+        return $this->html->tag('th', $this->renderHeaderCellContent(), $this->labelOptions);
     }
 
     /**
@@ -93,7 +205,7 @@ class Column
      */
     public function renderFooterCell(): string
     {
-        return Html::tag('td', $this->renderFooterCellContent(), array_merge($this->footerOptions, ['encode' => false]));
+        return $this->html->tag('td', $this->renderFooterCellContent(), $this->footerOptions);
     }
 
     /**
@@ -109,17 +221,15 @@ class Column
      */
     public function renderDataCell($arClass, $key, int $index): string
     {
-        if ($this->contentOptions instanceof Closure) {
-            $options = call_user_func($this->contentOptions, $arClass, $key, $index, $this);
-        } else {
-            $options = $this->contentOptions;
-        }
-
         if ($this->label !== '') {
-            $options = array_merge($options, ['data-label' => $this->label]);
+            $this->contentOptions = array_merge($this->contentOptions, ['data-label' => $this->label]);
         }
 
-        return Html::tag('td', (string) $this->renderDataCellContent($arClass, $key, $index), array_merge($options, ['encode' => false]));
+        return $this->html->tag(
+            'td',
+            $this->renderDataCellContent($arClass, $key, $index),
+            $this->contentOptions,
+        );
     }
 
     /**
@@ -127,7 +237,7 @@ class Column
      */
     public function renderFilterCell(): string
     {
-        return Html::tag('td', $this->renderFilterCellContent(), array_merge($this->filterOptions, ['encode' => false]));
+        return $this->html->tag('td', $this->renderFilterCellContent(), $this->filterOptions);
     }
 
     /**
@@ -135,6 +245,8 @@ class Column
      *
      * The default implementation simply renders {@see header}.
      * This method may be overridden to customize the rendering of the header cell.
+     *
+     * @throws JsonException
      *
      * @return string the rendering result
      */
@@ -170,14 +282,14 @@ class Column
     /**
      * Renders the data cell content.
      *
-     * @param mixed $arClass the data arClass
-     * @param mixed $key the key associated with the data arClass
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
      * @param int $index the zero-based index of the data arClass among the arClasss array returned by
      * {@see GridView::dataProvider}.
      *
-     * @return string|null the rendering result
+     * @return string the rendering result.
      */
-    protected function renderDataCellContent($arClass, $key, int $index): ?string
+    protected function renderDataCellContent($arClass, $key, int $index): string
     {
         if ($this->content !== null) {
             return call_user_func($this->content, $arClass, $key, $index, $this);
@@ -197,33 +309,5 @@ class Column
     protected function renderFilterCellContent(): string
     {
         return $this->grid->getEmptyCell();
-    }
-
-    /**
-     * @param array $labelOptions the HTML attributes for the header cell tag.
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function labelOptions(array $labelOptions): self
-    {
-        $new = clone $this;
-        $new->labelOptions = $labelOptions;
-
-        return $new;
-    }
-
-    /**
-     * @param GridView $grid the grid view object that owns this column.
-     *
-     * @return $this
-     */
-    public function grid(GridView $grid): self
-    {
-        $new = clone $this;
-        $new->grid = $grid;
-
-        return $this;
     }
 }

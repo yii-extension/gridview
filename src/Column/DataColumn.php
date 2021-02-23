@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
+use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Widget\LinkSorter;
 use Yiisoft\ActiveRecord\ActiveQueryInterface;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Html\Html;
 use Yiisoft\Form\FormModel;
-use Yiisoft\Strings\Inflector;
 use Yiisoft\Form\Widget\TextInput;
+use Yiisoft\Router\UrlGeneratorInterface;
+use Yiisoft\Strings\Inflector;
 
 /**
  * DataColumn is the default column type for the {@see GridView} widget.
@@ -126,6 +127,14 @@ class DataColumn extends Column
      */
     public string $filterAttribute = '';
 
+    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
+    {
+        parent::__construct($html, $urlGenerator);
+
+        $this->html = $html;
+        $this->urlGenerator = $urlGenerator;
+    }
+
     protected function renderHeaderCellContent(): string
     {
         if ($this->label === '' && $this->attribute === '') {
@@ -135,7 +144,7 @@ class DataColumn extends Column
         $label = $this->label;
 
         if ($this->encodeLabel) {
-            $label = Html::encode($label);
+            $label = $this->html->encode($label);
         }
 
         $sort = $this->grid->getSort();
@@ -199,9 +208,9 @@ class DataColumn extends Column
             $options = array_merge(['maxlength' => true], $this->filterInputOptions);
 
             if ($this->grid->getFrameworkCss() === 'bulma') {
-                Html::AddCssClass($options, ['input' => 'input']);
+                $this->html->AddCssClass($options, ['input' => 'input']);
             } else {
-                Html::AddCssClass($options, ['input' => 'form-control']);
+                $this->html->AddCssClass($options, ['input' => 'form-control']);
             }
 
             return TextInput::widget()->config($arClass, $this->filterAttribute, $options)->render();
@@ -234,7 +243,17 @@ class DataColumn extends Column
         return null;
     }
 
-    protected function renderDataCellContent($arClass, $key, int $index): ?string
+    /**
+     * Renders the data cell content.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the rendering result.
+     */
+    protected function renderDataCellContent($arClass, $key, int $index): string
     {
         if ($this->content === null) {
             return $this->getDataCellValue($arClass, $key, $index);

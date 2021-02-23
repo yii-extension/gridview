@@ -6,9 +6,9 @@ namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
+use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Html\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\View\WebView;
@@ -69,16 +69,19 @@ final class LinkPager extends Widget
     private array $requestAttributes = [];
     private array $requestQueryParams = [];
     private bool $urlAbsolute = false;
+    private Html $html;
     private Pagination $pagination;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
     private WebView $webView;
 
     public function __construct(
+        Html $html,
         UrlGeneratorInterface $urlGenerator,
         UrlMatcherInterface $urlMatcher,
         WebView $webView
     ) {
+        $this->html = $html;
         $this->urlGenerator = $urlGenerator;
         $this->urlMatcher = $urlMatcher;
         $this->webView = $webView;
@@ -531,7 +534,7 @@ final class LinkPager extends Widget
         /* button first page */
         if ($this->firstPageLabel !== '') {
             $linkAttributes = $this->linkAttributes;
-            Html::addCssClass($linkAttributes, $this->firstPageCssClass);
+            $this->html->addCssClass($linkAttributes, $this->firstPageCssClass);
 
             $buttons[] = $this->renderPageButton(
                 $this->firstPageLabel,
@@ -543,7 +546,7 @@ final class LinkPager extends Widget
         /* button previous page */
         if ($this->prevPageLabel !== '') {
             $prevPageLabelOptions = [];
-            Html::addCssClass($prevPageLabelOptions, $this->prevPageCssClass);
+            $this->html->addCssClass($prevPageLabelOptions, $this->prevPageCssClass);
 
             $buttons[] = $this->renderPageButton(
                 $this->prevPageLabel,
@@ -555,7 +558,7 @@ final class LinkPager extends Widget
 
         /* buttons pages */
         [$beginPage, $endPage] = $this->getPageRange();
-        Html::addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
+        $this->html->addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
 
         for ($i = $beginPage; $i <= $endPage; ++$i) {
             $buttons[] = $this->renderPageButton(
@@ -570,7 +573,7 @@ final class LinkPager extends Widget
         /* button next page */
         if ($this->nextPageLabel !== '') {
             $nextPageLabelOptions = [];
-            Html::addCssClass($nextPageLabelOptions, $this->nextPageCssClass);
+            $this->html->addCssClass($nextPageLabelOptions, $this->nextPageCssClass);
 
             $buttons[] = $this->renderPageButton(
                 $this->nextPageLabel,
@@ -583,7 +586,7 @@ final class LinkPager extends Widget
         /* button last page */
         if ($this->lastPageLabel !== '') {
             $linkAttributes = $this->linkAttributes;
-            Html::addCssClass($linkAttributes, $this->lastPageCssClass);
+            $this->html->addCssClass($linkAttributes, $this->lastPageCssClass);
 
             $buttons[] = $this->renderPageButton(
                 $this->lastPageLabel,
@@ -593,13 +596,11 @@ final class LinkPager extends Widget
         }
 
         $tag = ArrayHelper::remove($this->ulAttributes, 'tag', 'ul');
-        $ulAttributes = array_merge($this->ulAttributes, ['encode' => false]);
-        $navAttributes = array_merge($this->navAttributes, ['encode' => false]);
 
         return
-            Html::beginTag('nav', $navAttributes) . "\n" .
-                Html::tag($tag, "\n" . implode("\n", $buttons) . "\n", $ulAttributes) . "\n" .
-            Html::endTag('nav') . "\n";
+            $this->html->beginTag('nav', $this->navAttributes) . "\n" .
+                $this->html->tag($tag, "\n" . implode("\n", $buttons) . "\n", $this->ulAttributes) . "\n" .
+            $this->html->endTag('nav') . "\n";
     }
 
     /**
@@ -624,7 +625,7 @@ final class LinkPager extends Widget
         /* link button first page */
         if ($this->firstPageLabel !== '') {
             $linkAttributes = $this->linkAttributes;
-            Html::addCssClass($linkAttributes, $this->firstPageCssClass);
+            $this->html->addCssClass($linkAttributes, $this->firstPageCssClass);
 
             $links[] = $this->renderPageButton(
                 $this->firstPageLabel,
@@ -636,7 +637,7 @@ final class LinkPager extends Widget
         /* link button previous page */
         if ($this->prevPageLabel !== '') {
             $prevPageLabelOptions = [];
-            Html::addCssClass($prevPageLabelOptions, $this->prevPageCssClass);
+            $this->html->addCssClass($prevPageLabelOptions, $this->prevPageCssClass);
 
             $links[] = $this->renderPageButton(
                 $this->prevPageLabel,
@@ -648,7 +649,7 @@ final class LinkPager extends Widget
 
         /* link buttons pages */
         [$beginPage, $endPage] = $this->getPageRange();
-        Html::addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
+        $this->html->addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
 
         for ($i = $beginPage; $i <= $endPage; ++$i) {
             $buttons[] = $this->renderPageButton(
@@ -663,7 +664,7 @@ final class LinkPager extends Widget
         /* link button next page */
         if ($this->nextPageLabel !== '') {
             $nextPageLabelOptions = [];
-            Html::addCssClass($nextPageLabelOptions, $this->nextPageCssClass);
+            $this->html->addCssClass($nextPageLabelOptions, $this->nextPageCssClass);
 
             $links[] = $this->renderPageButton(
                 $this->nextPageLabel,
@@ -676,7 +677,7 @@ final class LinkPager extends Widget
         /* link button last page */
         if ($this->lastPageLabel !== '') {
             $linkAttributes = $this->linkAttributes;
-            Html::addCssClass($linkAttributes, $this->lastPageCssClass);
+            $this->html->addCssClass($linkAttributes, $this->lastPageCssClass);
 
             $links[] = $this->renderPageButton(
                 $this->lastPageLabel,
@@ -686,13 +687,11 @@ final class LinkPager extends Widget
         }
 
         $tag = ArrayHelper::remove($this->ulAttributes, 'tag', 'ul');
-        $ulAttributes = array_merge($this->ulAttributes, ['encode' => false]);
-        $navAttributes = array_merge($this->navAttributes, ['encode' => false]);
 
         return
-            Html::beginTag('nav', $navAttributes) . "\n" .
-                implode("\n", $links) . Html::tag($tag, "\n" . implode("\n", $buttons), $ulAttributes) . "\n" .
-            Html::endTag('nav');
+            $this->html->beginTag('nav', $this->navAttributes) . "\n" .
+                implode("\n", $links) . $this->html->tag($tag, "\n" . implode("\n", $buttons), $this->ulAttributes) . "\n" .
+            $this->html->endTag('nav');
     }
 
     /**
@@ -722,7 +721,7 @@ final class LinkPager extends Widget
         $linkAttributes['data-page'] = $page;
 
         if ($active) {
-            Html::addCssClass($buttonsAttributes, $this->activePageCssClass);
+            $this->html->addCssClass($buttonsAttributes, $this->activePageCssClass);
         }
 
         if ($disabled) {
@@ -731,7 +730,7 @@ final class LinkPager extends Widget
         }
 
         if ($disabled && $this->frameworkCss === self::BOOTSTRAP) {
-            Html::addCssClass($buttonsAttributes, $this->disabledPageCssClass);
+            $this->html->addCssClass($buttonsAttributes, $this->disabledPageCssClass);
         }
 
         if ($disabled && $this->frameworkCss === self::BULMA) {
@@ -739,9 +738,9 @@ final class LinkPager extends Widget
         }
 
         return
-            Html::beginTag($linkWrapTag, array_merge($buttonsAttributes, ['encode' => false])) .
-                Html::a($label, $this->createUrl($page), $linkAttributes) .
-            Html::endTag($linkWrapTag);
+            $this->html->beginTag($linkWrapTag, $buttonsAttributes) .
+                $this->html->a($label, $this->createUrl($page), $linkAttributes) .
+            $this->html->endTag($linkWrapTag);
     }
 
     /**

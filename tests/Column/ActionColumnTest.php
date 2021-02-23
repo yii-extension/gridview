@@ -6,7 +6,6 @@ namespace Yii\Extension\GridView\Tests\Column;
 
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
 use Yii\Extension\GridView\Tests\TestCase;
-use Yiisoft\Html\Html;
 
 final class ActionColumnTest extends TestCase
 {
@@ -27,7 +26,11 @@ final class ActionColumnTest extends TestCase
         $actionColumn = $this->actionColumn
             ->buttons(
                 [
-                    'admin/custom' => static fn ($url) => Html::a('custon', $url, ['class' => 'text-danger', 'title' => 'Custom', 'encode' => false]),
+                    'admin/custom' => fn ($url) => $this->html->a(
+                        'custon',
+                        $url,
+                        ['class' => 'text-danger', 'title' => 'Custom', 'encode' => false]
+                    ),
                 ]
             )
             ->grid($gridView)
@@ -36,7 +39,6 @@ final class ActionColumnTest extends TestCase
         $html = <<<'HTML'
         <td><a class="text-danger" href="/admin/custom/1" title="Custom">custon</a></td>
         HTML;
-
         $this->assertSame($html, $actionColumn->renderDataCell(['id' => 1], 1, 0));
     }
 
@@ -47,7 +49,6 @@ final class ActionColumnTest extends TestCase
         $html = <<<'HTML'
         <td><a href="/admin/view/1" disabled title="View" aria-label="View" data-name="view"><span>&#128065;</span></a> <a href="/admin/update/1" disabled title="Update" aria-label="Update" data-name="update"><span>&#128393;</span></a> <a href="/admin/delete/1" disabled title="Delete" aria-label="Delete" data-name="delete" data-confirm="Are you sure you want to delete this item?" data-method="post"><span>&#128465;</span></a></td>
         HTML;
-
         $this->assertSame($html, $actionColumn->renderDataCell(['id' => 1], 1, 0));
     }
 
@@ -62,7 +63,11 @@ final class ActionColumnTest extends TestCase
         $actionColumn = $this->actionColumn
             ->buttons(
                 [
-                    'admin/custom' => static fn ($url) => Html::a('admin/custom', $url, ['class' => 'text-danger', 'title' => 'Custom']),
+                    'admin/custom' => fn ($url) => $this->html->a(
+                        'admin/custom',
+                        $url,
+                        ['class' => 'text-danger', 'title' => 'Custom'],
+                    ),
                 ]
             )
             ->template('{admin/custom}')
@@ -72,7 +77,6 @@ final class ActionColumnTest extends TestCase
         $html = <<<'HTML'
         <td><a class="text-danger" href="/admin/custom?user_id=1" title="Custom">admin/custom</a></td>
         HTML;
-
         $this->assertSame($html, $actionColumn->renderDataCell(['user_id' => 1], 1, 0));
     }
 
@@ -109,26 +113,26 @@ final class ActionColumnTest extends TestCase
                 ]
             );
 
-        //test default visible button
+        /** test default visible button */
         $columnContents = $actionColumn->renderDataCell(['id' => 1], 1, 0);
         $this->assertSame('<td>update_button</td>', $columnContents);
 
-        //test visible button
+        /** test visible button */
         $actionColumn->visibleButtons(['update' => true]);
         $columnContents = $actionColumn->renderDataCell(['id' => 1], 1, 0);
         $this->assertSame('<td>update_button</td>', $columnContents);
 
-        //test visible button (condition is callback)
+        /** test visible button (condition is callback) */
         $actionColumn->visibleButtons(['update' => static fn ($model, $key, $index) => $model['id'] === 1]);
         $columnContents = $actionColumn->renderDataCell(['id' => 1], 1, 0);
         $this->assertSame('<td>update_button</td>', $columnContents);
 
-        //test invisible button
+        /** test invisible button */
         $actionColumn->visibleButtons(['update' => false]);
         $columnContents = $actionColumn->renderDataCell(['id' => 1], 1, 0);
         $this->assertNotSame('<td>update_button</td>', $columnContents);
 
-        //test invisible button (condition is callback)
+        /** test invisible button (condition is callback) */
         $actionColumn->visibleButtons(['update' => static fn ($model, $key, $index) => $model['id'] !== 1]);
         $columnContents = $this->actionColumn->renderDataCell(['id' => 1], 1, 0);
         $this->assertNotSame('<td>update_button</td>', $columnContents);

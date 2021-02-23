@@ -6,7 +6,8 @@ namespace Yii\Extension\GridView\Column;
 
 use Closure;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
-use Yiisoft\Html\Html;
+use Yii\Extension\GridView\Helper\Html;
+use Yiisoft\Router\UrlGeneratorInterface;
 
 /**
  * RadioButtonColumn displays a column of radio buttons in a grid view.
@@ -62,14 +63,29 @@ class RadioButtonColumn extends Column
     /**
      * @throws InvalidConfigException if {@see name} is not set.
      */
-    public function __construct()
+    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
+        parent::__construct($html, $urlGenerator);
+
         if (empty($this->name)) {
             throw new InvalidConfigException('The "name" property must be set.');
         }
+
+        $this->html = $html;
+        $this->urlGenerator = $urlGenerator;
     }
 
-    protected function renderDataCellContent($arClass, $key, $index): ?string
+    /**
+     * Renders the data cell content.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the rendering result.
+     */
+    protected function renderDataCellContent($arClass, $key, $index): string
     {
         if ($this->content !== null) {
             return parent::renderDataCellContent($arClass, $key, $index);
@@ -85,7 +101,9 @@ class RadioButtonColumn extends Column
                     : $key;
             }
         }
+
         $checked = $options['checked'] ?? false;
-        return Html::radio($this->name, $checked, $options);
+
+        return $this->html->radio($this->name, $checked, $options);
     }
 }

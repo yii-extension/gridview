@@ -6,9 +6,10 @@ namespace Yii\Extension\GridView\Column;
 
 use Closure;
 use JsonException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Html\Html;
+use Yii\Extension\GridView\Exception\InvalidConfigException;
+use Yii\Extension\GridView\Helper\Html;
 use Yiisoft\Json\Json;
+use Yiisoft\Router\UrlGeneratorInterface;
 
 /**
  * CheckboxColumn displays a column of checkboxes in a grid view.
@@ -38,57 +39,75 @@ use Yiisoft\Json\Json;
  *
  * {@see the [guide article on data widgets](guide:output-data-widgets)}.
  */
-class CheckboxColumn extends Column
+final class CheckboxColumn extends Column
 {
-    /**
-     * @var string the name of the input checkbox input fields. This will be appended with `[]` to ensure it is an
-     * array.
-     */
-    public string $name = 'selection';
+    private string $cssClass = '';
+    private array $checkboxOptions = [];
+    private bool $multiple = true;
+    private string $name = 'selection';
 
-    /**
-     * @var array|\Closure the HTML attributes for checkboxes. This can either be an array of attributes or an anonymous
-     * function ({@see Closure}) that returns such an array. The signature of the function should be the following:
-     * `function ($arClass, $key, $index, $column)`.
-     *
-     * Where `$arClass`, `$key`, and `$index` refer to the arClass, key and index of the row currently being rendered
-     * and `$column` is a reference to the {@see CheckboxColumn} object.
-     *
-     * A function may be used to assign different attributes to different rows based on the data in that row.
-     * Specifically if you want to set a different value for the checkbox
-     * you can use this option in the following way (in this example using the `name` attribute of the arClass):
-     *
-     * ```php
-     * 'checkboxOptions' => function ($arClass, $key, $index, $column) {
-     *     return ['value' => $arClass->name];
-     * }
-     * ```
-     *
-     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
-     */
-    public $checkboxOptions = [];
-
-    /**
-     * @var bool whether it is possible to select multiple rows. Defaults to `true`.
-     */
-    public bool $multiple = true;
-
-    /**
-     * @var string the css class that will be used to find the checkboxes.
-     */
-    public string $cssClass = '';
-
-    public function __construct()
+    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
-        if (empty($this->name)) {
+        parent::__construct($html, $urlGenerator);
+
+        $this->name = $this->html->getArrayableName($this->name);
+
+        $this->registerClientScript();
+    }
+
+    /**
+     * @param string the css class that will be used to find the checkboxes.
+     *
+     * @return $this
+     */
+    public function cssClass(string $cssClass): self
+    {
+        $this->cssClass = $cssClass;
+
+        return $this;
+    }
+
+    /**
+     * Set the HTML attributes for checkboxes.
+     *
+     * @param array $checkboxOptions the HTML attributes for checkboxes.
+     *
+     * @return $this
+     */
+    public function checkboxOptions(array $checkboxOptions): self
+    {
+        $this->checkboxOptions = $checkboxOptions;
+
+        return $this;
+    }
+
+    /**
+     * @param string the name of the input checkbox input fields. This will be appended with `[]` to ensure it is an
+     * array.
+     *
+     * @return $this
+     */
+    public function name(string $name): self
+    {
+        $this->name = $name;
+
+        if ($this->name === '') {
             throw new InvalidConfigException('The "name" property must be set.');
         }
 
-        if (substr_compare($this->name, '[]', -2, 2)) {
-            $this->name .= '[]';
-        }
+        return $this;
+    }
 
-        $this->registerClientScript();
+    /**
+     * @param bool whether it is possible to select multiple rows. Defaults to `true`.
+     *
+     * @return $this
+     */
+    public function notMultiple(): self
+    {
+        $this->multiple = false;
+
+        return $this;
     }
 
     /**
@@ -103,34 +122,40 @@ class CheckboxColumn extends Column
      */
     protected function renderHeaderCellContent(): string
     {
-        if ($this->label !== null || !$this->multiple) {
+        if ($this->label !== '' || $this->multiple === false) {
             return parent::renderHeaderCellContent();
         }
 
-        return Html::checkbox($this->getHeaderCheckBoxName(), false, ['class' => 'select-on-check-all']);
+        return $this->html->checkbox($this->getHeaderCheckBoxName(), false, ['class' => 'select-on-check-all']);
     }
 
-    protected function renderDataCellContent($arClass, $key, int $index): ?string
+    /**
+     * Renders the data cell content.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the rendering result.
+     */
+    protected function renderDataCellContent($arClass, $key, int $index): string
     {
         if ($this->content !== null) {
             return parent::renderDataCellContent($arClass, $key, $index);
         }
 
-        if ($this->checkboxOptions instanceof Closure) {
-            $options = call_user_func($this->checkboxOptions, $arClass, $key, $index, $this);
-        } else {
-            $options = $this->checkboxOptions;
-        }
+        $options = $this->checkboxOptions;
 
         if (!isset($options['value'])) {
             $options['value'] = is_array($key) ? Json::encode($key) : $key;
         }
 
         if ($this->cssClass !== '') {
-            Html::addCssClass($options, $this->cssClass);
+            $this->html->addCssClass($options, $this->cssClass);
         }
 
-        return Html::checkbox($this->name, !empty($options['checked']), $options);
+        return $this->html->checkbox($this->name, !empty($options['checked']), $options);
     }
 
     /**
@@ -157,7 +182,7 @@ class CheckboxColumn extends Column
     /**
      * Registers the needed JavaScript.
      */
-    public function registerClientScript(): void
+    private function registerClientScript(): void
     {
     }
 }

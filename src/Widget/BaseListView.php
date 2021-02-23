@@ -6,12 +6,12 @@ namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\Factory\GridViewFactory;
+use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yii\Extension\GridView\DataProvider\DataProviderInterface;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Factory\Exceptions\InvalidConfigException;
-use Yiisoft\Html\Html;
 use Yiisoft\Translator\TranslatorInterface;
 
 /**
@@ -33,6 +33,7 @@ abstract class BaseListView extends Widget
     protected array $options = [];
     protected DataProviderInterface $dataProvider;
     protected GridViewFactory $gridViewFactory;
+    protected Html $html;
     protected TranslatorInterface $translator;
     protected Pagination $pagination;
     private const FRAMEWORKCSS = [
@@ -51,8 +52,9 @@ abstract class BaseListView extends Widget
         '{totalCount, plural, one{item} other{items}}';
     private array $summaryOptions = ['class' => 'summary'];
 
-    public function __construct(GridViewFactory $gridViewFactory, TranslatorInterface $translator)
+    public function __construct(Html $html, GridViewFactory $gridViewFactory, TranslatorInterface $translator)
     {
+        $this->html = $html;
         $this->gridViewFactory = $gridViewFactory;
         $this->translator = $translator;
     }
@@ -87,13 +89,13 @@ abstract class BaseListView extends Widget
         $options = $this->options;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
-        $html = Html::tag($tag, $content, array_merge($options, ['encode' => false]));
+        $html = $this->html->tag($tag, $content, $options);
 
         if ($this->encloseByContainer) {
             $html =
-                Html::beginTag('div', $this->encloseByContainerOptions)  . "\n" .
-                    Html::tag($tag, $content, array_merge($options, ['encode' => false])) . "\n" .
-                Html::endTag('div') . "\n";
+                $this->html->beginTag('div', $this->encloseByContainerOptions)  . "\n" .
+                    $this->html->tag($tag, $content, $options) . "\n" .
+                $this->html->endTag('div') . "\n";
         }
 
         return $html;
@@ -192,6 +194,11 @@ abstract class BaseListView extends Widget
     public function getFrameworkCss(): string
     {
         return $this->frameworkCss;
+    }
+
+    public function getHtml(): Html
+    {
+        return $this->html;
     }
 
     public function getPagination(): Pagination
@@ -345,7 +352,7 @@ abstract class BaseListView extends Widget
         $options = $this->emptyTextOptions;
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
-        return Html::tag($tag, $this->emptyText, $options);
+        return $this->html->tag($tag, $this->emptyText, $options);
     }
 
     /**
@@ -443,7 +450,7 @@ abstract class BaseListView extends Widget
             $end = $totalCount = $count;
         }
 
-        return Html::tag(
+        return $this->html->tag(
             $tag,
             $this->translator->translate(
                 $this->summary,

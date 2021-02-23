@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Column;
 
 use Closure;
-use Yiisoft\Html\Html;
+use Yii\Extension\GridView\Helper\Html;
 use Yiisoft\Router\UrlGeneratorInterface;
 
 use function is_array;
@@ -31,19 +31,18 @@ use function is_array;
  */
 final class ActionColumn extends Column
 {
-    protected array $headerOptions = [];
     private array $buttons = [];
     private array $buttonOptions = [];
+    private array $headerOptions = [];
     private string $primaryKey = 'id';
     private string $template = '{view} {update} {delete}';
-    /** @var callable */
-    private $urlCreator;
+    /** @var callable|null $urlCreator */
+    private $urlCreator = null;
     private array $visibleButtons = [];
-    private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
-        $this->urlGenerator = $urlGenerator;
+        parent::__construct($html, $urlGenerator);
 
         $this->loadDefaultButtons();
     }
@@ -143,7 +142,7 @@ final class ActionColumn extends Column
     {
         $result = preg_match_all('/{([\w\-\/]+)}/', $template, $matches);
 
-        if ($result > 0 && is_array($matches) && !empty($matches[1])) {
+        if ($result > 0 && !empty($matches[1])) {
             $this->buttons = array_intersect_key($this->buttons, array_flip($matches[1]));
         }
 
@@ -216,14 +215,26 @@ final class ActionColumn extends Column
         return $this;
     }
 
+    /**
+     * Renders the data cell content.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the rendering result.
+     */
     protected function renderDataCellContent($arClass, $key, int $index): string
     {
-        return preg_replace_callback('/{([\w\-\/]+)}/', function ($matches) use ($arClass, $key, $index) {
+        return preg_replace_callback('/{([\w\-\/]+)}/', function (array $matches) use ($arClass, $key, $index): string {
+            /** @var string */
             $name = $matches[1];
 
             if (isset($this->visibleButtons[$name])) {
+                /** @var bool */
                 $isVisible = $this->visibleButtons[$name] instanceof Closure
-                    ? call_user_func($this->visibleButtons[$name], $arClass, $key, $index)
+                    ? $this->visibleButtons[$name]($arClass, $key, $index)
                     : $this->visibleButtons[$name];
             } else {
                 $isVisible = true;
@@ -231,7 +242,9 @@ final class ActionColumn extends Column
 
             if ($isVisible && isset($this->buttons[$name])) {
                 $url = $this->createUrl($name, $arClass, $key, $index);
-                return call_user_func($this->buttons[$name], $url, $arClass, $key);
+
+                /** @psalm-suppress MixedFunctionCall */
+                return (string) $this->buttons[$name]($url, $arClass, $key);
             }
 
             return '';
@@ -264,16 +277,18 @@ final class ActionColumn extends Column
     /**
      * Initializes the default button rendering callback for single button.
      *
-     * @param string $name Button name as it's written in template
-     * @param string $iconName The part of Bootstrap glyphicon class that makes it unique
-     * @param array $additionalOptions Array of additional options
+     * @param string $name Button name as it's written in template.
+     * @param string $iconName The part of Bootstrap glyphicon class that makes it unique.
+     * @param array $additionalOptions Array of additional options.
      *
      * @return void
      */
     private function createDefaultButton(string $name, string $iconName, array $additionalOptions = []): void
     {
+        $title = '';
+
         if (!isset($this->buttons[$name]) && strpos($this->template, '{' . $name . '}') !== false) {
-            $this->buttons[$name] = function ($url) use ($name, $iconName, $additionalOptions): string {
+            $this->buttons[$name] = function (?string $url) use ($name, $iconName, $additionalOptions, $title): string {
                 switch ($name) {
                     case 'view':
                         $title = 'View';
@@ -284,8 +299,6 @@ final class ActionColumn extends Column
                     case 'delete':
                         $title = 'Delete';
                         break;
-                    default:
-                        $title = '';
                 }
 
                 $options = array_merge(
@@ -293,15 +306,14 @@ final class ActionColumn extends Column
                         'title' => $title,
                         'aria-label' => $title,
                         'data-name' => $name,
-                        'encode' => false,
                     ],
                     $additionalOptions,
                     $this->buttonOptions
                 );
 
-                $icon = Html::tag('span', $iconName, ['encode' => false]);
+                $icon = $this->html->tag('span', $iconName);
 
-                return Html::a($icon, $url, $options);
+                return $this->html->a($icon, $url, $options);
             };
         }
     }
@@ -309,17 +321,18 @@ final class ActionColumn extends Column
     /**
      * Creates a URL for the given action and arClass. This method is called for each button and each row.
      *
-     * @param string $action the button name (or action ID)
-     * @param object|array $arClass the data arClass
-     * @param mixed $key the key associated with the data arClass
-     * @param int $index the current row index
+     * @param string $action the button name (or action ID).
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the current row index.
      *
-     * @return string the created URL
+     * @return string the created URL.
      */
     private function createUrl(string $action, $arClass, $key, int $index): string
     {
-        if (is_callable($this->urlCreator)) {
-            return call_user_func($this->urlCreator, $action, $arClass, $key, $index, $this);
+        if ($this->urlCreator !== null) {
+            /** @psalm-suppress MixedFunctionCall */
+            return (string) call_user_func($this->urlCreator, $action, $arClass, $key, $index, $this);
         }
 
         $params = is_array($key) ? $key : [$this->primaryKey => $key];

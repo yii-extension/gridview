@@ -12,7 +12,6 @@ use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Widget\BaseListView;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Form\FormModel;
-use Yiisoft\Html\Html;
 use Yiisoft\Json\Json;
 use Yiisoft\Router\FastRoute\UrlGenerator;
 
@@ -499,7 +498,7 @@ final class GridView extends BaseListView
             $tableFooterAfterBody,
         ]);
 
-        return Html::tag('table', implode("\n", $content), array_merge($this->tableOptions, ['encode' => false]));
+        return $this->html->tag('table', implode("\n", $content), $this->tableOptions);
     }
 
     /**
@@ -517,8 +516,8 @@ final class GridView extends BaseListView
             throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
         }
 
-        $dataColumn = new DataColumn();
-        $dataColumn->grid = $this;
+        $dataColumn = new DataColumn($this->html);
+        $dataColumn->grid($this);
         $dataColumn->attribute = $matches[1];
         $dataColumn->format = isset($matches[3]) ? $matches[3] : 'text';
         $dataColumn->label = isset($matches[5]) ? $matches[5] : '';
@@ -589,7 +588,7 @@ final class GridView extends BaseListView
                 $config = array_merge(
                     [
                         '__class' => $this->dataColumnClass,
-                        'grid' => $this,
+                        'grid()' => [$this],
                     ],
                     $column,
                 );
@@ -609,7 +608,7 @@ final class GridView extends BaseListView
                 }
             }
 
-            if (!$column->visible) {
+            if (!$column->isVisible()) {
                 unset($this->columns[$i]);
                 continue;
             }
@@ -628,7 +627,7 @@ final class GridView extends BaseListView
     private function renderHeader(): string
     {
         if (!empty($this->header)) {
-            return Html::tag('header', $this->header, array_merge($this->headerOptions, ['encode' => false]));
+            return $this->html->tag('header', $this->header, $this->headerOptions);
         }
 
         return '';
@@ -648,10 +647,10 @@ final class GridView extends BaseListView
             if (!empty($column->options)) {
                 $cols = [];
                 foreach ($this->columns as $col) {
-                    $cols[] = Html::tag('col', '', $col->options);
+                    $cols[] = $this->html->tag('col', '', $col->options);
                 }
 
-                return Html::tag('colgroup', implode("\n", $cols));
+                return $this->html->tag('colgroup', implode("\n", $cols));
             }
         }
 
@@ -687,7 +686,7 @@ final class GridView extends BaseListView
                 $cells[] = $column->renderFilterCell();
             }
 
-            return Html::tag('tr', implode('', $cells), array_merge($this->filterRowOptions, ['encode' => false]));
+            return $this->html->tag('tr', implode('', $cells), $this->filterRowOptions);
         }
 
         return '';
@@ -746,7 +745,7 @@ final class GridView extends BaseListView
             $cells[] = $column->renderFooterCell();
         }
 
-        $content = Html::tag('tr', implode('', $cells), array_merge($this->footerRowOptions, ['encode' => false]));
+        $content = $this->html->tag('tr', implode('', $cells), $this->footerRowOptions);
 
         if ($this->filterPosition === self::FILTER_POS_FOOTER) {
             $content .= $this->renderFilters();
@@ -769,7 +768,7 @@ final class GridView extends BaseListView
             $cells[] = $column->renderHeaderCell();
         }
 
-        $content = Html::tag('tr', implode('', $cells), array_merge($this->headerRowOptions, ['encode' => false]));
+        $content = $this->html->tag('tr', implode('', $cells), $this->headerRowOptions);
 
         if ($this->filterPosition === self::FILTER_POS_HEADER) {
             $content = $this->renderFilters() . $content;
@@ -806,7 +805,7 @@ final class GridView extends BaseListView
 
         $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
 
-        return Html::tag('tr', implode('', $cells), array_merge($options, ['encode' => false]));
+        return $this->html->tag('tr', implode('', $cells), $options);
     }
 
     private function renderToolbar(): string
@@ -816,9 +815,9 @@ final class GridView extends BaseListView
         foreach ($this->toolbar as $item) {
             $content = $item['content'] ?? '';
             $options = $item['options'] ?? [];
-            $toolbar .= Html::tag('div', $content, $options);
+            $toolbar .= $this->html->tag('div', $content, $options);
         }
 
-        return Html::tag('div', $toolbar, array_merge($this->toolbarOptions, ['encode' => false]));
+        return $this->html->tag('div', $toolbar, $this->toolbarOptions);
     }
 }
