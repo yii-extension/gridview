@@ -7,7 +7,7 @@ namespace Yii\Extension\GridView\Tests\Column;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
-use Yii\Extension\GridView\Gridview;
+use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Tests\TestCase;
 
 final class DataColumnTest extends TestCase
@@ -86,7 +86,7 @@ final class DataColumnTest extends TestCase
         </div>
         HTML;
 
-        $this->assertSame($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFilterInputOptions(): void
@@ -131,7 +131,7 @@ final class DataColumnTest extends TestCase
         </div>
         HTML;
 
-        $this->assertSame($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFilterValueDefault(): void
@@ -175,7 +175,7 @@ final class DataColumnTest extends TestCase
         </div>
         HTML;
 
-        $this->assertSame($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testAttributeStringFormat(): void
