@@ -333,9 +333,60 @@ final class Html
         return "</$name>";
     }
 
+    /**
+     * Returns the real attribute name from the given attribute expression.
+     *
+     * If `$attribute` has neither prefix nor suffix, it will be returned back without change.
+     *
+     * @param string $attribute the attribute name or expression
+     *
+     * @throws InvalidArgumentException if the attribute name contains non-word characters.
+     *
+     * @return string the attribute name without prefix and suffix.
+     *
+     * @see parseAttribute()
+     */
+    public function getAttributeName(string $attribute): string
+    {
+        return $this->parseAttribute($attribute)['name'];
+    }
+
     public function getArrayableName(string $name): string
     {
         return substr($name, -2) !== '[]' ? $name . '[]' : $name;
+    }
+
+    /**
+     * Generates an appropriate input name for the specified attribute name or expression.
+     *
+     * This method generates a name that can be used as the input name to collect user input for the specified
+     * attribute. The name is generated according to the of the form and the given attribute name. For example, if the
+     * form name of the `Post` form is `Post`, then the input name generated for the `content` attribute would be
+     * `Post[content]`.
+     *
+     * See {@see getAttributeName()} for explanation of attribute expression.
+     *
+     * @param string $formName the form name.
+     * @param string $attribute the attribute name or expression.
+     *
+     * @throws InvalidArgumentException if the attribute name contains non-word characters
+     * or empty form name for tabular inputs
+     *
+     * @return string the generated input name.
+     */
+    public function getInputName(string $formName, string $attribute): string
+    {
+        $data = self::parseAttribute($attribute);
+
+        if ($formName === '' && $data['prefix'] === '') {
+            return $attribute;
+        }
+
+        if ($formName !== '') {
+            return $formName . $data['prefix'] . '[' . $data['name'] . ']' . $data['suffix'];
+        }
+
+        throw new InvalidArgumentException($formName . '::formName() cannot be empty for tabular inputs.');
     }
 
     /**
@@ -548,6 +599,28 @@ final class Html
     }
 
     /**
+     * Generates a text input field.
+     *
+     * @param string $name The name attribute.
+     * @param bool|float|int|string|null $value The value attribute. If it is null, the value attribute will not be
+     * generated.
+     * @param array $options The tag options in terms of name-value pairs. These will be rendered as
+     * the attributes of the resulting tag. The values will be HTML-encoded using {@see encode())}.
+     *
+     * If a value is null, the corresponding attribute will not be rendered.
+     *
+     * {@see renderTagAttributes()} for details on how attributes are being rendered.
+     *
+     * @throws JsonException
+     *
+     * @return string The generated text input tag.
+     */
+    public function textInput(string $name, $value = null, array $options = []): string
+    {
+        return $this->input('text', $name, $value, $options);
+    }
+
+    /**
      * Generates a boolean input.
      *
      * @param string $type The input type. This can be either `radio` or `checkbox`.
@@ -716,6 +789,38 @@ final class Html
         return array_unique($existingClasses);
     }
 
+    /**
+     * This method parses an attribute expression and returns an associative array containing real attribute name,
+     * prefix and suffix.
+     *
+     * For example: `['name' => 'content', 'prefix' => '', 'suffix' => '[0]']`
+     *
+     * An attribute expression is an attribute name prefixed and/or suffixed with array indexes. It is mainly used in
+     * tabular data input and/or input of array type. Below are some examples:
+     *
+     * - `[0]content` is used in tabular data input to represent the "content" attribute for the first model in tabular
+     *    input;
+     * - `dates[0]` represents the first array element of the "dates" attribute;
+     * - `[0]dates[0]` represents the first array element of the "dates" attribute for the first model in tabular
+     *    input.
+     *
+     * @param string $attribute the attribute name or expression
+     *
+     * @throws InvalidArgumentException if the attribute name contains non-word characters.
+     *
+     * @return array
+     */
+    private function parseAttribute(string $attribute)
+    {
+        if (!preg_match('/(^|.*\])([\w\.\+]+)(\[.*|$)/u', $attribute, $matches)) {
+            throw new InvalidArgumentException('Attribute name must contain word characters only.');
+        }
+        return [
+            'name' => $matches[2],
+            'prefix' => $matches[1],
+            'suffix' => $matches[3],
+        ];
+    }
 
     /**
      * Renders the option tags that can be used by {@see dropDownList()} and {@see listBox()}.

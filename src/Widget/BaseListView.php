@@ -216,7 +216,7 @@ abstract class BaseListView extends Widget
         return $this->requestQueryParams;
     }
 
-    public function getSort(): ?Sort
+    public function getSort(): Sort
     {
         return $this->dataProvider->getSort();
     }

@@ -11,7 +11,6 @@ use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Widget\BaseListView;
 use Yiisoft\ActiveRecord\ActiveRecord;
-use Yiisoft\Form\FormModel;
 use Yiisoft\Json\Json;
 use Yiisoft\Router\FastRoute\UrlGenerator;
 
@@ -42,7 +41,7 @@ final class GridView extends BaseListView
     protected array $options = ['class' => 'grid-view'];
     private ?Closure $afterRow = null;
     private ?Closure $beforeRow = null;
-    private ?FormModel $filterModel = null;
+    private string $filterModelName = '';
     private string $header = '';
     private array $headerOptions = [];
     private array $columns = [];
@@ -281,20 +280,18 @@ final class GridView extends BaseListView
     }
 
     /**
-     * @param FormModel|null the arClass that keeps the user-entered filter data. When this property is set, the grid
+     * @param string the form model name that keeps the user-entered filter data. When this property is set, the grid
      * view will enable column-based filtering. Each data column by default will display a text field at the top that
      * users can fill in to filter the data.
      *
      * Note that in order to show an input field for filtering, a column must have its {@see DataColumn::attribute}
-     * property set and the attribute should be active in the current scenario of $filterModel or have
+     * property set and the attribute should be active in the current scenario of $filterModelName or have
      * {@see DataColumn::filter} set as the HTML code for the input field.
-     *
-     * When this property is not set (null) the filtering feature is disabled.
      */
-    public function filterModel(FormModel $filterModel): self
+    public function filterModelName(string $filterModelName): self
     {
         $new = clone $this;
-        $new->filterModel = $filterModel;
+        $new->filterModelName = $filterModelName;
 
         return $new;
     }
@@ -368,9 +365,9 @@ final class GridView extends BaseListView
         return $this->filterErrorOptions;
     }
 
-    public function getfilterModel(): FormModel
+    public function getfilterModelName(): string
     {
-        return $this->filterModel;
+        return $this->filterModelName;
     }
 
     /**
@@ -516,11 +513,13 @@ final class GridView extends BaseListView
             throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
         }
 
-        $dataColumn = new DataColumn($this->html);
-        $dataColumn->grid($this);
-        $dataColumn->attribute = $matches[1];
-        $dataColumn->format = isset($matches[3]) ? $matches[3] : 'text';
-        $dataColumn->label = isset($matches[5]) ? $matches[5] : '';
+        $dataColumn = $this->gridViewFactory->createColumnClass(
+            ['__class' => $this->dataColumnClass, 'grid()' => [$this]]
+        );
+
+        $dataColumn->attribute($matches[1]);
+        $dataColumn->format(isset($matches[3]) ? $matches[3] : 'text');
+        $dataColumn->label(isset($matches[5]) ? $matches[5] : '');
 
         return $dataColumn;
     }
@@ -570,9 +569,9 @@ final class GridView extends BaseListView
                 $value = null;
                 $visibleButtons = null;
 
-                if (isset($column['buttons()'])) {
-                    $buttons = $column['buttons()'];
-                    unset($column['buttons()']);
+                if (isset($column['buttons'])) {
+                    $buttons = $column['buttons'];
+                    unset($column['buttons']);
                 }
 
                 if (isset($column['value'])) {
@@ -580,9 +579,9 @@ final class GridView extends BaseListView
                     unset($column['value']);
                 }
 
-                if (isset($column['visibleButtons()'])) {
-                    $buttons = $column['visibleButtons()'];
-                    unset($column['visibleButtons()']);
+                if (isset($column['visibleButtons'])) {
+                    $buttons = $column['visibleButtons'];
+                    unset($column['visibleButtons']);
                 }
 
                 $config = array_merge(
@@ -600,7 +599,7 @@ final class GridView extends BaseListView
                 }
 
                 if ($value !== null) {
-                    $column->value = $value;
+                    $column->value($value);
                 }
 
                 if ($visibleButtons !== null) {
@@ -658,27 +657,13 @@ final class GridView extends BaseListView
     }
 
     /**
-     * Renders validator errors of filter arClass.
-     *
-     * @return string the rendering result.
-     */
-    private function renderErrors(): string
-    {
-        if ($this->filterModel instanceof ActiveRecord && $this->filterModel->hasErrors()) {
-            return Html::errorSummary($this->filterModel, $this->filterErrorSummaryOptions);
-        }
-
-        return '';
-    }
-
-    /**
      * Renders the filter.
      *
      * @return string the rendering result.
      */
     private function renderFilters(): string
     {
-        if ($this->filterModel !== null) {
+        if ($this->filterModelName !== '') {
             $cells = [];
 
             foreach ($this->columns as $column) {
@@ -776,7 +761,7 @@ final class GridView extends BaseListView
             $content .= $this->renderFilters();
         }
 
-        return "<thead>\n" . $content . "\n</thead>";
+        return "\n<thead>\n" . $content . "\n</thead>";
     }
 
     /**
@@ -810,6 +795,7 @@ final class GridView extends BaseListView
 
     private function renderToolbar(): string
     {
+        $html = '';
         $toolbar = '';
 
         foreach ($this->toolbar as $item) {
@@ -818,6 +804,10 @@ final class GridView extends BaseListView
             $toolbar .= $this->html->tag('div', $content, $options);
         }
 
-        return $this->html->tag('div', $toolbar, $this->toolbarOptions);
+        if ($toolbar !== '') {
+            $html = $this->html->tag('div', $toolbar, $this->toolbarOptions);
+        }
+
+        return $html;
     }
 }

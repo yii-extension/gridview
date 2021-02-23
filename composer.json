@@ -15,7 +15,6 @@
         "yiisoft/active-record": "^3.0@dev",
         "yiisoft/arrays": "^1.0",
         "yiisoft/factory": "^3.0@dev",
-        "yiisoft/form": "^1.0@dev",
         "yiisoft/html": "^3.0@dev",
         "yiisoft/router": "^3.0@dev",
         "yiisoft/router-fastroute": "^3.0@dev",

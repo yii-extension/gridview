@@ -10,8 +10,6 @@ use Yii\Extension\GridView\Widget\LinkSorter;
 use Yiisoft\ActiveRecord\ActiveQueryInterface;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Form\FormModel;
-use Yiisoft\Form\Widget\TextInput;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Strings\Inflector;
 
@@ -20,8 +18,9 @@ use Yiisoft\Strings\Inflector;
  *
  * It is used to show data columns and allows {@see enableSorting|sorting} and {@see filter|filtering} them.
  *
- * A simple data column definition refers to an attribute in the data arClass of the GridView's data provider. The name of
- * the attribute is specified by {@seee attribute}.
+ * A simple data column definition refers to an attribute in the data arClass of the GridView's data provider.
+ *
+ * The name of the attribute is specified by {@see attribute}.
  *
  * By setting {@see value} and {@see label}, the header and cell content can be customized.
  *
@@ -35,27 +34,181 @@ use Yiisoft\Strings\Inflector;
  */
 class DataColumn extends Column
 {
+    private string $attribute = '';
+    private bool $encodeLabel = true;
+    private bool $enableSorting = true;
+    private string $filter = '';
+    public string $filterAttribute = '';
+    private array $filterInputOptions = ['id' => null];
+    /** @var bool|float|int|string|null */
+    private $filterValueDefault = null;
+    private string $format = 'text';
+    private Inflector $inflector;
+    private array $sortLinkOptions = [];
+    /** @var string|Closure|null */
+    private $value;
+
+    public function __construct(Inflector $inflector, Html $html, UrlGeneratorInterface $urlGenerator)
+    {
+        parent::__construct($html, $urlGenerator);
+
+        $this->inflector = $inflector;
+        $this->html = $html;
+        $this->urlGenerator = $urlGenerator;
+    }
+
     /**
-     * @var string the attribute name associated with this column. When neither {@see content} nor {@see value} is
+     * @param string the attribute name associated with this column. When neither {@see content} nor {@see value} is
      * specified, the value of the specified attribute will be retrieved from each data arClass and displayed.
      *
      * Also, if {@see label} is not specified, the label associated with the attribute will be displayed.
+     *
+     * @return $this
      */
-    public string $attribute = '';
+    public function attribute(string $attribute): self
+    {
+        $this->attribute = $attribute;
+
+        return $this;
+    }
 
     /**
-     * @var bool whether the header label should be HTML-encoded.
+     * @param string the HTML code representing a filter input (e.g. a text field, a dropdown list) that is used for
+     * this data column. This property is effective only when {@see filterModel} is set.
+     *
+     * - If this property is not set, a text field will be generated as the filter input with attributes defined
+     *   with {@see filterInputOptions}. See {@see Html::activeInput} for details on how an active input tag is
+     *   generated.
+     * - If this property is an array, a dropdown list will be generated that uses this property value as the list
+     *   options.
+     * - If you don't want a filter for this data column, set this value to be false.
+     *
+     * @return $this
+     */
+    public function filter(string $filter): self
+    {
+        $this->filter = $filter;
+
+        return $this;
+    }
+
+    /**
+     * @param string the attribute name of the {@see filterModel} associated with this column. If not set, will have the
+     * same value as {@see attribute}.
+     *
+     * @return $this
+     */
+    public function filterAttribute(string $filterAttribute): self
+    {
+        $this->filterAttribute = $filterAttribute;
+
+        return $this;
+    }
+
+    /**
+     * @param array the HTML attributes for the filter input fields.
+     *
+     * This property is used in combination with the {@see filter} property. When {@see filter} is not set or is an
+     * array, this property will be used to render the HTML attributes for the generated filter input fields.
+     *
+     * Empty `id` in the default value ensures that id would not be obtained from the arClass attribute thus
+     * providing better performance.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function filterInputOptions(array $filterInputOptions)
+    {
+        $this->filterInputOptions = $filterInputOptions;
+
+        return $this;
+    }
+
+    /**
+     * Set filter value default text input field.
+     *
+     * @param bool|float|int|string|null $filterValueDefault
+     *
+     * @return $this
+     */
+    public function filterValueDefault($filterValueDefault): self
+    {
+        $this->filterValueDefault = $filterValueDefault;
+
+        return $this;
+    }
+
+    /**
+     * @param string in which format should the value of each data arClass be displayed as
+     * (e.g. `"raw"`, `"text"`, `"html"`).
+     *
+     * Supported formats are determined by the {@see formatter} used by the {@see GridView}.
+     *
+     * Default format is "text" which will format the value as an HTML-encoded plain text when {@see formatter} is used
+     * as the {@see formatter} of the GridView.
+     *
+     * @return $this
+     *
+     * {@see format()}
+     */
+    public function format(string $format): self
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    /**
+     * @param bool whether the header label should not be HTML-encoded.
+     *
+     * @return $this
      *
      * {@see label}
      */
-    public bool $encodeLabel = true;
+    public function notEncodeLabel(): self
+    {
+        $this->encodeLabel = false;
+
+        return $this;
+    }
 
     /**
-     * @var string|Closure an anonymous function or a string that is used to determine the value to display in the
-     * current column.
+     * @param bool whether to allow sorting by this column. If true and {@see attribute} is found in the sort definition
+     * of {@see dataProvider}, then the header cell of this column will contain a link that may trigger the sorting when
+     * being clicked.
+     *
+     * @return $this
+     */
+    public function notEnableSorting(): self
+    {
+        $this->enableSorting = false;
+
+        return $this;
+    }
+
+    /**
+     * @param array the HTML attributes for the link tag in the header cell enerated by {@see Sort::link} when sorting
+     * is enabled for this column.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function sortLinkOptions(array $sortLinkOptions): self
+    {
+        $this->sortLinkOptions = $sortLinkOptions;
+
+        return $this;
+    }
+
+    /**
+     * @param string|Closure|null $value an anonymous function or a string that is used to determine the value to
+     * display in the current column.
      *
      * If this is an anonymous function, it will be called for each row and the return value will be used as the value
      * to display for every data arClass. The signature of this function should be:
+     *
      * `function ($arClass, $key, $index, $column)`.
      *
      * Where `$arClass`, `$key`, and `$index` refer to the arClass, key and index of the row currently being rendered
@@ -67,84 +220,24 @@ class DataColumn extends Column
      *
      * If this is not set, `$arClass[$attribute]` will be used to obtain the value, where `$attribute` is the value of
      * {@see attribute}.
-     */
-    public $value;
-
-    /**
-     * @var string|array|Closure in which format should the value of each data arClass be displayed as
-     * (e.g. `"raw"`, `"text"`, `"html"`, `['date', 'php:Y-m-d']`). Supported formats are determined by the
-     * {@see GridView::formatter|formatter} used by the {@see GridView}. Default format is "text" which will format the
-     * value as an HTML-encoded plain text when [[\yii\i18n\Formatter]] is used as the
-     * {@see GridView::$formatter|formatter} of the GridView.
      *
-     * {@see \yii\i18n\Formatter::format()}
+     * @return $this
      */
-    public $format = 'text';
-
-    /**
-     * @var bool whether to allow sorting by this column. If true and {@see attribute} is found in the sort definition
-     * of {@see GridView::dataProvider}, then the header cell of this column will contain a link that may trigger the
-     * sorting when being clicked.
-     */
-    public bool $enableSorting = true;
-
-    /**
-     * @var array the HTML attributes for the link tag in the header cell enerated by [[\yii\data\Sort::link]] when
-     * sorting is enabled for this column.
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public array $sortLinkOptions = [];
-
-    /**
-     * @var string|array|null|false the HTML code representing a filter input (e.g. a text field, a dropdown list)
-     * that is used for this data column. This property is effective only when {@see GridView::filterModel} is set.
-     *
-     * - If this property is not set, a text field will be generated as the filter input with attributes defined
-     * with {@see filterInputOptions}. See {@see Html::activeInput} for details on how an active input tag is
-     * generated.
-     * - If this property is an array, a dropdown list will be generated that uses this property value as the list
-     * options.
-     * - If you don't want a filter for this data column, set this value to be false.
-     */
-    public $filter;
-
-    /**
-     * @var array the HTML attributes for the filter input fields. This property is used in combination with
-     * the [[filter]] property. When [[filter]] is not set or is an array, this property will be used to
-     * render the HTML attributes for the generated filter input fields.
-     *
-     * Empty `id` in the default value ensures that id would not be obtained from the arClass attribute thus
-     * providing better performance.
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public array $filterInputOptions = ['id' => null];
-
-    /**
-     * @var string|null the attribute name of the {@see GridView::filterModel} associated with this column. If not set,
-     * will have the same value as {@see attribute}.
-     */
-    public string $filterAttribute = '';
-
-    public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
+    public function value($value): self
     {
-        parent::__construct($html, $urlGenerator);
+        $this->value = $value;
 
-        $this->html = $html;
-        $this->urlGenerator = $urlGenerator;
+        return $this;
     }
 
     protected function renderHeaderCellContent(): string
     {
-        if ($this->label === '' && $this->attribute === '') {
-            return parent::renderHeaderCellContent();
+        if ($this->label === '') {
+            $this->label = parent::renderHeaderCellContent();
         }
 
-        $label = $this->label;
-
         if ($this->encodeLabel) {
-            $label = $this->html->encode($label);
+            $this->label = $this->html->encode($this->label);
         }
 
         $sort = $this->grid->getSort();
@@ -156,64 +249,35 @@ class DataColumn extends Column
                 ->pagination($this->grid->getPagination())
                 ->requestAttributes($this->grid->getRequestAttributes())
                 ->requestQueryParams($this->grid->getRequestQueryParams())
-                ->linkOptions(array_merge($this->sortLinkOptions, ['label' => $label]))
+                ->linkOptions(array_merge($this->sortLinkOptions, ['label' => $this->label]))
                 ->sort($sort)
                 ->render();
         }
 
-        return $label;
+        return $this->label;
     }
 
     protected function getHeaderCellLabel(): string
     {
-        return $this->label !== '' ? $this->label : (new Inflector())->toPascalCase($this->attribute) ;
+        return $this->label !== '' ? $this->label : $this->inflector->toHumanReadable($this->attribute) ;
     }
 
     protected function renderFilterCellContent(): string
     {
-        if ($this->filterAttribute === '') {
-            $this->filterAttribute = $this->attribute;
-        }
-
-        if (is_string($this->filter)) {
+        if ($this->filter !== '') {
             return $this->filter;
         }
 
-        $arClass = $this->grid->getFilterModel();
-
-        if (
-            $this->filter !== false &&
-            $arClass instanceof FormModel &&
-            $this->filterAttribute !== '' &&
-            $arClass->isAttributeActive($this->filterAttribute)
-        ) {
-            if ($arClass->hasErrors($this->filterAttribute)) {
-                Html::addCssClass($this->filterOptions, 'has-error');
-                $error = ' ' . Html::error($arClass, $this->filterAttribute, $this->grid->getFilterErrorOptions());
-            } else {
-                $error = '';
-            }
-
-            if (is_array($this->filter)) {
-                $options = array_merge(['prompt' => ''], $this->filterInputOptions);
-                return Html::activeDropDownList($arClass, $this->filterAttribute, $this->filter, $options) . $error;
-            } elseif ($this->format === 'boolean') {
-                $options = array_merge(['prompt' => ''], $this->filterInputOptions);
-                return Html::activeDropDownList($arClass, $this->filterAttribute, [
-                    1 => $this->grid->formatter->booleanFormat[1],
-                    0 => $this->grid->formatter->booleanFormat[0],
-                ], $options) . $error;
-            }
-
-            $options = array_merge(['maxlength' => true], $this->filterInputOptions);
-
+        if ($this->filterAttribute !== '') {
             if ($this->grid->getFrameworkCss() === 'bulma') {
-                $this->html->AddCssClass($options, ['input' => 'input']);
+                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'input']);
             } else {
-                $this->html->AddCssClass($options, ['input' => 'form-control']);
+                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'form-control']);
             }
 
-            return TextInput::widget()->config($arClass, $this->filterAttribute, $options)->render();
+            $name = $this->html->getInputName($this->grid->getFilterModelName(), $this->filterAttribute);
+
+            return $this->html->textInput($name, $this->filterValueDefault, $this->filterInputOptions);
         }
 
         return parent::renderFilterCellContent();
@@ -221,26 +285,27 @@ class DataColumn extends Column
 
     /**
      * Returns the data cell value.
-     * @param mixed $arClass the data arClass
+     *
+     * @param array|object $arClass the data arClass
      * @param mixed $key the key associated with the data arClass
      * @param int $index the zero-based index of the data arClass among the active record classes array returned by
      * {@see GridView::dataProvider}.
      *
      * @return string the data cell value
      */
-    public function getDataCellValue($arClass, $key, int $index): ?string
+    public function getDataCellValue($arClass, $key, int $index): string
     {
         if ($this->value !== null) {
             if (is_string($this->value)) {
-                return ArrayHelper::getValue($arClass, $this->value);
+                return (string) ArrayHelper::getValue($arClass, $this->value);
             }
 
-            return call_user_func($this->value, $arClass, $key, $index, $this);
-        } elseif ($this->attribute !== null) {
+            return (string) call_user_func($this->value, $arClass, $key, $index, $this);
+        } elseif ($this->attribute !== '') {
             return (string) ArrayHelper::getValue($arClass, $this->attribute);
         }
 
-        return null;
+        return '';
     }
 
     /**

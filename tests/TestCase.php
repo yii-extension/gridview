@@ -9,6 +9,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use ReflectionClass;
+use ReflectionObject;
 use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\CheckboxColumn;
 use Yii\Extension\GridView\Column\DataColumn;
@@ -89,8 +91,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function createGridView(
         array $columns = [],
-        int $currentPage = 0,
-        int $pageSize = 0,
+        int $currentPage = 1,
+        int $pageSize = 10,
         string $frameworkCss = 'bootstrap'
     ): GridView {
         return GridView::widget()
@@ -114,6 +116,65 @@ class TestCase extends \PHPUnit\Framework\TestCase
         ];
 
         return $data;
+    }
+
+    /**
+     * Gets an inaccessible object property.
+     *
+     * @param object $object
+     * @param string $propertyName
+     * @param bool $revoke whether to make property inaccessible after getting.
+     *
+     * @return mixed
+     */
+    protected function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true)
+    {
+        $class = new ReflectionClass($object);
+
+        while (!$class->hasProperty($propertyName)) {
+            $class = $class->getParentClass();
+        }
+
+        $property = $class->getProperty($propertyName);
+
+        $property->setAccessible(true);
+
+        $result = $property->getValue($object);
+
+        if ($revoke) {
+            $property->setAccessible(false);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Invokes a inaccessible method.
+     *
+     * @param $object
+     * @param $method
+     * @param array $args
+     * @param bool $revoke whether to make method inaccessible after execution
+     *
+     * @throws ReflectionException
+     *
+     * @return mixed
+     */
+    protected function invokeMethod($object, $method, $args = [], $revoke = true)
+    {
+        $reflection = new ReflectionObject($object);
+
+        $method = $reflection->getMethod($method);
+
+        $method->setAccessible(true);
+
+        $result = $method->invokeArgs($object, $args);
+
+        if ($revoke) {
+            $method->setAccessible(false);
+        }
+
+        return $result;
     }
 
     private function configContainer(): void

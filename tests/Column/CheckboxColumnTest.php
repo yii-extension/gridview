@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Tests\Column;
 
 use Yii\Extension\GridView\Column\CheckboxColumn;
-use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Tests\TestCase;
 
