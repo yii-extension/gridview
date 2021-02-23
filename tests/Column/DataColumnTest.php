@@ -7,6 +7,7 @@ namespace Yii\Extension\GridView\Tests\Column;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
+use Yii\Extension\GridView\Gridview;
 use Yii\Extension\GridView\Tests\TestCase;
 
 final class DataColumnTest extends TestCase
@@ -46,6 +47,8 @@ final class DataColumnTest extends TestCase
 
     public function testFilter(): void
     {
+        GridView::counter(0);
+
         $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
         $dataProvider->allData($this->getArrayData());
 
@@ -62,7 +65,7 @@ final class DataColumnTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->filterModelName('testMe');
 
         $html = <<<'HTML'
-        <div id="w2-gridview" class="grid-view">
+        <div id="w1-gridview" class="grid-view">
 
         <table class="table">
         <thead>
@@ -88,6 +91,8 @@ final class DataColumnTest extends TestCase
 
     public function testFilterInputOptions(): void
     {
+        GridView::counter(0);
+
         $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
         $dataProvider->allData($this->getArrayData());
 
@@ -105,7 +110,7 @@ final class DataColumnTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->filterModelName('testMe');
 
         $html = <<<'HTML'
-        <div id="w3-gridview" class="grid-view">
+        <div id="w1-gridview" class="grid-view">
 
         <table class="table">
         <thead>
@@ -131,6 +136,8 @@ final class DataColumnTest extends TestCase
 
     public function testFilterValueDefault(): void
     {
+        GridView::counter(0);
+
         $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
         $dataProvider->allData($this->getArrayData());
 
@@ -147,7 +154,7 @@ final class DataColumnTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->filterModelName('testMe');
 
         $html = <<<'HTML'
-        <div id="w4-gridview" class="grid-view">
+        <div id="w1-gridview" class="grid-view">
 
         <table class="table">
         <thead>
