@@ -677,7 +677,7 @@ final class DataColumnTest extends TestCase
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
 
         $request = new ServerRequest('GET', '/admin/index');
         $this->urlMatcher->match($request);
@@ -714,7 +714,7 @@ final class DataColumnTest extends TestCase
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testNotVisible(): void
@@ -778,7 +778,7 @@ final class DataColumnTest extends TestCase
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testValue(): void
@@ -823,7 +823,7 @@ final class DataColumnTest extends TestCase
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
 
         $dataProvider = new ArrayDataProvider();
         $dataProvider->allData($this->getArrayData());
@@ -862,6 +862,6 @@ final class DataColumnTest extends TestCase
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 }
