@@ -18,7 +18,7 @@ final class ActionColumnTest extends TestCase
     {
         $gridView = $this->createGridView();
 
-        $dataProvider = new ArrayDataProvider($this->pagination, $this->sort);
+        $dataProvider = new ArrayDataProvider();
         $dataProvider->allData($this->getArrayData());
 
         $gridView->dataProvider($dataProvider);

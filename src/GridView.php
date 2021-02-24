@@ -566,12 +566,18 @@ final class GridView extends BaseListView
                 $column = $this->createDataColumn($column);
             } else {
                 $buttons = null;
+                $content = null;
                 $value = null;
                 $visibleButtons = null;
 
                 if (isset($column['buttons'])) {
                     $buttons = $column['buttons'];
                     unset($column['buttons']);
+                }
+
+                if (isset($column['content'])) {
+                    $content = $column['content'];
+                    unset($column['content']);
                 }
 
                 if (isset($column['value'])) {
@@ -596,6 +602,10 @@ final class GridView extends BaseListView
 
                 if ($buttons !== null) {
                     $column->buttons($buttons);
+                }
+
+                if ($content !== null) {
+                    $column->content($content);
                 }
 
                 if ($value !== null) {

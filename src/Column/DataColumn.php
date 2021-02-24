@@ -180,7 +180,7 @@ class DataColumn extends Column
      *
      * @return $this
      */
-    public function notEnableSorting(): self
+    public function notSorting(): self
     {
         $this->enableSorting = false;
 
@@ -320,10 +320,10 @@ class DataColumn extends Column
      */
     protected function renderDataCellContent($arClass, $key, int $index): string
     {
-        if ($this->content === null) {
-            return $this->getDataCellValue($arClass, $key, $index);
+        if (!empty($this->content)) {
+            return parent::renderDataCellContent($arClass, $key, $index);
         }
 
-        return parent::renderDataCellContent($arClass, $key, $index);
+        return $this->getDataCellValue($arClass, $key, $index);
     }
 }

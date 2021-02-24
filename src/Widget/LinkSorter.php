@@ -34,7 +34,6 @@ final class LinkSorter extends Widget
     private string $attribute = '';
     private string $frameworkCss = self::BOOTSTRAP;
     private array $linkOptions = [];
-    private array $options = [];
     private string $pageAttribute = 'page';
     private string $pageSizeAttribute = 'pagesize';
     private array $requestAttributes = [];
@@ -109,20 +108,6 @@ final class LinkSorter extends Widget
     {
         $new = clone $this;
         $new->linkOptions = $linkOptions;
-
-        return $new;
-    }
-
-    /**
-     * @param array $options HTML attributes for the sorter container tag.
-     *
-     * {@see Html::ul()} for special attributes.
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function options(array $options): self
-    {
-        $new = clone $this;
-        $new->options = $options;
 
         return $new;
     }
@@ -247,7 +232,6 @@ final class LinkSorter extends Widget
      */
     private function createUrl(string $attribute, bool $absolute = false): string
     {
-        $action = '';
         $page = $this->pagination->getCurrentPage();
         $pageSize = $this->pagination->getPageSize();
 
@@ -295,20 +279,20 @@ final class LinkSorter extends Widget
 
         if ($direction !== null) {
             $sorterClass = $direction === SORT_DESC ? 'desc' : 'asc';
-            if (isset($this->options['class'])) {
-                $this->options['class'] .= ' ' . $sorterClass;
+            if (isset($this->linkOptions['class'])) {
+                $this->linkOptions['class'] .= ' ' . $sorterClass;
             } else {
-                $this->options['class'] = $sorterClass;
+                $this->linkOptions['class'] = $sorterClass;
             }
         }
 
         $url = $this->createUrl($this->attribute);
 
-        $this->options['data-sort'] = $this->createSorterParam($this->attribute);
+        $this->linkOptions['data-sort'] = $this->createSorterParam($this->attribute);
 
-        if (isset($this->options['label'])) {
-            $label = $this->inflector->toHumanReadable($this->options['label']);
-            unset($this->options['label']);
+        if (isset($this->linkOptions['label'])) {
+            $label = $this->inflector->toHumanReadable($this->linkOptions['label']);
+            unset($this->linkOptions['label']);
         } elseif (isset($attributes[$this->attribute]['label'])) {
             $label = $this->inflector->toHumanReadable($attributes[$this->attribute]['label']);
         } else {
@@ -316,9 +300,9 @@ final class LinkSorter extends Widget
         }
 
         if ($this->frameworkCss === self::BULMA) {
-            $this->html->addCssClass($this->options, ['link' => 'has-text-link']);
+            $this->html->addCssClass($this->linkOptions, ['link' => 'has-text-link']);
         }
 
-        return $this->html->a($label, $url, $this->options);
+        return $this->html->a($label, $url, $this->linkOptions);
     }
 }

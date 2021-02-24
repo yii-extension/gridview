@@ -50,6 +50,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected Html $html;
     protected Pagination $pagination;
     protected Sort $sort;
+    protected UrlMatcherInterface $urlMacther;
     private ContainerInterface $container;
 
     protected function setUp(): void
@@ -189,6 +190,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->html = $this->container->get(Html::class);
         $this->pagination = $this->container->get(Pagination::class);
         $this->sort = $this->container->get(Sort::class);
+        $this->urlMatcher = $this->container->get(UrlMatcherInterface::class);
     }
 
     private function config(): array
@@ -219,6 +221,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
             RouteCollectorInterface::class => Group::create(
                 null,
                 [
+                    Route::methods(['GET', 'POST'], '/admin/index', [TestDelete::class, 'run'])
+                        ->name('admin'),
                     Route::methods(['GET', 'POST'], '/admin/delete[/{id}]', [TestDelete::class, 'run'])
                         ->name('delete'),
                     Route::methods(['GET', 'POST'], '/admin/update[/{id}]', [TestUpdate::class, 'run'])

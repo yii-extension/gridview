@@ -141,13 +141,14 @@ final class CheckboxColumn extends Column
      */
     protected function renderDataCellContent($arClass, $key, int $index): string
     {
-        if ($this->content !== null) {
+        if (!empty($this->content)) {
             return parent::renderDataCellContent($arClass, $key, $index);
         }
 
         $options = $this->checkboxOptions;
 
         if (!isset($options['value'])) {
+            /** @var mixed */
             $options['value'] = is_array($key) ? Json::encode($key) : $key;
         }
 

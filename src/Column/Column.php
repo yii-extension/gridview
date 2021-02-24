@@ -17,6 +17,11 @@ use Yiisoft\Router\UrlGeneratorInterface;
  */
 class Column
 {
+    /**
+     * @var callable
+     *
+     * @psalm-suppress PropertyNotSetInConstructor
+     */
     protected $content;
     protected array $contentOptions = [];
     protected array $filterOptions = [];
@@ -27,9 +32,9 @@ class Column
     protected GridView $grid;
     protected string $label = '';
     protected array $labelOptions = [];
-    protected array $options = [];
     protected UrlGeneratorInterface $urlGenerator;
     protected bool $visible = true;
+    private string $dataLabel = '';
 
     public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
@@ -49,10 +54,9 @@ class Column
      */
     public function content(callable $content): self
     {
-        $new = clone $this;
-        $new->content = $content;
+        $this->content = $content;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -64,10 +68,16 @@ class Column
      */
     public function contentOptions(array $contentOptions): self
     {
-        $new = clone $this;
-        $new->contentOptions = $contentOptions;
+        $this->contentOptions = $contentOptions;
 
-        return $new;
+        return $this;
+    }
+
+    public function dataLabel(string $dataLabel): self
+    {
+        $this->dataLabel = $dataLabel;
+
+        return $this;
     }
 
     /**
@@ -79,10 +89,9 @@ class Column
      */
     public function filterOptions(array $filterOptions): self
     {
-        $new = clone $this;
-        $new->filterOptions = $filterOptions;
+        $this->filterOptions = $filterOptions;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -92,10 +101,9 @@ class Column
      */
     public function footer(string $footer)
     {
-        $new = clone $this;
-        $new->footer = $footer;
+        $this->footer = $footer;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -107,10 +115,9 @@ class Column
      */
     public function footerOptions(array $footerOptions)
     {
-        $new = clone $this;
-        $new->footerOptions = $footerOptions;
+        $this->footerOptions = $footerOptions;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -120,10 +127,9 @@ class Column
      */
     public function grid(GridView $grid): self
     {
-        $new = clone $this;
-        $new->grid = $grid;
+        $this->grid = $grid;
 
-        return $new;
+        return $this;
     }
 
     public function isVisible(): bool
@@ -143,10 +149,9 @@ class Column
      */
     public function label(string $label): self
     {
-        $new = clone $this;
-        $new->label = $label;
+        $this->label = $label;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -158,10 +163,9 @@ class Column
      */
     public function labelOptions(array $labelOptions): self
     {
-        $new = clone $this;
-        $new->labelOptions = $labelOptions;
+        $this->labelOptions = $labelOptions;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -171,25 +175,9 @@ class Column
      */
     public function notVisible(): self
     {
-        $new = clone $this;
-        $new->visible = false;
+        $this->visible = false;
 
-        return $new;
-    }
-
-    /**
-     * @param array the HTML attributes for the column group tag.
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function options(array $options)
-    {
-        $new = clone $this;
-        $new->options = $options;
-
-        return $new;
+        return $this;
     }
 
     /**
@@ -211,18 +199,23 @@ class Column
     /**
      * Renders a data cell.
      *
-     * @param mixed $arClass the data arClass being rendered
-     * @param mixed $key the key associated with the data arClass
+     * @param array|object $arClass the data arClass being rendered.
+     * @param mixed $key the key associated with the data arClass.
      * @param int $index the zero-based index of the data item among the item array returned by
      * {@see GridView::dataProvider}.
      *
-     * @return string the rendering result
      * @throws JsonException
+     *
+     * @return string the rendering result.
      */
     public function renderDataCell($arClass, $key, int $index): string
     {
-        if ($this->label !== '') {
-            $this->contentOptions = array_merge($this->contentOptions, ['data-label' => $this->label]);
+        if ($this->dataLabel === '') {
+            $this->dataLabel = $this->label;
+        }
+
+        if ($this->dataLabel !== '') {
+            $this->contentOptions = array_merge($this->contentOptions, ['data-label' => $this->dataLabel]);
         }
 
         return $this->html->tag(
@@ -291,11 +284,13 @@ class Column
      */
     protected function renderDataCellContent($arClass, $key, int $index): string
     {
-        if ($this->content !== null) {
-            return call_user_func($this->content, $arClass, $key, $index, $this);
+        $html = $this->grid->getEmptyCell();
+
+        if (!empty($this->content)) {
+            $html = (string) call_user_func($this->content, $arClass, $key, $index, $this);
         }
 
-        return $this->grid->getEmptyCell();
+        return $html;
     }
 
     /**
