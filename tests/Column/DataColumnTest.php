@@ -127,7 +127,7 @@ final class DataColumnTest extends TestCase
         $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
-    public function testContentIsNull(): void
+    public function testContentIsEmpty(): void
     {
         GridView::counter(0);
 

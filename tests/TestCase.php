@@ -13,7 +13,7 @@ use ReflectionClass;
 use ReflectionObject;
 use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\CheckboxColumn;
-use Yii\Extension\GridView\Column\DataColumn;
+use Yii\Extension\GridView\Column\RadioButtonColumn;
 use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
@@ -46,9 +46,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected ActionColumn $actionColumn;
     protected CheckboxColumn $checkboxColumn;
-    protected DataColumn $dataColumn;
     protected Html $html;
     protected Pagination $pagination;
+    protected RadioButtonColumn $radioButtonColumn;
     protected Sort $sort;
     protected UrlMatcherInterface $urlMacther;
     private ContainerInterface $container;
@@ -68,9 +68,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->actionColumn,
             $this->checkBoxColumn,
             $this->container,
-            $this->dataColumn,
             $this->html,
             $this->pagination,
+            $this->radioButtonColumn,
             $this->sort,
         );
     }
@@ -186,9 +186,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->actionColumn = $this->container->get(ActionColumn::class);
         $this->checkboxColumn = $this->container->get(CheckboxColumn::class);
-        $this->dataColumn = $this->container->get(DataColumn::class);
         $this->html = $this->container->get(Html::class);
         $this->pagination = $this->container->get(Pagination::class);
+        $this->radioButtonColumn = $this->container->get(RadioButtonColumn::class);
         $this->sort = $this->container->get(Sort::class);
         $this->urlMatcher = $this->container->get(UrlMatcherInterface::class);
     }

@@ -32,7 +32,7 @@ use Yiisoft\Strings\Inflector;
  * For more details and usage information on DataColumn, see the:
  * [guide article on data widgets](guide:output-data-widgets).
  */
-class DataColumn extends Column
+final class DataColumn extends Column
 {
     private string $attribute = '';
     private bool $encodeLabel = true;
