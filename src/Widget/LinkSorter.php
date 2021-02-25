@@ -35,6 +35,7 @@ final class LinkSorter extends Widget
     private string $frameworkCss = self::BOOTSTRAP;
     private array $linkOptions = [];
     private string $pageAttribute = 'page';
+    private int $pageSize = Pagination::DEFAULT_PAGE_SIZE;
     private string $pageSizeAttribute = 'pagesize';
     private array $requestAttributes = [];
     private array $requestQueryParams = [];
@@ -42,7 +43,9 @@ final class LinkSorter extends Widget
     private bool $urlAbsolute = false;
     private Html $html;
     private Inflector $inflector;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private Pagination $pagination;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private Sort $sort;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -66,10 +69,6 @@ final class LinkSorter extends Widget
      */
     protected function run(): string
     {
-        if ($this->sort === null) {
-            throw new InvalidConfigException('The "sort" property must be set.');
-        }
-
         return $this->renderSorterLink();
     }
 
@@ -135,7 +134,7 @@ final class LinkSorter extends Widget
         return $new;
     }
 
-    public function pageSize(string $pageSize): self
+    public function pageSize(int $pageSize): self
     {
         $new = clone $this;
         $new->pageSize = $pageSize;
@@ -186,6 +185,7 @@ final class LinkSorter extends Widget
             throw new InvalidConfigException("Unknown attribute: $attribute");
         }
 
+        /** @var array */
         $definition = $attributes[$attribute];
 
         $directions = $this->sort->getAttributeOrders();
@@ -194,6 +194,7 @@ final class LinkSorter extends Widget
             $direction = $directions[$attribute] === SORT_DESC ? SORT_ASC : SORT_DESC;
             unset($directions[$attribute]);
         } else {
+            /** @var int */
             $direction = $definition['default'] ?? SORT_ASC;
         }
 
@@ -205,6 +206,7 @@ final class LinkSorter extends Widget
 
         $sorts = [];
 
+        /** @var array<string, int> $directions */
         foreach ($directions as $attribute => $direction) {
             $sorts[] = $direction === SORT_DESC ? '-' . $attribute : $attribute;
         }
@@ -232,8 +234,10 @@ final class LinkSorter extends Widget
      */
     private function createUrl(string $attribute, bool $absolute = false): string
     {
+        $action = '';
         $page = $this->pagination->getCurrentPage();
         $pageSize = $this->pagination->getPageSize();
+        $linkSorterQueryParams = [];
 
         $linkPagerAttributes = [$this->pageAttribute => $page, $this->pageSizeAttribute => $pageSize];
         $linkSorterQueryParams[$this->sort->getSortParam()] = $this->createSorterParam($attribute);
@@ -279,7 +283,7 @@ final class LinkSorter extends Widget
 
         if ($direction !== null) {
             $sorterClass = $direction === SORT_DESC ? 'desc' : 'asc';
-            if (isset($this->linkOptions['class'])) {
+            if (isset($this->linkOptions['class']) && is_string($this->linkOptions['class'])) {
                 $this->linkOptions['class'] .= ' ' . $sorterClass;
             } else {
                 $this->linkOptions['class'] = $sorterClass;
@@ -291,10 +295,10 @@ final class LinkSorter extends Widget
         $this->linkOptions['data-sort'] = $this->createSorterParam($this->attribute);
 
         if (isset($this->linkOptions['label'])) {
-            $label = $this->inflector->toHumanReadable($this->linkOptions['label']);
+            $label = $this->inflector->toHumanReadable((string) $this->linkOptions['label']);
             unset($this->linkOptions['label']);
         } elseif (isset($attributes[$this->attribute]['label'])) {
-            $label = $this->inflector->toHumanReadable($attributes[$this->attribute]['label']);
+            $label = $this->inflector->toHumanReadable((string) $attributes[$this->attribute]['label']);
         } else {
             $label = $this->inflector->toHumanReadable($this->attribute);
         }

@@ -31,10 +31,12 @@ abstract class BaseListView extends Widget
     protected string $emptyText = 'No results found.';
     protected string $layout = "{items}\n{summary}\n{pager}";
     protected array $options = [];
+    /** @psalm-suppress PropertyNotSetInConstructor */
     protected DataProviderInterface $dataProvider;
     protected GridViewFactory $gridViewFactory;
     protected Html $html;
     protected TranslatorInterface $translator;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     protected Pagination $pagination;
     private const FRAMEWORKCSS = [
         self::BOOTSTRAP,
@@ -76,9 +78,9 @@ abstract class BaseListView extends Widget
         }
 
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
-            $content = preg_replace_callback('/{\\w+}/', function ($matches) {
+            $content = preg_replace_callback('/{\\w+}/', function (array $matches): string {
 
-                $content = $this->renderSection($matches[0]);
+                $content = $this->renderSection((string) $matches[0]);
 
                 return $content;
             }, $this->layout);
@@ -87,6 +89,8 @@ abstract class BaseListView extends Widget
         }
 
         $options = $this->options;
+
+        /** @var string */
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
         $html = $this->html->tag($tag, $content, $options);
@@ -350,6 +354,8 @@ abstract class BaseListView extends Widget
         }
 
         $options = $this->emptyTextOptions;
+
+        /** @var string */
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
         return $this->html->tag($tag, $this->emptyText, $options);
@@ -391,7 +397,7 @@ abstract class BaseListView extends Widget
     {
         $pagination = $this->dataProvider->getPagination();
 
-        if ($pagination === null || $this->dataProvider->getCount() < 0) {
+        if ($this->dataProvider->getCount() < 0) {
             return '';
         }
 
@@ -414,7 +420,7 @@ abstract class BaseListView extends Widget
     {
         $sort = $this->dataProvider->getSort();
 
-        if ($sort === null || empty($sort->getAttributeOrders()) || $this->dataProvider->getCount() <= 0) {
+        if (empty($sort->getAttributeOrders()) || $this->dataProvider->getCount() <= 0) {
             return '';
         }
 
@@ -432,23 +438,20 @@ abstract class BaseListView extends Widget
 
         $summaryOptions = $this->summaryOptions;
         $summaryOptions['encode'] = false;
+
+        /** @var string */
         $tag = ArrayHelper::remove($summaryOptions, 'tag', 'div');
 
-        if ($pagination) {
-            $totalCount = $this->dataProvider->getTotalCount();
-            $begin = ($pagination->getOffset() + 1);
-            $end = $begin + $count - 1;
+        $totalCount = $this->dataProvider->getTotalCount();
+        $begin = ($pagination->getOffset() + 1);
+        $end = $begin + $count - 1;
 
-            if ($begin > $end) {
-                $begin = $end;
-            }
-
-            $page = $pagination->getCurrentPage();
-            $pageCount = $pagination->getTotalPages();
-        } else {
-            $begin = $page = $pageCount = 1;
-            $end = $totalCount = $count;
+        if ($begin > $end) {
+            $begin = $end;
         }
+
+        $page = $pagination->getCurrentPage();
+        $pageCount = $pagination->getTotalPages();
 
         return $this->html->tag(
             $tag,

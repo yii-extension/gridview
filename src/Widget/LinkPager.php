@@ -64,12 +64,14 @@ final class LinkPager extends Widget
     private bool $hideOnSinglePage = true;
     private int $maxButtonCount = 10;
     private string $pageAttribute = 'page';
+    private int $pageSize = Pagination::DEFAULT_PAGE_SIZE;
     private string $pageSizeAttribute = 'pagesize';
     private bool $registerLinkTags = false;
     private array $requestAttributes = [];
     private array $requestQueryParams = [];
     private bool $urlAbsolute = false;
     private Html $html;
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private Pagination $pagination;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
@@ -100,10 +102,6 @@ final class LinkPager extends Widget
     {
         $html = '';
         $this->buildWidget();
-
-        if ($this->pagination === null) {
-            throw new InvalidConfigException('The "pagination" property must be set.');
-        }
 
         if ($this->registerLinkTags) {
             $this->registerLinkTagsInternal();
@@ -358,7 +356,7 @@ final class LinkPager extends Widget
         return $new;
     }
 
-    public function pageSize(string $pageSize): self
+    public function pageSize(int $pageSize): self
     {
         $new = clone $this;
         $new->pageSize = $pageSize;
@@ -508,6 +506,7 @@ final class LinkPager extends Widget
      */
     private function registerLinkTagsInternal(): void
     {
+        /** @var array */
         foreach ($this->createLinks() as $rel => $href) {
             $this->webView->registerLinkTag(['rel' => $rel, 'href' => $href]);
         }
@@ -556,7 +555,12 @@ final class LinkPager extends Widget
             );
         }
 
-        /* buttons pages */
+        /**
+         * buttons pages
+         *
+         * @var int $beginPage
+         * @var int $endPage
+         */
         [$beginPage, $endPage] = $this->getPageRange();
         $this->html->addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
 
@@ -595,6 +599,7 @@ final class LinkPager extends Widget
             );
         }
 
+        /** @var string */
         $tag = ArrayHelper::remove($this->ulAttributes, 'tag', 'ul');
 
         return
@@ -647,7 +652,12 @@ final class LinkPager extends Widget
             );
         }
 
-        /* link buttons pages */
+        /**
+         * link buttons pages
+         *
+         * @var int $beginPage
+         * @var int $endPage
+         */
         [$beginPage, $endPage] = $this->getPageRange();
         $this->html->addCssClass($this->buttonsContainerAttributes, $this->pageCssClass);
 
@@ -686,6 +696,7 @@ final class LinkPager extends Widget
             );
         }
 
+        /** @var string */
         $tag = ArrayHelper::remove($this->ulAttributes, 'tag', 'ul');
 
         return
@@ -716,6 +727,7 @@ final class LinkPager extends Widget
         bool $disabled = false,
         bool $active = false
     ): string {
+        /** @var string */
         $linkWrapTag = ArrayHelper::remove($buttonsAttributes, 'tag', 'li');
         $linkAttributes = $this->linkAttributes;
         $linkAttributes['data-page'] = $page;

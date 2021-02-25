@@ -69,37 +69,4 @@ abstract class Widget extends BaseWidget
 
         return $this->id;
     }
-
-    /**
-     * Validate CSS class default options.
-     *
-     * @param array $options
-     * @param string $defaultClass
-     *
-     * @return array
-     */
-    protected function addOptions(array $options, string $defaultClass): array
-    {
-        $class = '';
-
-        if (isset($options['class'])) {
-            $class = $options['class'];
-            unset($options['class']);
-
-            if (is_array($class)) {
-                $class = implode(' ', $class);
-            }
-        }
-
-        /** @psalm-var string $class */
-        if (strpos($class, $defaultClass) === false) {
-            Html::addCssClass($options, $defaultClass);
-        }
-
-        if (!empty($class)) {
-            Html::addCssClass($options, $class);
-        }
-
-        return $options;
-    }
 }
