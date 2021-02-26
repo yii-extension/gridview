@@ -6,7 +6,6 @@
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yii-extension/gridview/v/stable.png)](https://packagist.org/packages/yii-extension/gridview)
 [![Total Downloads](https://poser.pugx.org/yii-extension/gridview/downloads.png)](https://packagist.org/packages/yii-extension/gridview)
 [![Build Status](https://github.com/yii-extension/gridview/workflows/build/badge.svg)](https://github.com/yii-extension/gridview/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/yii-extension/gridview/branch/master/graph/badge.svg?token=FJD9AADHHD)](https://codecov.io/gh/yii-extension/gridview)
