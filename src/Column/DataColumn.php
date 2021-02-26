@@ -7,8 +7,6 @@ namespace Yii\Extension\GridView\Column;
 use Closure;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Widget\LinkSorter;
-use Yiisoft\ActiveRecord\ActiveQueryInterface;
-use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Strings\Inflector;
@@ -45,7 +43,7 @@ final class DataColumn extends Column
     private string $format = 'text';
     private Inflector $inflector;
     private array $sortLinkOptions = [];
-    /** @var string|Closure|null */
+    /** @var Closure|string|null */
     private $value;
 
     public function __construct(Inflector $inflector, Html $html, UrlGeneratorInterface $urlGenerator)
@@ -177,7 +175,8 @@ final class DataColumn extends Column
             }
 
             return (string) call_user_func($this->value, $arClass, $key, $index, $this);
-        } elseif ($this->attribute !== '') {
+        }
+        if ($this->attribute !== '') {
             return (string) ArrayHelper::getValue($arClass, $this->attribute);
         }
 
@@ -228,7 +227,7 @@ final class DataColumn extends Column
     }
 
     /**
-     * @param string|Closure|null $value an anonymous function or a string that is used to determine the value to
+     * @param Closure|string|null $value an anonymous function or a string that is used to determine the value to
      * display in the current column.
      *
      * If this is an anonymous function, it will be called for each row and the return value will be used as the value

@@ -46,7 +46,7 @@ final class ArrayDataProvider extends DataProvider
 {
     /** @var array<array-key,array> */
     private array $allData;
-    /** @var string|callable */
+    /** @var callable|string */
     private $key;
     private Sort $sort;
 
@@ -73,7 +73,7 @@ final class ArrayDataProvider extends DataProvider
     }
 
     /**
-     * @param string|callable $key the column that is used as the key of the data.
+     * @param callable|string $key the column that is used as the key of the data.
      *
      * This can be either a column name, or a callable that returns the key value of a given data model.
      *
@@ -121,7 +121,7 @@ final class ArrayDataProvider extends DataProvider
                     $keys[] = $arClass[$this->key];
                 } else {
                     /** @var mixed */
-                    $keys[] = call_user_func($this->key, $arClass);
+                    $keys[] = ($this->key)($arClass);
                 }
             }
 

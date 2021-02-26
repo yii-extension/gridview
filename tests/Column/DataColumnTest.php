@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Tests\Column;
 
 use Nyholm\Psr7\ServerRequest;
-use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
-use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Tests\TestCase;
 
@@ -98,7 +96,7 @@ final class DataColumnTest extends TestCase
             'username',
             [
                 'attribute()' => ['total'],
-                'content' => static fn ($arClass) => ($arClass['total'] * 20)/100
+                'content' => static fn ($arClass) => ($arClass['total'] * 20)/100,
             ],
         ]);
         $gridView = $gridView->dataProvider($dataProvider);
@@ -607,7 +605,7 @@ final class DataColumnTest extends TestCase
                     'attribute()' => ['id'],
                     'label()' => ['<i class="fas fa-home>id</id>'],
                     'dataLabel()' => ['id'],
-                    'notEncodeLabel()' => []
+                    'notEncodeLabel()' => [],
                 ],
                 ['attribute()' => ['username']],
             ]
@@ -752,7 +750,7 @@ final class DataColumnTest extends TestCase
             [
                 ['attribute()' => ['id'], 'sortLinkOptions()' => [['class' => 'testMe']]],
                 'username',
-                'total'
+                'total',
             ]
         );
         $gridView = $gridView->dataProvider($dataProvider);

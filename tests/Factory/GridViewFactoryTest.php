@@ -12,7 +12,6 @@ use Yii\Extension\GridView\Column\Column;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\Column\RadioButtonColumn;
 use Yii\Extension\GridView\Column\SerialColumn;
-use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Tests\TestCase;
 
 final class GridViewFactoryTest extends TestCase
