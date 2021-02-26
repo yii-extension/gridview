@@ -6,7 +6,6 @@ namespace Yii\Extension\GridView\Helper;
 
 use InvalidArgumentException;
 use JsonException;
-use UnexpectedValueException;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Json\Json;
 
@@ -133,7 +132,7 @@ final class Html
     public function addCssClass(array &$options, $class): void
     {
         if (isset($options['class'])) {
-            /** @var string[]|string */
+            /** @var string|string[] */
             $classOptions = $options['class'];
 
             if (is_array($classOptions)) {
@@ -221,7 +220,7 @@ final class Html
      * Generates a drop-down list.
      *
      * @param string $name the input name.
-     * @param string|array|null $selection the selected value(s). String for single or array for multiple selection(s).
+     * @param array|string|null $selection the selected value(s). String for single or array for multiple selection(s).
      * @param array $items the option data items. The array keys are option values, and the array values are the
      * corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
      *
@@ -232,7 +231,6 @@ final class Html
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in the labels
      * will also be HTML-encoded.
-     *
      * @param array $attributes the tag $attributes in terms of name-value pairs. The following $attributes are
      * specially handled:
      *
@@ -472,7 +470,7 @@ final class Html
      * Generates a list box.
      *
      * @param string $name The input name.
-     * @param iterable|array|string|null $selection The selected value(s). String for single or array for multiple
+     * @param array|iterable|string|null $selection The selected value(s). String for single or array for multiple
      * selection(s).
      * @param array $items The option data items. The array keys are option values, and the array values are the
      * corresponding option labels. The array can also be nested (i.e. some array values are arrays too). For each
@@ -756,7 +754,6 @@ final class Html
      *
      * {@see renderTagAttributes()} for details on how attributes are being rendered.
      *
-     *
      * @throws JsonException
      *
      * @return string The generated checkbox tag.
@@ -937,7 +934,7 @@ final class Html
     /**
      * Renders the option tags that can be used by {@see dropDownList()} and {@see listBox()}.
      *
-     * @param iterable|array|bool|int|float|string|null $selection the selected value(s). String for single or array for
+     * @param array|bool|float|int|iterable|string|null $selection the selected value(s). String for single or array for
      * multiple selection(s).
      * @param array $items the option data items. The array keys are option values, and the array values are the
      * corresponding option labels. The array can also be nested (i.e. some array values are arrays too).
@@ -948,7 +945,6 @@ final class Html
      *
      * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in the labels
      * will also be HTML-encoded.
-     *
      * @param array $tagOptions the $options parameter that is passed to the {@see dropDownList()} or {@see listBox()}
      * call.
      *
@@ -1028,7 +1024,7 @@ final class Html
                     'groups' => $groups,
                     'encodeSpaces' => $encodeSpaces,
                     'encode' => $encode,
-                    'strict' => $tagOptions['strict']
+                    'strict' => $tagOptions['strict'],
                 ];
 
                 /**

@@ -10,7 +10,7 @@ use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Tests\TestCase;
 
-final class RadioButtonColumTest extends TestCase
+final class RadioButtonColumnTest extends TestCase
 {
     public function testContentIsEmpty(): void
     {
@@ -23,7 +23,7 @@ final class RadioButtonColumTest extends TestCase
             [
                 '__class' => RadioButtonColumn::class,
                 'content' => static fn () => '',
-                'label()' => ['x']
+                'label()' => ['x'],
             ],
         ]);
         $gridView = $gridView->dataProvider($dataProvider);

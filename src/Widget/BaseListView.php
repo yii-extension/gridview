@@ -77,10 +77,7 @@ abstract class BaseListView extends Widget
 
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
             $content = preg_replace_callback('/{\\w+}/', function (array $matches): string {
-
-                $content = $this->renderSection((string) $matches[0]);
-
-                return $content;
+                return $this->renderSection((string) $matches[0]);
             }, $this->layout);
         } else {
             $content = $this->renderEmpty();
@@ -95,7 +92,7 @@ abstract class BaseListView extends Widget
 
         if ($this->encloseByContainer) {
             $html =
-                $this->html->beginTag('div', $this->encloseByContainerOptions)  . "\n" .
+                $this->html->beginTag('div', $this->encloseByContainerOptions) . "\n" .
                     $this->html->tag($tag, $content, $options) . "\n" .
                 $this->html->endTag('div') . "\n";
         }
@@ -362,7 +359,7 @@ abstract class BaseListView extends Widget
     /**
      * Renders the pager.
      *
-     * @throws JsonException|InvalidConfigException
+     * @throws InvalidConfigException|JsonException
      *
      * @return string the rendering result
      */

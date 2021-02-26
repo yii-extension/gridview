@@ -10,8 +10,6 @@ use Yiisoft\Strings\Inflector;
 use function array_merge;
 use function explode;
 use function is_array;
-use function is_iterable;
-use function is_scalar;
 use function strncmp;
 use function substr;
 
@@ -116,7 +114,7 @@ final class Sort
     {
         $attributes = [];
 
-        /** @var array<string,string|array> $value */
+        /** @var array<string,array|string> $value */
         foreach ($value as $name => $attribute) {
             if (!is_array($attribute)) {
                 $attributes[$attribute] = [
