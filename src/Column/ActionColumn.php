@@ -16,13 +16,10 @@ use function is_array;
  * To add an ActionColumn to the gridview, add it to the {@see GridView::columns|columns} configuration as follows:
  *
  * ```php
- * 'columns' => [
- *     // ...
- *     [
- *         '__class' => ActionColumn::class,
- *         // you may configure additional properties here
- *     ],
- * ]
+ * [
+ *     '__class' => ActionColumn::class,
+ *     // you may configure additional properties here
+ * ],
  * ```
  *
  * For more details and usage information on ActionColumn.
@@ -36,7 +33,7 @@ final class ActionColumn extends Column
     private array $headerOptions = [];
     private string $primaryKey = 'id';
     private string $template = '{view} {update} {delete}';
-    /** @var callable|null $urlCreator */
+    /** @var callable|null */
     private $urlCreator = null;
     private array $visibleButtons = [];
 
@@ -54,11 +51,12 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     buttons() => [
+     *     buttons => [
      *         'action' => function (string $url, $arClass, int $key) {
      *             // return the button HTML code
      *         }
      *     ],
+     * ]
      * ```
      *
      * where `$url` is the URL that the column creates for the button, `$arClass` is the arClass object being rendered
@@ -69,7 +67,7 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     buttons() = [
+     *     buttons = [
      *         'update' => function (string $url, $arClass, $key) {
      *             return $arClass->status === 'editable' ? Html::a('Update', $url) : '';
      *         },
@@ -158,7 +156,7 @@ final class ActionColumn extends Column
      * parameter, which refers to the column instance itself:
      * ```php
      * [
-     *     'urlCreator()' => [
+     *     'urlCreator' => [
      *         'action' => function (string $action, $arClass, mixed $key, int $index) {
      *             return string;
      *         }
@@ -186,7 +184,7 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     visibleButtons() => [
+     *     visibleButtons => [
      *         update => [
      *             function ($arClass, $key, int $index) {
      *                 return $arClass->status === 'editable';
@@ -200,7 +198,7 @@ final class ActionColumn extends Column
      *
      * ```php
      * [
-     *     visibleButtons() => [
+     *     visibleButtons => [
      *         'update' => true,
      *     ],
      * ],
@@ -243,8 +241,9 @@ final class ActionColumn extends Column
             if ($isVisible && isset($this->buttons[$name])) {
                 $url = $this->createUrl($name, $arClass, $key, $index);
 
-                /** @psalm-suppress MixedFunctionCall */
-                return (string) $this->buttons[$name]($url, $arClass, $key);
+                if ($this->buttons[$name] instanceof Closure) {
+                    return (string) $this->buttons[$name]($url, $arClass, $key);
+                }
             }
 
             return '';
@@ -331,7 +330,6 @@ final class ActionColumn extends Column
     private function createUrl(string $action, $arClass, $key, int $index): string
     {
         if ($this->urlCreator !== null) {
-            /** @psalm-suppress MixedFunctionCall */
             return (string) call_user_func($this->urlCreator, $action, $arClass, $key, $index, $this);
         }
 

@@ -651,7 +651,7 @@ final class DataColumnTest extends TestCase
         $dataProvider->getSort()->attributes([
             'id',
             'username',
-        ]);
+        ])->params(['sort' => '-id,username'])->multisort();
 
         $gridView = $this->createGridView(['id', 'username', 'total']);
         $gridView = $gridView->dataProvider($dataProvider);
@@ -661,18 +661,18 @@ final class DataColumnTest extends TestCase
 
         <table class="table">
         <thead>
-        <tr><th><a href="/admin/index?page=1&amp;pagesize=10&amp;sort=id" data-sort="id">Id</a></th><th><a href="/admin/index?page=1&amp;pagesize=10&amp;sort=username" data-sort="username">Username</a></th><th>Total</th></tr>
+        <tr><th><a class="desc" href="/admin/index?page=1&amp;pagesize=10&amp;sort=id%2Cusername" data-sort="id,username">Id</a></th><th><a class="asc" href="/admin/index?page=1&amp;pagesize=10&amp;sort=-username%2C-id" data-sort="-username,-id">Username</a></th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr data-key="0"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr data-key="1"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr data-key="2"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr data-key="3"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
         <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr data-key="5"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr data-key="6"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr data-key="7"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr data-key="8"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>

@@ -27,17 +27,15 @@ abstract class BaseListView extends Widget
 {
     public const BOOTSTRAP = 'bootstrap';
     public const BULMA = 'bulma';
-    protected string $frameworkCss = self::BOOTSTRAP;
-    protected string $emptyText = 'No results found.';
-    protected string $layout = "{items}\n{summary}\n{pager}";
-    protected array $options = [];
-    /** @psalm-suppress PropertyNotSetInConstructor */
     protected DataProviderInterface $dataProvider;
+    protected string $emptyText = 'No results found.';
+    protected string $frameworkCss = self::BOOTSTRAP;
     protected GridViewFactory $gridViewFactory;
     protected Html $html;
-    protected TranslatorInterface $translator;
-    /** @psalm-suppress PropertyNotSetInConstructor */
+    protected string $layout = "{items}\n{summary}\n{pager}";
+    protected array $options = [];
     protected Pagination $pagination;
+    protected TranslatorInterface $translator;
     private const FRAMEWORKCSS = [
         self::BOOTSTRAP,
         self::BULMA,
@@ -113,6 +111,19 @@ abstract class BaseListView extends Widget
         return $new;
     }
 
+    /**
+     * @param DataProviderInterface $dataProvider the data provider for the view. This property is required.
+     *
+     * @return $this
+     */
+    public function dataProvider(DataProviderInterface $dataProvider): self
+    {
+        $new = clone $this;
+        $new->dataProvider = $dataProvider;
+
+        return $new;
+    }
+
     public function encloseByContainer(): self
     {
         $new = clone $this;
@@ -125,19 +136,6 @@ abstract class BaseListView extends Widget
     {
         $new = clone $this;
         $new->encloseByContainerOptions = $encloseByContainerOptions;
-
-        return $new;
-    }
-
-    /**
-     * @param DataProviderInterface $dataProvider the data provider for the view. This property is required.
-     *
-     * @return $this
-     */
-    public function dataProvider(DataProviderInterface $dataProvider): self
-    {
-        $new = clone $this;
-        $new->dataProvider = $dataProvider;
 
         return $new;
     }
@@ -245,6 +243,22 @@ abstract class BaseListView extends Widget
         return $new;
     }
 
+    /**
+     * @param array $options the HTML attributes for the container tag of the list view. The "tag" element specifies
+     * the tag name of the container element and defaults to "div".
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function options(array $options): self
+    {
+        $new = clone $this;
+        $new->options = $options;
+
+        return $new;
+    }
+
     public function pageSize(int $pageSize): self
     {
         $new = clone $this;
@@ -283,34 +297,18 @@ abstract class BaseListView extends Widget
     }
 
     /**
-     * @param array $options the HTML attributes for the container tag of the list view. The "tag" element specifies
-     * the tag name of the container element and defaults to "div".
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function options(array $options): self
-    {
-        $new = clone $this;
-        $new->options = $options;
-
-        return $new;
-    }
-
-    /**
      * @param string $summary the HTML content to be displayed as the summary of the list view.
      *
      * If you do not want to show the summary, you may set it with an empty string.
      *
      * The following tokens will be replaced with the corresponding values:
      *
-     * - `{begin}`: the starting row number (1-based) currently being displayed
-     * - `{end}`: the ending row number (1-based) currently being displayed
-     * - `{count}`: the number of rows currently being displayed
-     * - `{totalCount}`: the total number of rows available
-     * - `{page}`: the page number (1-based) current being displayed
-     * - `{pageCount}`: the number of pages available
+     * - `{begin}`: the starting row number (1-based) currently being displayed.
+     * - `{end}`: the ending row number (1-based) currently being displayed.
+     * - `{count}`: the number of rows currently being displayed.
+     * - `{totalCount}`: the total number of rows available.
+     * - `{page}`: the page number (1-based) current being displayed.
+     * - `{pageCount}`: the number of pages available.
      *
      * @return $this
      */
@@ -362,6 +360,29 @@ abstract class BaseListView extends Widget
     }
 
     /**
+     * Renders the pager.
+     *
+     * @throws JsonException|InvalidConfigException
+     *
+     * @return string the rendering result
+     */
+    private function renderPager(): string
+    {
+        $pagination = $this->dataProvider->getPagination();
+
+        if ($this->dataProvider->getCount() < 0) {
+            return '';
+        }
+
+        return LinkPager::widget()
+            ->frameworkCss($this->frameworkCss)
+            ->requestAttributes($this->requestAttributes)
+            ->requestQueryParams($this->requestQueryParams)
+            ->pagination($pagination)
+            ->render();
+    }
+
+    /**
      * Renders a section of the specified name. If the named section is not supported, empty string will be returned.
      *
      * @param string $name the section name, e.g., `{summary}`, `{items}`.
@@ -384,29 +405,6 @@ abstract class BaseListView extends Widget
             default:
                 return '';
         }
-    }
-
-    /**
-     * Renders the pager.
-     *
-     * @throws JsonException|InvalidConfigException
-     *
-     * @return string the rendering result
-     */
-    private function renderPager(): string
-    {
-        $pagination = $this->dataProvider->getPagination();
-
-        if ($this->dataProvider->getCount() < 0) {
-            return '';
-        }
-
-        return LinkPager::widget()
-            ->frameworkCss($this->frameworkCss)
-            ->requestAttributes($this->requestAttributes)
-            ->requestQueryParams($this->requestQueryParams)
-            ->pagination($pagination)
-            ->render();
     }
 
     /**

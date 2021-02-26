@@ -17,18 +17,13 @@ use Yiisoft\Router\UrlGeneratorInterface;
  */
 class Column
 {
-    /**
-     * @var callable
-     *
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
+    /** @var callable */
     protected $content;
     protected array $contentOptions = [];
     protected array $filterOptions = [];
     protected string $footer = '';
     protected array $footerOptions = [];
     protected Html $html;
-    /** @psalm-suppress PropertyNotSetInConstructor */
     protected GridView $grid;
     protected string $label = '';
     protected array $labelOptions = [];
@@ -181,22 +176,6 @@ class Column
     }
 
     /**
-     * Renders the header cell.
-     */
-    public function renderHeaderCell(): string
-    {
-        return $this->html->tag('th', $this->renderHeaderCellContent(), $this->labelOptions);
-    }
-
-    /**
-     * Renders the footer cell.
-     */
-    public function renderFooterCell(): string
-    {
-        return $this->html->tag('td', $this->renderFooterCellContent(), $this->footerOptions);
-    }
-
-    /**
      * Renders a data cell.
      *
      * @param array|object $arClass the data arClass being rendered.
@@ -234,22 +213,24 @@ class Column
     }
 
     /**
-     * Renders the header cell content.
-     *
-     * The default implementation simply renders {@see header}.
-     * This method may be overridden to customize the rendering of the header cell.
-     *
-     * @throws JsonException
-     *
-     * @return string the rendering result
+     * Renders the footer cell.
      */
-    protected function renderHeaderCellContent(): string
+    public function renderFooterCell(): string
     {
-        return trim($this->label) !== '' ? $this->label : $this->getHeaderCellLabel();
+        return $this->html->tag('td', $this->renderFooterCellContent(), $this->footerOptions);
+    }
+
+    /**
+     * Renders the header cell.
+     */
+    public function renderHeaderCell(): string
+    {
+        return $this->html->tag('th', $this->renderHeaderCellContent(), $this->labelOptions);
     }
 
     /**
      * Returns header cell label.
+     *
      * This method may be overridden to customize the label of the header cell.
      *
      * @return string label
@@ -257,19 +238,6 @@ class Column
     protected function getHeaderCellLabel(): string
     {
         return $this->grid->getEmptyCell();
-    }
-
-    /**
-     * Renders the footer cell content.
-     *
-     * The default implementation simply renders {@see footer}.
-     * This method may be overridden to customize the rendering of the footer cell.
-     *
-     * @return string the rendering result
-     */
-    protected function renderFooterCellContent(): string
-    {
-        return trim($this->footer) !== '' ? $this->footer : $this->grid->getEmptyCell();
     }
 
     /**
@@ -304,5 +272,33 @@ class Column
     protected function renderFilterCellContent(): string
     {
         return $this->grid->getEmptyCell();
+    }
+
+    /**
+     * Renders the footer cell content.
+     *
+     * The default implementation simply renders {@see footer}.
+     * This method may be overridden to customize the rendering of the footer cell.
+     *
+     * @return string the rendering result
+     */
+    protected function renderFooterCellContent(): string
+    {
+        return trim($this->footer) !== '' ? $this->footer : $this->grid->getEmptyCell();
+    }
+
+    /**
+     * Renders the header cell content.
+     *
+     * The default implementation simply renders {@see header}.
+     * This method may be overridden to customize the rendering of the header cell.
+     *
+     * @throws JsonException
+     *
+     * @return string the rendering result
+     */
+    protected function renderHeaderCellContent(): string
+    {
+        return trim($this->label) !== '' ? $this->label : $this->getHeaderCellLabel();
     }
 }

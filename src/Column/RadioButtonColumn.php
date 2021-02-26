@@ -28,15 +28,42 @@ final class RadioButtonColumn extends Column
     private string $name = 'radioButtonSelection';
     private array $radioOptions = [];
 
-    /**
-     * @throws InvalidConfigException if {@see name} is not set.
-     */
     public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
         parent::__construct($html, $urlGenerator);
 
         $this->html = $html;
         $this->urlGenerator = $urlGenerator;
+    }
+
+    /**
+     * @param string $name the name of the input radio button input fields.
+     *
+     * @return $this
+     */
+    public function name(string $name): self
+    {
+        if (empty($name)) {
+            throw new InvalidConfigException('The "name" property it cannot be empty.');
+        }
+
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param array $radioOptions the HTML attributes for the radio buttons.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function radioOptions(array $radioOptions): self
+    {
+        $this->radioOptions = $radioOptions;
+
+        return $this;
     }
 
     /**
@@ -68,35 +95,5 @@ final class RadioButtonColumn extends Column
         $checked = $options['checked'] ?? false;
 
         return $this->html->radio($this->name, $checked, $options);
-    }
-
-    /**
-     * @param string $name the name of the input radio button input fields.
-     *
-     * @return $this
-     */
-    public function name(string $name): self
-    {
-        if (empty($name)) {
-            throw new InvalidConfigException('The "name" property it cannot be empty.');
-        }
-
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @param array $radioOptions the HTML attributes for the radio buttons.
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function radioOptions(array $radioOptions): self
-    {
-        $this->radioOptions = $radioOptions;
-
-        return $this;
     }
 }

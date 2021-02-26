@@ -11,7 +11,7 @@ use function strpos;
 
 abstract class Widget extends BaseWidget
 {
-    private ?string $id = null;
+    private string $id = '';
     private bool $autoGenerate = true;
     private string $autoIdPrefix = 'w';
     private static int $counter = 0;
@@ -59,11 +59,11 @@ abstract class Widget extends BaseWidget
     /**
      * Returns the Id of the widget.
      *
-     * @return string|null Id of the widget.
+     * @return string Id of the widget.
      */
-    protected function getId(): ?string
+    protected function getId(): string
     {
-        if ($this->autoGenerate && $this->id === null) {
+        if ($this->autoGenerate && $this->id === '') {
             $this->id = $this->autoIdPrefix . ++self::$counter;
         }
 

@@ -15,6 +15,7 @@ use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\CheckboxColumn;
 use Yii\Extension\GridView\Column\RadioButtonColumn;
 use Yii\Extension\GridView\GridView;
+use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
@@ -46,6 +47,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected ActionColumn $actionColumn;
     protected CheckboxColumn $checkboxColumn;
+    protected GridViewFactory $gridViewFactory;
     protected Html $html;
     protected Pagination $pagination;
     protected RadioButtonColumn $radioButtonColumn;
@@ -68,6 +70,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->actionColumn,
             $this->checkBoxColumn,
             $this->container,
+            $this->gridViewFactory,
             $this->html,
             $this->pagination,
             $this->radioButtonColumn,
@@ -186,6 +189,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->actionColumn = $this->container->get(ActionColumn::class);
         $this->checkboxColumn = $this->container->get(CheckboxColumn::class);
+        $this->gridViewFactory = $this->container->get(GridViewFactory::class);
         $this->html = $this->container->get(Html::class);
         $this->pagination = $this->container->get(Pagination::class);
         $this->radioButtonColumn = $this->container->get(RadioButtonColumn::class);

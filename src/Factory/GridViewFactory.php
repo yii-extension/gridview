@@ -19,14 +19,11 @@ final class GridViewFactory
     }
 
     /**
-     * Creates a DataColumn defined by config passed
+     * Creates a DataColumn defined by config passed.
      *
-     * @param array $config parameters for creating a widget
+     * @param array $config parameters for creating a widget.
      *
-     * @throws RuntimeException if factory was not initialized
-     * @throws InvalidConfigException
-     *
-     * @psalm-suppress MoreSpecificReturnType
+     * @throws RuntimeException.
      *
      * @return Column
      */
@@ -36,7 +33,7 @@ final class GridViewFactory
 
         if (!($columnClass instanceof Column)) {
             throw new RuntimeException(
-                sprintf('The "%s" is not an instance of the "%s".', $columnClass, Column::class)
+                sprintf('The "%s" is not an instance of the "%s".', get_class($columnClass), Column::class)
             );
         }
 

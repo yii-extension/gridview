@@ -160,6 +160,31 @@ final class DataColumn extends Column
     }
 
     /**
+     * Returns the data cell value.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the active record classes array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the data cell value.
+     */
+    public function getDataCellValue($arClass, $key, int $index): string
+    {
+        if ($this->value !== null) {
+            if (is_string($this->value)) {
+                return (string) ArrayHelper::getValue($arClass, $this->value);
+            }
+
+            return (string) call_user_func($this->value, $arClass, $key, $index, $this);
+        } elseif ($this->attribute !== '') {
+            return (string) ArrayHelper::getValue($arClass, $this->attribute);
+        }
+
+        return '';
+    }
+
+    /**
      * @param bool whether the header label should not be HTML-encoded.
      *
      * @return $this
@@ -215,6 +240,7 @@ final class DataColumn extends Column
      * and `$column` is a reference to the {@see DataColumn} object.
      *
      * You may also set this property to a string representing the attribute name to be displayed in this column.
+     *
      * This can be used when the attribute to be displayed is different from the {@see attribute} that is used for
      * sorting and filtering.
      *
@@ -228,6 +254,51 @@ final class DataColumn extends Column
         $this->value = $value;
 
         return $this;
+    }
+
+    protected function getHeaderCellLabel(): string
+    {
+        return $this->label !== '' ? $this->label : $this->inflector->toHumanReadable($this->attribute) ;
+    }
+
+    /**
+     * Renders the data cell content.
+     *
+     * @param array|object $arClass the data arClass.
+     * @param mixed $key the key associated with the data arClass.
+     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
+     * {@see GridView::dataProvider}.
+     *
+     * @return string the rendering result.
+     */
+    protected function renderDataCellContent($arClass, $key, int $index): string
+    {
+        if (!empty($this->content)) {
+            return parent::renderDataCellContent($arClass, $key, $index);
+        }
+
+        return $this->getDataCellValue($arClass, $key, $index);
+    }
+
+    protected function renderFilterCellContent(): string
+    {
+        if ($this->filter !== '') {
+            return $this->filter;
+        }
+
+        if ($this->filterAttribute !== '') {
+            if ($this->grid->getFrameworkCss() === 'bulma') {
+                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'input']);
+            } else {
+                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'form-control']);
+            }
+
+            $name = $this->html->getInputName($this->grid->getFilterModelName(), $this->filterAttribute);
+
+            return $this->html->textInput($name, $this->filterValueDefault, $this->filterInputOptions);
+        }
+
+        return parent::renderFilterCellContent();
     }
 
     protected function renderHeaderCellContent(): string
@@ -255,75 +326,5 @@ final class DataColumn extends Column
         }
 
         return $this->label;
-    }
-
-    protected function getHeaderCellLabel(): string
-    {
-        return $this->label !== '' ? $this->label : $this->inflector->toHumanReadable($this->attribute) ;
-    }
-
-    protected function renderFilterCellContent(): string
-    {
-        if ($this->filter !== '') {
-            return $this->filter;
-        }
-
-        if ($this->filterAttribute !== '') {
-            if ($this->grid->getFrameworkCss() === 'bulma') {
-                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'input']);
-            } else {
-                $this->html->AddCssClass($this->filterInputOptions, ['input' => 'form-control']);
-            }
-
-            $name = $this->html->getInputName($this->grid->getFilterModelName(), $this->filterAttribute);
-
-            return $this->html->textInput($name, $this->filterValueDefault, $this->filterInputOptions);
-        }
-
-        return parent::renderFilterCellContent();
-    }
-
-    /**
-     * Returns the data cell value.
-     *
-     * @param array|object $arClass the data arClass
-     * @param mixed $key the key associated with the data arClass
-     * @param int $index the zero-based index of the data arClass among the active record classes array returned by
-     * {@see GridView::dataProvider}.
-     *
-     * @return string the data cell value
-     */
-    public function getDataCellValue($arClass, $key, int $index): string
-    {
-        if ($this->value !== null) {
-            if (is_string($this->value)) {
-                return (string) ArrayHelper::getValue($arClass, $this->value);
-            }
-
-            return (string) call_user_func($this->value, $arClass, $key, $index, $this);
-        } elseif ($this->attribute !== '') {
-            return (string) ArrayHelper::getValue($arClass, $this->attribute);
-        }
-
-        return '';
-    }
-
-    /**
-     * Renders the data cell content.
-     *
-     * @param array|object $arClass the data arClass.
-     * @param mixed $key the key associated with the data arClass.
-     * @param int $index the zero-based index of the data arClass among the arClasss array returned by
-     * {@see GridView::dataProvider}.
-     *
-     * @return string the rendering result.
-     */
-    protected function renderDataCellContent($arClass, $key, int $index): string
-    {
-        if (!empty($this->content)) {
-            return parent::renderDataCellContent($arClass, $key, $index);
-        }
-
-        return $this->getDataCellValue($arClass, $key, $index);
     }
 }

@@ -33,22 +33,20 @@ final class LinkSorter extends Widget
     ];
     private string $attribute = '';
     private string $frameworkCss = self::BOOTSTRAP;
+    private Html $html;
+    private Inflector $inflector;
     private array $linkOptions = [];
     private string $pageAttribute = 'page';
     private int $pageSize = Pagination::DEFAULT_PAGE_SIZE;
     private string $pageSizeAttribute = 'pagesize';
+    private Pagination $pagination;
     private array $requestAttributes = [];
     private array $requestQueryParams = [];
     private string $sortParams = 'sort';
     private bool $urlAbsolute = false;
-    private Html $html;
-    private Inflector $inflector;
-    /** @psalm-suppress PropertyNotSetInConstructor */
-    private Pagination $pagination;
-    /** @psalm-suppress PropertyNotSetInConstructor */
-    private Sort $sort;
     private UrlGeneratorInterface $urlGenerator;
     private UrlMatcherInterface $urlMatcher;
+    private Sort $sort;
 
     public function __construct(
         Html $html,
@@ -99,7 +97,8 @@ final class LinkSorter extends Widget
     }
 
     /**
-     * @param array $linkOptions HTML attributes for the link in a sorter container tag which are passed to {@see Sort::link()}.
+     * @param array $linkOptions HTML attributes for the link in a sorter container tag which are passed to
+     * {@see Sort::link()}.
      *
      * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
      */
@@ -119,6 +118,14 @@ final class LinkSorter extends Widget
         return $new;
     }
 
+    public function pageSize(int $pageSize): self
+    {
+        $new = clone $this;
+        $new->pageSize = $pageSize;
+
+        return $new;
+    }
+
     /**
      * @param Pagination $pagination the pagination object that this pager is associated with.
      *
@@ -130,14 +137,6 @@ final class LinkSorter extends Widget
     {
         $new = clone $this;
         $new->pagination = $pagination;
-
-        return $new;
-    }
-
-    public function pageSize(int $pageSize): self
-    {
-        $new = clone $this;
-        $new->pageSize = $pageSize;
 
         return $new;
     }

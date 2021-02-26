@@ -20,6 +20,24 @@ use Yii\Extension\GridView\Helper\Sort;
 interface DataProviderInterface
 {
     /**
+     * The prefix to the automatically generated widget IDs.
+     *
+     * @param string $value
+     *
+     * @return $this
+     *
+     * {@see getId()}
+     */
+    public function autoIdPrefix(string $value): self;
+
+    /**
+     * Returns the data active record classes in the current page.
+     *
+     * @return array the list of data active record classes in the current page.
+     */
+    public function getARClasses(): array;
+
+    /**
      * Returns the number of data active record classes in the current page.
      *
      * This is equivalent to `count($provider->getARClasses())`.
@@ -31,6 +49,24 @@ interface DataProviderInterface
     public function getCount(): int;
 
     /**
+     * Returns the key values associated with the data active record classes.
+     *
+     * @return array the list of key values corresponding to {@see getARClasses|arClasses}. Each data model in
+     * {@see getARClasses()|ActiveRecord} is uniquely identified by the corresponding key value in this array.
+     */
+    public function getKeys(): array;
+
+    /**
+     * @return Pagination pagination object.
+     */
+    public function getPagination(): Pagination;
+
+    /**
+     * @return Sort the sorting object.
+     */
+    public function getSort(): Sort;
+
+    /**
      * Returns the total number of data active record classes.
      *
      * When {@see getPagination|pagination} is false, this is the same as {@see getCount()|count}.
@@ -40,27 +76,33 @@ interface DataProviderInterface
     public function getTotalCount(): int;
 
     /**
-     * Returns the data active record classes in the current page.
+     * Set the Id of the widget.
      *
-     * @return array the list of data active record classes in the current page.
-     */
-    public function getARClasses(): array;
-
-    /**
-     * Returns the key values associated with the data active record classes.
+     * @param string $value
      *
-     * @return array the list of key values corresponding to {@see getARClasses|arClasses}. Each data model in
-     * {@see getARClasses()|ActiveRecord} is uniquely identified by the corresponding key value in this array.
+     * @return $this
      */
-    public function getKeys(): array;
+    public function id(string $value): self;
 
     /**
-     * @return Sort the sorting object.
+     * Sets the key values associated with the data active record classes.
+     *
+     * @param array $value the list of key values corresponding to {@see arClasses}.
      */
-    public function getSort(): Sort;
+    public function keys(array $value): void;
 
     /**
-     * @return Pagination pagination object.
+     * Refreshes the data provider.
+     *
+     * After calling this method, if {@see getARClasses()}, {@see getKeys()} or {@see getTotalCount()} is called again,
+     * they will re-execute the query and return the latest data available.
      */
-    public function getPagination(): Pagination;
+    public function refresh(): void;
+
+    /**
+     * Sets the total number of data active record classes.
+     *
+     * @param int $value the total number of data active record classes.
+     */
+    public function totalCount(int $value): void;
 }

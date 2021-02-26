@@ -27,33 +27,20 @@ abstract class DataProvider implements DataProviderInterface
 
     public function __construct()
     {
-        if (isset($this->id)) {
+        if ($this->id !== '') {
             $this->id = $this->getId();
         }
     }
 
     /**
-     * Prepares the data active record class that will be made available in the current page.
+     * Sets the data active record classes in the current page.
      *
-     * @return array the available data active record class.
+     * @param array $value the active record clasess in the current page.
      */
-    abstract protected function prepareARClass(): array;
-
-    /**
-     * Prepares the keys associated with the currently available data active record class.
-     *
-     * @param array $arClasses the available data active record class.
-     *
-     * @return array the keys.
-     */
-    abstract protected function prepareKeys(array $arClasses = []): array;
-
-    /**
-     * Returns a value indicating the total number of data active record class in this data provider.
-     *
-     * @return int total number of data active record class in this data provider.
-     */
-    abstract protected function prepareTotalCount(): int;
+    public function arClasses(array $value): void
+    {
+        $this->arClasses = $value;
+    }
 
     /**
      * The prefix to the automatically generated widget IDs.
@@ -68,26 +55,6 @@ abstract class DataProvider implements DataProviderInterface
     {
         $this->autoIdPrefix = $value;
         return $this;
-    }
-
-    /**
-     * Sets the data active record classes in the current page.
-     *
-     * @param array $value the active record clasess in the current page.
-     */
-    public function arClasses(array $value): void
-    {
-        $this->arClasses = $value;
-    }
-
-    /**
-     * Counter used to generate {@see id} for widgets.
-     *
-     * @param int $value
-     */
-    public static function counter(int $value): void
-    {
-        self::$counter = $value;
     }
 
     /**
@@ -113,15 +80,16 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * @return string Id of the widget.
+     * Returns the key values associated with the data active record classes.
+     *
+     * @return array the list of key values corresponding to {@see arClasses}. Each data active record class in
+     * {@see arClasses} is uniquely identified by the corresponding key value in this array.
      */
-    protected function getId(): string
+    public function getKeys(): array
     {
-        if ($this->autoGenerate) {
-            $this->id = $this->autoIdPrefix . ++self::$counter;
-        }
+        $this->prepare();
 
-        return $this->id;
+        return $this->keys;
     }
 
     /**
@@ -170,19 +138,6 @@ abstract class DataProvider implements DataProviderInterface
     }
 
     /**
-     * Returns the key values associated with the data active record classes.
-     *
-     * @return array the list of key values corresponding to {@see arClasses}. Each data active record class in
-     * {@see arClasses} is uniquely identified by the corresponding key value in this array.
-     */
-    public function getKeys(): array
-    {
-        $this->prepare();
-
-        return $this->keys;
-    }
-
-    /**
      * Set the Id of the widget.
      *
      * @param string $value
@@ -227,6 +182,41 @@ abstract class DataProvider implements DataProviderInterface
     {
         $this->totalCount = $value;
     }
+
+    /**
+     * @return string Id of the widget.
+     */
+    protected function getId(): string
+    {
+        if ($this->autoGenerate) {
+            $this->id = $this->autoIdPrefix . ++self::$counter;
+        }
+
+        return $this->id;
+    }
+
+    /**
+     * Prepares the data active record class that will be made available in the current page.
+     *
+     * @return array the available data active record class.
+     */
+    abstract protected function prepareARClass(): array;
+
+    /**
+     * Prepares the keys associated with the currently available data active record class.
+     *
+     * @param array $arClasses the available data active record class.
+     *
+     * @return array the keys.
+     */
+    abstract protected function prepareKeys(array $arClasses = []): array;
+
+    /**
+     * Returns a value indicating the total number of data active record class in this data provider.
+     *
+     * @return int total number of data active record class in this data provider.
+     */
+    abstract protected function prepareTotalCount(): int;
 
     /**
      * Prepares the data active record class and keys.

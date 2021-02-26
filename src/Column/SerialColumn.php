@@ -14,19 +14,16 @@ use Yiisoft\Router\UrlGeneratorInterface;
  * follows:
  *
  * ```php
- * 'columns' => [
- *     // ...
- *     [
- *         '__class' => SerialColumn::class,
- *         // you may configure additional properties here
- *     ],
- * ]
+ * [
+ *     '__class' => SerialColumn::class,
+ *     // you may configure additional properties here
+ * ],
  * ```
  *
  * For more details and usage information on SerialColumn, see the:
  * [guide article on data widgets](guide:output-data-widgets).
  */
-class SerialColumn extends Column
+final class SerialColumn extends Column
 {
     public string $header = '#';
 

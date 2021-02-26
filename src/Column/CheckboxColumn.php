@@ -18,21 +18,10 @@ use Yiisoft\Router\UrlGeneratorInterface;
  * follows:
  *
  * ```php
- * 'columns' => [
- *     // ...
- *     [
- *         'class' => 'yii\grid\CheckboxColumn',
- *         // you may configure additional properties here
- *     ],
- * ]
- * ```
- *
- * Users may click on the checkboxes to select rows of the grid. The selected rows may be
- * obtained by calling the following JavaScript code:
- *
- * ```javascript
- * var keys = $('#grid').yiiGridView('getSelectedRows');
- * // keys is an array consisting of the keys associated with the selected rows
+ * [
+ *     '__class' => 'yii\grid\CheckboxColumn',
+ *     // you may configure additional properties here
+ * ],
  * ```
  *
  * For more details and usage information on CheckboxColumn.
@@ -111,25 +100,6 @@ final class CheckboxColumn extends Column
     }
 
     /**
-     * Renders the header cell content.
-     *
-     * The default implementation simply renders {@see header}.
-     * This method may be overridden to customize the rendering of the header cell.
-     *
-     * @throws JsonException
-     *
-     * @return string the rendering result
-     */
-    protected function renderHeaderCellContent(): string
-    {
-        if ($this->label !== '' || $this->multiple === false) {
-            return parent::renderHeaderCellContent();
-        }
-
-        return $this->html->checkbox($this->getHeaderCheckBoxName(), false, ['class' => 'select-on-check-all']);
-    }
-
-    /**
      * Renders the data cell content.
      *
      * @param array|object $arClass the data arClass.
@@ -157,6 +127,25 @@ final class CheckboxColumn extends Column
         }
 
         return $this->html->checkbox($this->name, !empty($options['checked']), $options);
+    }
+
+    /**
+     * Renders the header cell content.
+     *
+     * The default implementation simply renders {@see header}.
+     * This method may be overridden to customize the rendering of the header cell.
+     *
+     * @throws JsonException
+     *
+     * @return string the rendering result
+     */
+    protected function renderHeaderCellContent(): string
+    {
+        if ($this->label !== '' || $this->multiple === false) {
+            return parent::renderHeaderCellContent();
+        }
+
+        return $this->html->checkbox($this->getHeaderCheckBoxName(), false, ['class' => 'select-on-check-all']);
     }
 
     /**
