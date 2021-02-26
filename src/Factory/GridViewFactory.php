@@ -23,7 +23,7 @@ final class GridViewFactory
      *
      * @param array $config parameters for creating a widget.
      *
-     * @throws RuntimeException.
+     * @throws RuntimeException
      *
      * @return Column
      */

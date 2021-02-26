@@ -116,6 +116,7 @@ final class Sort
     {
         $attributes = [];
 
+        /** @var array<string,string|array> $value */
         foreach ($value as $name => $attribute) {
             if (!is_array($attribute)) {
                 $attributes[$attribute] = [
@@ -154,6 +155,7 @@ final class Sort
             $this->attributeOrders = $attributeOrders;
         } else {
             $this->attributeOrders = [];
+            /** @var array<string,int> $attributeOrders */
             foreach ($attributeOrders as $attribute => $order) {
                 if (isset($this->attributes[$attribute])) {
                     $this->attributeOrders[$attribute] = $order;
@@ -223,6 +225,7 @@ final class Sort
      */
     public function getAttributeOrder(string $attribute): ?int
     {
+        /** @var array<array-key,int> */
         $orders = $this->getAttributeOrders();
 
         return $orders[$attribute] ?? null;
@@ -240,7 +243,9 @@ final class Sort
     {
         if ($this->attributeOrders === [] || $recalculate) {
             if (isset($this->params[$this->sortParam])) {
-                foreach ($this->parseSortParam($this->params[$this->sortParam]) as $attribute) {
+                $sortParam = $this->parseSortParam((string) $this->params[$this->sortParam]);
+                /** @var array<array-key,string> $sortParam */
+                foreach ($sortParam as $attribute) {
                     $descending = false;
                     if (strncmp($attribute, '-', 1) === 0) {
                         $descending = true;
@@ -278,15 +283,15 @@ final class Sort
 
         $orders = [];
 
+        /** @var array<string,int> $attributeOrders */
         foreach ($attributeOrders as $attribute => $direction) {
+            /** @var array */
             $definition = $this->attributes[$attribute];
+            /** @var array */
             $columns = $definition[$direction === SORT_ASC ? 'asc' : 'desc'];
-            if (is_iterable($columns)) {
-                foreach ($columns as $name => $dir) {
-                    $orders[$name] = $dir;
-                }
-            } else {
-                $orders[] = $columns;
+            /** @var array<string,int> $columns */
+            foreach ($columns as $name => $dir) {
+                $orders[$name] = $dir;
             }
         }
 
@@ -384,6 +389,6 @@ final class Sort
      */
     private function parseSortParam(string $param): array
     {
-        return is_scalar($param) ? explode($this->separator, $param) : [];
+        return explode($this->separator, $param);
     }
 }

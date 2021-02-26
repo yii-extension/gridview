@@ -30,6 +30,7 @@ class Column
     protected UrlGeneratorInterface $urlGenerator;
     protected bool $visible = true;
     private string $dataLabel = '';
+    private array $options = [];
 
     public function __construct(Html $html, UrlGeneratorInterface $urlGenerator)
     {
@@ -115,6 +116,11 @@ class Column
         return $this;
     }
 
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
     /**
      * @param GridView $grid the grid view object that owns this column.
      *
@@ -173,6 +179,22 @@ class Column
         $this->visible = false;
 
         return $this;
+    }
+
+    /**
+     * @param array $options the HTML attributes for the container tag of the list view. The "tag" element specifies
+     * the tag name of the container element and defaults to "div".
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     */
+    public function options(array $options): self
+    {
+        $new = clone $this;
+        $new->options = $options;
+
+        return $new;
     }
 
     /**

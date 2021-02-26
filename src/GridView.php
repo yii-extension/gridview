@@ -6,6 +6,7 @@ namespace Yii\Extension\GridView;
 
 use Closure;
 use JsonException;
+use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\Column;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
@@ -44,19 +45,19 @@ final class GridView extends BaseListView
     private string $filterModelName = '';
     private string $header = '';
     private array $headerOptions = [];
+    /** @var array<array-key,array<array-key,Column>|Column|string> */
     private array $columns = [];
     private string $dataColumnClass = DataColumn::class;
-    private array $filterErrorOptions = ['class' => 'help-block'];
-    private array $filterErrorSummaryOptions = ['class' => 'error-summary'];
     private array $filterRowOptions = ['class' => 'filters'];
     private array $footerRowOptions = [];
     private array $headerRowOptions = [];
     private array $rowOptions = [];
     private array $tableOptions = ['class' => 'table'];
-    private bool $filterOnFocusOut = true;
+    private bool $filterOnFocusOut = false;
     private bool $placeFooterAfterBody = false;
     private bool $showFooter = false;
     private bool $showHeader = true;
+    /** @var array<array-key,array> */
     private array $toolbar = [];
     private array $toolbarOptions = [];
     private string $emptyCell = '&nbsp;';
@@ -201,11 +202,12 @@ final class GridView extends BaseListView
      *     // ...
      * ]
      * ```
+     * @psalm-param array<array-key,array<array-key,Column>|Column|string> $columns
      */
-    public function columns(array $value): self
+    public function columns(array $columns): self
     {
         $new = clone $this;
-        $new->columns = $value;
+        $new->columns = $columns;
 
         return $new;
     }
@@ -232,34 +234,6 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->emptyCell = $emptyCell;
-
-        return $new;
-    }
-
-    /**
-     * @param array the options for rendering every filter error message.
-     *
-     * This is mainly used by {@see Html::error()} when rendering an error message next to every filter input field.
-     */
-    public function filterErrorOptions(array $filterErrorOptions): self
-    {
-        $new = clone $this;
-        $new->filterErrorOptions = $filterErrorOptions;
-
-        return $new;
-    }
-
-    /**
-     * @param array $filterErrorSummaryOptions the options for rendering the filter error summary.
-     *
-     * Please refer to {@see Html::errorSummary()} for more details about how to specify the options.
-     *
-     * {@see renderErrors()}
-     */
-    public function filterErrorSummaryOptions(array $filterErrorSummaryOptions): self
-    {
-        $new = clone $this;
-        $new->filterErrorSummaryOptions = $filterErrorSummaryOptions;
 
         return $new;
     }
@@ -297,15 +271,14 @@ final class GridView extends BaseListView
     }
 
     /**
-     * @param bool $filterOnFocusOut whatever to apply filters on losing focus. Leaves an ability to manage filters via
-     * yiiGridView JS.
+     * Whatever to apply filters on losing focus. Leaves an ability to manage filters via JS.
      *
-     * @return $this;
+     * @return $this
      */
-    public function filterOnFocusOut(bool $filterOnFocusOut): self
+    public function filterOnFocusOut(): self
     {
         $new = clone $this;
-        $new->filterOnFocusOut = $filterOnFocusOut;
+        $new->filterOnFocusOut = true;
 
         return $new;
     }
@@ -358,11 +331,6 @@ final class GridView extends BaseListView
     public function getEmptyCell(): string
     {
         return $this->emptyCell;
-    }
-
-    public function getFilterErrorOptions(): array
-    {
-        return $this->filterErrorOptions;
     }
 
     public function getfilterModelName(): string
@@ -433,6 +401,9 @@ final class GridView extends BaseListView
         return $new;
     }
 
+    /**
+     * @psalm-param array<array-key,array> $toolbar
+     */
     public function toolbar(array $toolbar): self
     {
         $new = clone $this;
@@ -456,8 +427,6 @@ final class GridView extends BaseListView
                 return $this->renderHeader();
             case '{toolbar}':
                 return $this->renderToolbar();
-            case '{errors}':
-                return $this->renderErrors();
             default:
                 return parent::renderSection($name);
         }
@@ -505,14 +474,15 @@ final class GridView extends BaseListView
      *
      * @throws InvalidConfigException if the column specification is invalid
      *
-     * @return DataColumn the column instance
+     * @return Column the column instance
      */
-    private function createDataColumn($text): DataColumn
+    private function createDataColumn($text): Column
     {
         if (!preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
             throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
         }
 
+        /** @var DataColumn $dataColumn */
         $dataColumn = $this->gridViewFactory->createColumnClass(
             ['__class' => $this->dataColumnClass, 'grid()' => [$this]]
         );
@@ -541,13 +511,13 @@ final class GridView extends BaseListView
     private function guessColumns(): void
     {
         $arClasses = $this->dataProvider->getARClasses();
-        $arClass = reset($arClasses);
 
-        if (is_array($arClass) || is_object($arClass)) {
-            foreach ($arClass as $name => $value) {
-                if ($value === null || is_scalar($value) || is_callable([$value, '__toString'])) {
-                    $this->columns[] = (string) $name;
-                }
+        reset($arClasses);
+
+        /** @var array<array-key,object|int|bool|string|null> $arClasses */
+        foreach ($arClasses as $name => $value) {
+            if ($value === null || is_scalar($value) || is_callable([$value, '__toString'])) {
+                $this->columns[] = (string) $name;
             }
         }
     }
@@ -564,31 +534,13 @@ final class GridView extends BaseListView
         foreach ($this->columns as $i => $column) {
             if (is_string($column)) {
                 $column = $this->createDataColumn($column);
-            } else {
-                $buttons = null;
-                $content = null;
-                $value = null;
-                $visibleButtons = null;
+            } elseif (is_array($column)) {
+                $buttons = $this->checkColumnButtonFunctions($column);
+                $content = $this->checkColumnContentFunctions($column);
+                $value = $this->checkColumnValueFunctions($column);
+                $visibleButtons = $this->checkColumnVisibleButtonsFunctions($column);
 
-                if (isset($column['buttons'])) {
-                    $buttons = $column['buttons'];
-                    unset($column['buttons']);
-                }
-
-                if (isset($column['content'])) {
-                    $content = $column['content'];
-                    unset($column['content']);
-                }
-
-                if (isset($column['value'])) {
-                    $value = $column['value'];
-                    unset($column['value']);
-                }
-
-                if (isset($column['visibleButtons'])) {
-                    $buttons = $column['visibleButtons'];
-                    unset($column['visibleButtons']);
-                }
+                unset($column['buttons'], $column['content'], $column['value'], $column['visibleButtons']);
 
                 $config = array_merge(
                     [
@@ -600,7 +552,7 @@ final class GridView extends BaseListView
 
                 $column = $this->gridViewFactory->createColumnClass($config);
 
-                if ($buttons !== null) {
+                if ($column instanceof ActionColumn && $buttons !== null) {
                     $column->buttons($buttons);
                 }
 
@@ -608,12 +560,12 @@ final class GridView extends BaseListView
                     $column->content($content);
                 }
 
-                if ($value !== null) {
+                if ($column instanceof DataColumn && $value !== null) {
                     $column->value($value);
                 }
 
-                if ($visibleButtons !== null) {
-                    $column->visibleButtons($value);
+                if ($column instanceof ActionColumn && $visibleButtons !== null) {
+                    $column->visibleButtons($visibleButtons);
                 }
             }
 
@@ -652,11 +604,12 @@ final class GridView extends BaseListView
     private function renderColumnGroup(): string
     {
         foreach ($this->columns as $column) {
-            /* @var $column Column */
-            if (!empty($column->options)) {
+            if ($column instanceof Column && $column->getOptions() !== []) {
                 $cols = [];
                 foreach ($this->columns as $col) {
-                    $cols[] = $this->html->tag('col', '', $col->options);
+                    if ($col instanceof Column) {
+                        $cols[] = $this->html->tag('col', '', $col->getOptions());
+                    }
                 }
 
                 return $this->html->tag('colgroup', implode("\n", $cols));
@@ -677,8 +630,9 @@ final class GridView extends BaseListView
             $cells = [];
 
             foreach ($this->columns as $column) {
-                /* @var $column Column */
-                $cells[] = $column->renderFilterCell();
+                if ($column instanceof Column) {
+                    $cells[] = $column->renderFilterCell();
+                }
             }
 
             return $this->html->tag('tr', implode('', $cells), $this->filterRowOptions);
@@ -695,12 +649,17 @@ final class GridView extends BaseListView
     private function renderTableBody(): string
     {
         $arClasses = array_values($this->dataProvider->getARClasses());
-        $keys = $this->dataProvider->getKeys();
 
+        /** @var array */
+        $keys = $this->dataProvider->getKeys();
         $rows = [];
+
+        /** @var array<int,array|activeRecord> $arClasses */
         foreach ($arClasses as $index => $arClass) {
+            /** @var mixed */
             $key = $keys[$index];
             if ($this->beforeRow !== null) {
+                /** @var array */
                 $row = call_user_func($this->beforeRow, $arClass, $key, $index, $this);
                 if (!empty($row)) {
                     $rows[] = $row;
@@ -710,6 +669,7 @@ final class GridView extends BaseListView
             $rows[] = $this->renderTableRow($arClass, $key, $index);
 
             if ($this->afterRow !== null) {
+                /** @var array */
                 $row = call_user_func($this->afterRow, $arClass, $key, $index, $this);
                 if (!empty($row)) {
                     $rows[] = $row;
@@ -736,8 +696,9 @@ final class GridView extends BaseListView
         $cells = [];
 
         foreach ($this->columns as $column) {
-            /* @var $column Column */
-            $cells[] = $column->renderFooterCell();
+            if ($column instanceof Column) {
+                $cells[] = $column->renderFooterCell();
+            }
         }
 
         $content = $this->html->tag('tr', implode('', $cells), $this->footerRowOptions);
@@ -759,8 +720,9 @@ final class GridView extends BaseListView
         $cells = [];
 
         foreach ($this->columns as $column) {
-            /* @var $column Column */
-            $cells[] = $column->renderHeaderCell();
+            if ($column instanceof Column) {
+                $cells[] = $column->renderHeaderCell();
+            }
         }
 
         $content = $this->html->tag('tr', implode('', $cells), $this->headerRowOptions);
@@ -787,20 +749,15 @@ final class GridView extends BaseListView
     {
         $cells = [];
 
-        /* @var $column Column */
         foreach ($this->columns as $column) {
-            $cells[] = $column->renderDataCell($arClass, $key, $index);
+            if ($column instanceof Column) {
+                $cells[] = $column->renderDataCell($arClass, $key, $index);
+            }
         }
 
-        if ($this->rowOptions instanceof Closure) {
-            $options = call_user_func($this->rowOptions, $arClass, $key, $index, $this);
-        } else {
-            $options = $this->rowOptions;
-        }
+        $this->rowOptions['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
 
-        $options['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
-
-        return $this->html->tag('tr', implode('', $cells), $options);
+        return $this->html->tag('tr', implode('', $cells), $this->rowOptions);
     }
 
     private function renderToolbar(): string
@@ -809,8 +766,11 @@ final class GridView extends BaseListView
         $toolbar = '';
 
         foreach ($this->toolbar as $item) {
+            /** @var string */
             $content = $item['content'] ?? '';
+            /** @var array */
             $options = $item['options'] ?? [];
+
             $toolbar .= $this->html->tag('div', $content, $options);
         }
 
@@ -819,5 +779,50 @@ final class GridView extends BaseListView
         }
 
         return $html;
+    }
+
+    private function checkColumnButtonFunctions(array $column, array $buttons = null): ?array
+    {
+        if (isset($column['buttons'])) {
+            /** @var array */
+            $buttons = $column['buttons'];
+        }
+
+        return $buttons;
+    }
+
+    private function checkColumnContentFunctions(array $column, callable $content = null): ?callable
+    {
+        if (isset($column['content'])) {
+            /** @var callable|null */
+            $content = $column['content'];
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param string|Closure|null $value
+     *
+     * @return string|Closure|null
+     */
+    private function checkColumnValueFunctions(array $column, $value = null)
+    {
+        if (isset($column['value'])) {
+            /** @var string|Closure|null */
+            $value = $column['value'];
+        }
+
+        return $value;
+    }
+
+    private function checkColumnVisibleButtonsFunctions(array $column, array $visibleButtons = null): ?array
+    {
+        if (isset($column['visibleButtons'])) {
+            /** @var array */
+            $visibleButtons = $column['visibleButtons'];
+        }
+
+        return $visibleButtons;
     }
 }

@@ -389,6 +389,11 @@ final class Html
         throw new InvalidArgumentException($formName . '::formName() cannot be empty for tabular inputs.');
     }
 
+    public function getNonArrayableName(string $name): string
+    {
+        return substr($name, -2) === '[]' ? substr($name, 0, -2) : $name;
+    }
+
     /**
      * Generates a hidden input field.
      *
@@ -405,7 +410,7 @@ final class Html
      *
      * @return string The generated hidden input tag.
      */
-    public function hiddeInput(string $name, $value = null, array $options = []): string
+    public function hiddenInput(string $name, $value = null, array $options = []): string
     {
         return $this->input('hidden', $name, $value, $options);
     }
@@ -456,11 +461,115 @@ final class Html
      *
      * @return string the generated label tag
      */
-    public static function label(string $content, string $for = null, array $options = [])
+    public function label(string $content, string $for = null, array $options = [])
     {
         $options['for'] = $for;
 
         return $this->tag('label', $content, $options);
+    }
+
+    /**
+     * Generates a list box.
+     *
+     * @param string $name The input name.
+     * @param iterable|array|string|null $selection The selected value(s). String for single or array for multiple
+     * selection(s).
+     * @param array $items The option data items. The array keys are option values, and the array values are the
+     * corresponding option labels. The array can also be nested (i.e. some array values are arrays too). For each
+     * sub-array, an option group will be generated whose label is the key associated with the sub-array. If you have a
+     * list of data models, you may convert them into the format described above using
+     * {@see ArrayHelper::map()}.
+     *
+     * Note, the values and labels will be automatically HTML-encoded by this method, and the blank spaces in the
+     * labels will also be HTML-encoded.
+     * @param array $attributes The tag attributes in terms of name-value pairs. The following attributes are specially
+     * handled:
+     *
+     * - prompt: string, a prompt text to be displayed as the first option. You can use an array to override the value
+     *   and to set other tag attributes:
+     *
+     * ```php
+     * ['text' => 'Please select', 'options' => ['value' => 'none', 'class' => 'prompt', 'label' => 'Select']],
+     * ```
+     *
+     * - options: array, the attributes for the select option tags. The array keys must be valid option values, and the
+     *   array values are the extra attributes for the corresponding option tags. For example,
+     *
+     * ```php
+     * [
+     *     'value1' => ['disabled' => true],
+     *     'value2' => ['label' => 'value 2'],
+     * ];
+     * ```
+     *
+     * - groups: array, the attributes for the optgroup tags. The structure of this is similar to that of 'options',
+     *   except that the array keys represent the optgroup labels specified in $items.
+     * - unselect: string, the value that will be submitted when no option is selected.
+     *   When this attribute is set, a hidden field will be generated so that if no option is selected in multiple
+     *   mode, we can still obtain the posted unselect value.
+     * - encodeSpaces: bool, whether to encode spaces in option prompt and option value with `&nbsp;` character.
+     *   Defaults to false.
+     * - encode: bool, whether to encode option prompt and option value characters. Defaults to `true`.
+     *
+     * The rest of the options will be rendered as the attributes of the resulting tag. The values will be HTML-encoded.
+     *
+     * using {@see encode}. If a value is null, the corresponding attribute will not be rendered.
+     *
+     * See {@see renderTagAttributes()} for details on how attributes are being rendered.
+     *
+     * List of supported attributes: autofocus, class, disabled, encode, encodeSpaces, form, groups, multiple, name,
+     * options, prompt, size, strict, unselect.
+     *
+     * @throws JsonException
+     *
+     * @return string The generated list box tag.
+     */
+    public function listBox(string $name, $selection = null, array $items = [], array $attributes = []): string
+    {
+        if (!array_key_exists('size', $attributes)) {
+            $attributes['size'] = 4;
+        }
+
+        if (!empty($attributes['multiple']) && !empty($name)) {
+            $name = $this->getArrayableName($name);
+        }
+
+        $attributes['name'] = $name;
+
+        /** @var bool|float|int|string|null */
+        $unselect = $attributes['unselect'] ?? null;
+
+        unset($attributes['unselect']);
+
+        if ($unselect !== null) {
+            // Add a hidden field so that if the list box has no option being selected, it still submits a value.
+            $name = $this->getNonArrayableName($name);
+            $hiddenOptions = [];
+
+            // Make sure disabled input is not sending any value.
+            if (!empty($attributes['disabled'])) {
+                /** @var string */
+                $hiddenOptions['disabled'] = $attributes['disabled'];
+            }
+
+            $hidden = $this->hiddenInput($name, $unselect, $hiddenOptions);
+        } else {
+            $hidden = '';
+        }
+
+        /**
+         * @var string $selectContent
+         * @var array $attributes
+         */
+        [$selectContent, $attributes] = $this->renderSelectOptions($selection, $items, $attributes);
+
+        $html = $hidden . $this->tag('select', "\n" . $selectContent . "\n", $attributes);
+
+        if (empty($selectContent)) {
+            $html = $hidden . $this->tag('select', $selectContent, $attributes);
+        }
+
+        return $html;
     }
 
     /**
@@ -809,12 +918,15 @@ final class Html
      * @throws InvalidArgumentException if the attribute name contains non-word characters.
      *
      * @return array
+     *
+     * @psalm-return array<array-key,string>
      */
-    private function parseAttribute(string $attribute)
+    private function parseAttribute(string $attribute): array
     {
         if (!preg_match('/(^|.*\])([\w\.\+]+)(\[.*|$)/u', $attribute, $matches)) {
             throw new InvalidArgumentException('Attribute name must contain word characters only.');
         }
+
         return [
             'name' => $matches[2],
             'prefix' => $matches[1],
