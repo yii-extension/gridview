@@ -6,7 +6,6 @@ namespace Yii\Extension\GridView\Tests\Column;
 
 use Yii\Extension\GridView\Column\SerialColumn;
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
-use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\GridView;
 use Yii\Extension\GridView\Tests\TestCase;
 
@@ -22,7 +21,7 @@ final class SerialColumnTest extends TestCase
         $gridView = $this->createGridView([
             [
                 '__class' => SerialColumn::class,
-                'label()' => ['x']
+                'label()' => ['x'],
             ],
         ]);
         $gridView = $gridView->dataProvider($dataProvider);

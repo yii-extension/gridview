@@ -107,7 +107,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function getArrayData(): array
     {
-        $data = [
+        return [
             ['id' => 1, 'username' => 'tests 1', 'total' => '10'],
             ['id' => 2, 'username' => 'tests 2', 'total' => '20'],
             ['id' => 3, 'username' => 'tests 3', 'total' => '30'],
@@ -118,8 +118,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ['id' => 8, 'username' => 'tests 8', 'total' => '80'],
             ['id' => 9, 'username' => 'tests 9', 'total' => '90'],
         ];
-
-        return $data;
     }
 
     /**

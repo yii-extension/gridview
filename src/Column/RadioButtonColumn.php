@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Column;
 
-use Closure;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Helper\Html;
 use Yiisoft\Router\UrlGeneratorInterface;

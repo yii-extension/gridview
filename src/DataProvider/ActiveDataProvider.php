@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\DataProvider;
 
-use Closure;
-use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\ActiveRecord\ActiveRecord;
@@ -13,7 +11,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Strings\Inflector;
 
 use function array_keys;
-use function call_user_func;
 use function count;
 use function is_string;
 
@@ -51,7 +48,7 @@ final class ActiveDataProvider extends DataProvider
      */
     private ActiveQuery $activeQuery;
     /**
-     * @var string|callable the column that is used as the key of the data active record class.
+     * @var callable|string the column that is used as the key of the data active record class.
      *
      * This can be either a column name, or a callable that returns the key value of a given data active record class.
      *
@@ -140,7 +137,7 @@ final class ActiveDataProvider extends DataProvider
                     $keys[] = $arClass[$this->key];
                 } else {
                     /** @var mixed */
-                    $keys[] = call_user_func($this->key, $arClass);
+                    $keys[] = ($this->key)($arClass);
                 }
             }
 

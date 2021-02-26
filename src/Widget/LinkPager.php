@@ -107,9 +107,7 @@ final class LinkPager extends Widget
             $this->registerLinkTagsInternal();
         }
 
-        $html = $this->renderPageButtons();
-
-        return $html;
+        return $this->renderPageButtons();
     }
 
     /**
@@ -694,7 +692,7 @@ final class LinkPager extends Widget
                 ) . "\n" .
             $this->html->endTag('nav') . "\n";
 
-        if ($this->frameworkCss === static::BULMA) {
+        if ($this->frameworkCss === self::BULMA) {
             $html =
                 $this->html->beginTag('nav', $this->navAttributes) . "\n" .
                     trim($renderFirstPageButtonLink) . trim($renderPreviousPageButtonLink) .
