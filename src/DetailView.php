@@ -257,33 +257,35 @@ final class DetailView extends Widget
                 ];
             }
 
-            if (isset($attribute['visible']) && !$attribute['visible']) {
-                unset($attributes[$i]);
-                continue;
-            }
-
-            if (!isset($attribute['format'])) {
-                $attribute['format'] = 'text';
-            }
-
-            if (isset($attribute['attribute'])) {
-                /** @var string */
-                $attributeName = $attribute['attribute'];
-                if (!isset($attribute['label'])) {
-                    $attribute['label'] = $this->inflector->toHumanReadable($attributeName, true);
+            if (is_array($attribute)) {
+                if (isset($attribute['visible']) && !$attribute['visible']) {
+                    unset($attributes[$i]);
+                    continue;
                 }
 
-                if (!array_key_exists('value', $attribute) && $this->data !== null) {
+                if (!isset($attribute['format'])) {
+                    $attribute['format'] = 'text';
+                }
+
+                if (isset($attribute['attribute'])) {
+                    /** @var string */
+                    $attributeName = $attribute['attribute'];
+                    if (!isset($attribute['label'])) {
+                        $attribute['label'] = $this->inflector->toHumanReadable($attributeName, true);
+                    }
+
+                    if (!array_key_exists('value', $attribute) && $this->data !== null) {
+                        /** @var mixed */
+                        $attribute['value'] = ArrayHelper::getValue($this->data, $attributeName);
+                    }
+                } elseif (!isset($attribute['label']) || !array_key_exists('value', $attribute)) {
+                    throw new InvalidConfigException('The attribute configuration requires the "attribute" element to determine the value and display label.');
+                }
+
+                if ($attribute['value'] instanceof Closure) {
                     /** @var mixed */
-                    $attribute['value'] = ArrayHelper::getValue($this->data, $attributeName);
+                    $attribute['value'] = call_user_func($attribute['value'], $this->data, $this);
                 }
-            } elseif (!isset($attribute['label']) || !array_key_exists('value', $attribute)) {
-                throw new InvalidConfigException('The attribute configuration requires the "attribute" element to determine the value and display label.');
-            }
-
-            if ($attribute['value'] instanceof Closure) {
-                /** @var mixed */
-                $attribute['value'] = call_user_func($attribute['value'], $this->data, $this);
             }
 
             $attributes[$i] = $attribute;
