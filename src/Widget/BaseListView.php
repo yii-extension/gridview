@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
+use Yii\Extension\GridView\DataProvider\DataProviderInterface;
 use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
-use Yii\Extension\GridView\DataProvider\DataProviderInterface;
+use Yii\Extension\GridView\Widget;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Translator\TranslatorInterface;

@@ -9,6 +9,7 @@ use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
+use Yii\Extension\GridView\Widget;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\Strings\Inflector;

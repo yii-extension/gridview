@@ -8,11 +8,11 @@ use JsonException;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
+use Yii\Extension\GridView\Widget;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Router\UrlMatcherInterface;
 use Yiisoft\View\WebView;
-use Yiisoft\Widget\Widget;
 
 use function implode;
 
