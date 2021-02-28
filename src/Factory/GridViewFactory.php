@@ -6,7 +6,6 @@ namespace Yii\Extension\GridView\Factory;
 
 use RuntimeException;
 use Yii\Extension\GridView\Column\Column;
-use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Factory\Factory;
 
 final class GridViewFactory

@@ -13,7 +13,6 @@ use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Widget\BaseListView;
 use Yiisoft\ActiveRecord\ActiveRecord;
 use Yiisoft\Json\Json;
-use Yiisoft\Router\FastRoute\UrlGenerator;
 
 /**
  * The GridView widget is used to display data in a grid.
@@ -488,8 +487,8 @@ final class GridView extends BaseListView
         );
 
         $dataColumn->attribute($matches[1]);
-        $dataColumn->format(isset($matches[3]) ? $matches[3] : 'text');
-        $dataColumn->label(isset($matches[5]) ? $matches[5] : '');
+        $dataColumn->format($matches[3] ?? 'text');
+        $dataColumn->label($matches[5] ?? '');
 
         return $dataColumn;
     }
@@ -654,7 +653,7 @@ final class GridView extends BaseListView
         $keys = $this->dataProvider->getKeys();
         $rows = [];
 
-        /** @var array<int,array|activeRecord> $arClasses */
+        /** @var array<int,activeRecord|array> $arClasses */
         foreach ($arClasses as $index => $arClass) {
             /** @var mixed */
             $key = $keys[$index];
@@ -802,14 +801,14 @@ final class GridView extends BaseListView
     }
 
     /**
-     * @param string|Closure|null $value
+     * @param Closure|string|null $value
      *
-     * @return string|Closure|null
+     * @return Closure|string|null
      */
     private function checkColumnValueFunctions(array $column, $value = null)
     {
         if (isset($column['value'])) {
-            /** @var string|Closure|null */
+            /** @var Closure|string|null */
             $value = $column['value'];
         }
 
