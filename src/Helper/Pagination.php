@@ -33,7 +33,7 @@ final class Pagination
     public function currentPage(int $currentPage): self
     {
         if ($currentPage < 1) {
-            throw new RuntimeException('Page size should be at least 1');
+            throw new RuntimeException('Current page should be at least 1');
         }
 
         $this->currentPage = $currentPage;

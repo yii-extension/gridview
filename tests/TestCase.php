@@ -74,7 +74,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->html,
             $this->pagination,
             $this->radioButtonColumn,
-            $this->sort,
+            $this->sort
         );
     }
 

@@ -6,14 +6,15 @@ namespace Yii\Extension\GridView\Widget;
 
 use JsonException;
 use Yii\Extension\GridView\DataProvider\DataProviderInterface;
+use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Factory\GridViewFactory;
 use Yii\Extension\GridView\Helper\Html;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yii\Extension\GridView\Widget;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Factory\Exceptions\InvalidConfigException;
 use Yiisoft\Translator\TranslatorInterface;
+use Yiisoft\View\WebView;
 
 /**
  * BaseListView is a base class for widgets displaying data from data provider such as ListView and GridView.
@@ -37,11 +38,12 @@ abstract class BaseListView extends Widget
     protected array $options = [];
     protected Pagination $pagination;
     protected TranslatorInterface $translator;
+    protected WebView $webView;
     private const FRAMEWORKCSS = [
         self::BOOTSTRAP,
         self::BULMA,
     ];
-    private int $currentPage = 0;
+    private int $currentPage = 1;
     private bool $encloseByContainer = false;
     private array $encloseByContainerOptions = [];
     private array $emptyTextOptions = ['class' => 'empty'];
@@ -53,11 +55,16 @@ abstract class BaseListView extends Widget
         '{totalCount, plural, one{item} other{items}}';
     private array $summaryOptions = ['class' => 'summary'];
 
-    public function __construct(Html $html, GridViewFactory $gridViewFactory, TranslatorInterface $translator)
-    {
+    public function __construct(
+        Html $html,
+        GridViewFactory $gridViewFactory,
+        TranslatorInterface $translator,
+        WebView $webView
+    ) {
         $this->html = $html;
         $this->gridViewFactory = $gridViewFactory;
         $this->translator = $translator;
+        $this->webView = $webView;
     }
 
     /**
@@ -69,6 +76,10 @@ abstract class BaseListView extends Widget
 
     protected function run(): string
     {
+        if (!isset($this->dataProvider)) {
+            throw new InvalidConfigException('The "dataProvider" property must be set.');
+        }
+
         $pagination = $this->getPagination();
         $pagination->currentPage($this->currentPage);
 
