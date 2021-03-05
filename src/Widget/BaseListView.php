@@ -80,11 +80,12 @@ abstract class BaseListView extends Widget
             throw new InvalidConfigException('The "dataProvider" property must be set.');
         }
 
-        $pagination = $this->getPagination();
-        $pagination->currentPage($this->currentPage);
+        $this->pagination = $this->getPagination();
+
+        $this->pagination->currentPage($this->currentPage);
 
         if ($this->pageSize > 0) {
-            $pagination->pageSize($this->pageSize);
+            $this->pagination->pageSize($this->pageSize);
         }
 
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
@@ -377,8 +378,6 @@ abstract class BaseListView extends Widget
      */
     private function renderPager(): string
     {
-        $pagination = $this->dataProvider->getPagination();
-
         if ($this->dataProvider->getCount() < 0) {
             return '';
         }
@@ -387,7 +386,7 @@ abstract class BaseListView extends Widget
             ->frameworkCss($this->frameworkCss)
             ->requestAttributes($this->requestAttributes)
             ->requestQueryParams($this->requestQueryParams)
-            ->pagination($pagination)
+            ->pagination($this->pagination)
             ->render();
     }
 
@@ -437,7 +436,6 @@ abstract class BaseListView extends Widget
     private function renderSummary(): string
     {
         $count = $this->dataProvider->getCount();
-        $pagination = $this->getPagination();
 
         if ($count <= 0) {
             return '';
@@ -450,15 +448,15 @@ abstract class BaseListView extends Widget
         $tag = ArrayHelper::remove($summaryOptions, 'tag', 'div');
 
         $totalCount = $this->dataProvider->getTotalCount();
-        $begin = ($pagination->getOffset() + 1);
+        $begin = ($this->pagination->getOffset() + 1);
         $end = $begin + $count - 1;
 
         if ($begin > $end) {
             $begin = $end;
         }
 
-        $page = $pagination->getCurrentPage();
-        $pageCount = $pagination->getTotalPages();
+        $page = $this->pagination->getCurrentPage();
+        $pageCount = $this->pagination->getTotalPages();
 
         return $this->html->tag(
             $tag,

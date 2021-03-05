@@ -731,6 +731,22 @@ final class DataColumnTest extends TestCase
         $this->assertStringNotContainsString('total', $gridView->render());
     }
 
+    public function testOptions(): void
+    {
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = $this->createGridView(
+            [
+                ['label()' => ['id']],
+                ['label()' => ['username']],
+                ['label()' => ['total'], 'options()' => [['class' => 'testMe']]],
+            ]
+        );
+        $gridView = $gridView->dataProvider($dataProvider);
+        $this->assertStringContainsString('class="testMe"', $gridView->render());
+    }
+
     public function testSortLinkOptions(): void
     {
         GridView::counter(0);

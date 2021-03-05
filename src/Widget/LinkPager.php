@@ -63,7 +63,6 @@ final class LinkPager extends Widget
     private string $prevPageLabel = 'Previous';
     private string $pageAttribute = 'page';
     private string $pageCssClass = 'page-item';
-    private int $pageSize = Pagination::DEFAULT_PAGE_SIZE;
     private string $pageSizeAttribute = 'pagesize';
     private Pagination $pagination;
     private string $prevPageCssClass = 'page-item';
@@ -374,14 +373,6 @@ final class LinkPager extends Widget
         return $new;
     }
 
-    public function pageSize(int $pageSize): self
-    {
-        $new = clone $this;
-        $new->pageSize = $pageSize;
-
-        return $new;
-    }
-
     /**
      * @param Pagination $pagination the pagination object that this pager is associated with.
      *
@@ -527,9 +518,8 @@ final class LinkPager extends Widget
 
     private function createLinks(): array
     {
-        $pagination = $this->pagination;
-        $currentPage = $pagination->getCurrentPage();
-        $pageCount = $pagination->getTotalPages();
+        $currentPage = $this->pagination->getCurrentPage();
+        $pageCount = $this->pagination->getTotalPages();
 
         $links = [self::REL_SELF => $this->createUrl($currentPage)];
 
@@ -662,9 +652,8 @@ final class LinkPager extends Widget
     {
         $buttons = [];
         $links = [];
-        $pagination = $this->pagination;
-        $currentPage = $pagination->getCurrentPage();
-        $pageCount = $pagination->getTotalPages();
+        $currentPage = $this->pagination->getCurrentPage();
+        $pageCount = $this->pagination->getTotalPages();
 
         if ($pageCount < 2 && $this->hideOnSinglePage) {
             return '';

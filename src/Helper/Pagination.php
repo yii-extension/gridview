@@ -27,18 +27,14 @@ final class Pagination
      * Sets the current page number.
      *
      * @param int $currentPage the zero-based index of the current page.
-     *
-     * @return Pagination
      */
-    public function currentPage(int $currentPage): self
+    public function currentPage(int $currentPage): void
     {
         if ($currentPage < 1) {
             throw new RuntimeException('Current page should be at least 1');
         }
 
         $this->currentPage = $currentPage;
-
-        return $this;
     }
 
     public function getCurrentPage(): int
@@ -81,44 +77,30 @@ final class Pagination
 
     /**
      * @param string $pageParam name of the parameter storing the current page index.
-     *
-     * @return $this
      */
-    public function pageParam(string $pageParam): self
+    public function pageParam(string $pageParam): void
     {
-        $new = clone $this;
-        $new->pageParam = $pageParam;
-
-        return $this;
+        $this->pageParam = $pageParam;
     }
 
     /**
      * @param string $pageSizeParam name of the parameter storing the page size.
-     *
-     * @return $this
      */
-    public function pageSizeParam(string $pageSizeParam): self
+    public function pageSizeParam(string $pageSizeParam): void
     {
-        $new = clone $this;
-        $new->pageSizeParam = $pageSizeParam;
-
-        return $this;
+        $this->pageSizeParam = $pageSizeParam;
     }
 
     /**
      * @param int $pageSize number of items on each page.
-     *
-     * @return $this
      */
-    public function pageSize(int $pageSize): self
+    public function pageSize(int $pageSize): void
     {
         if ($pageSize < 1) {
             throw new RuntimeException('Page size should be at least 1');
         }
 
         $this->pageSize = $pageSize;
-
-        return $this;
     }
 
     public function totalCount(int $totalCount): self
