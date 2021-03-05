@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yii\Extension\GridView\Tests\Column;
+namespace Yii\Extension\GridView\Tests;
 
 use Yii\Extension\GridView\DetailView;
 use Yii\Extension\GridView\Exception\InvalidConfigException;
