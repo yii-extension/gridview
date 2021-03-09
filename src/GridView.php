@@ -52,8 +52,6 @@ final class GridView extends BaseListView
     private array $headerRowOptions = [];
     private array $rowOptions = [];
     private array $tableOptions = ['class' => 'table'];
-    private bool $filterOnFocusOut = false;
-    private bool $placeFooterAfterBody = false;
     private bool $showFooter = false;
     private bool $showHeader = true;
     /** @var array<array-key,array> */
@@ -75,10 +73,6 @@ final class GridView extends BaseListView
         if (!isset($this->options['id'])) {
             $this->options['id'] = "{$this->getId()}-gridview";
         }
-
-        $options = Json::htmlEncode(
-            array_merge($this->getClientOptions(), ['filterOnFocusOut' => $this->filterOnFocusOut])
-        );
 
         $this->initColumns();
 
@@ -113,37 +107,6 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->beforeRow = $beforeRow;
-
-        return $new;
-    }
-
-    /**
-     * @param string $header the header of the grid table.
-     *
-     * @return $this
-     *
-     * {@see headerOptions}
-     */
-    public function header(string $header)
-    {
-        $new = clone $this;
-        $new->header = $header;
-
-        return $new;
-    }
-
-    /**
-     * @param array $headerOptions the HTML attributes for the caption element.
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     * {@see caption}
-     */
-    public function headerOptions(array $headerOptions): self
-    {
-        $new = clone $this;
-        $new->headerOptions = $headerOptions;
 
         return $new;
     }
@@ -270,19 +233,6 @@ final class GridView extends BaseListView
     }
 
     /**
-     * Whatever to apply filters on losing focus. Leaves an ability to manage filters via JS.
-     *
-     * @return $this
-     */
-    public function filterOnFocusOut(): self
-    {
-        $new = clone $this;
-        $new->filterOnFocusOut = true;
-
-        return $new;
-    }
-
-    /**
      * @param array the HTML attributes for the filter row element.
      *
      * @return $this
@@ -308,6 +258,37 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->footerRowOptions = $footerRowOptions;
+
+        return $new;
+    }
+
+    /**
+     * @param string $header the header of the grid table.
+     *
+     * @return $this
+     *
+     * {@see headerOptions}
+     */
+    public function header(string $header)
+    {
+        $new = clone $this;
+        $new->header = $header;
+
+        return $new;
+    }
+
+    /**
+     * @param array $headerOptions the HTML attributes for the caption element.
+     *
+     * @return $this
+     *
+     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
+     * {@see caption}
+     */
+    public function headerOptions(array $headerOptions): self
+    {
+        $new = clone $this;
+        $new->headerOptions = $headerOptions;
 
         return $new;
     }
@@ -344,17 +325,6 @@ final class GridView extends BaseListView
     {
         $new = clone $this;
         $new->showHeader = false;
-
-        return $new;
-    }
-
-    /**
-     * Whether to place footer after body in DOM if $showFooter is true.
-     */
-    public function placeFooterAfterBody(): self
-    {
-        $new = clone $this;
-        $this->placeFooterAfterBody = true;
 
         return $new;
     }
@@ -448,11 +418,7 @@ final class GridView extends BaseListView
         $tableFooterAfterBody = false;
 
         if ($this->showFooter) {
-            if ($this->placeFooterAfterBody) {
-                $tableFooterAfterBody = $this->renderTableFooter();
-            } else {
-                $tableFooter = $this->renderTableFooter();
-            }
+            $tableFooter = $this->renderTableFooter();
         }
 
         $content = array_filter([
@@ -460,7 +426,6 @@ final class GridView extends BaseListView
             $tableHeader,
             $tableFooter,
             $tableBody,
-            $tableFooterAfterBody,
         ]);
 
         return $this->html->tag('table', implode("\n", $content), $this->tableOptions);
@@ -478,7 +443,10 @@ final class GridView extends BaseListView
     private function createDataColumn($text): Column
     {
         if (!preg_match('/^([^:]+)(:(\w*))?(:(.*))?$/', $text, $matches)) {
-            throw new InvalidConfigException('The column must be specified in the format of "attribute", "attribute:format" or "attribute:format:label"');
+            throw new InvalidConfigException(
+                'The column must be specified in the format of "attribute", "attribute:format" or ' .
+                '"attribute:format:label"'
+            );
         }
 
         /** @var DataColumn $dataColumn */
@@ -491,16 +459,6 @@ final class GridView extends BaseListView
         $dataColumn->label($matches[5] ?? '');
 
         return $dataColumn;
-    }
-
-    /**
-     * Returns the options for the grid view JS widget.
-     *
-     * @return array the options
-     */
-    private function getClientOptions(): array
-    {
-        return [];
     }
 
     /**
@@ -656,7 +614,7 @@ final class GridView extends BaseListView
         /** @var array<int,activeRecord|array> $arClasses */
         foreach ($arClasses as $index => $arClass) {
             /** @var mixed */
-            $key = $keys[$index];
+            $key = isset($keys[$index]) ? $keys[$index] : $index;
             if ($this->beforeRow !== null) {
                 /** @var array */
                 $row = call_user_func($this->beforeRow, $arClass, $key, $index, $this);
@@ -770,7 +728,7 @@ final class GridView extends BaseListView
             /** @var array */
             $options = $item['options'] ?? [];
 
-            $toolbar .= $this->html->tag('div', $content, $options);
+            $toolbar .= $this->html->tag('div', $content . "\n", $options);
         }
 
         if ($toolbar !== '') {

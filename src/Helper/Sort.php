@@ -34,21 +34,18 @@ use function substr;
  *                  'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
  *             ]
  *         ]
- *     )->params(['sort' => 'age,-name'])->multisort(true);
+ *     )->params(['sort' => 'age,-name'])->multisort();
  * }
  * ```
  *
  * In the above, we declare two {@see attributes} that support sorting: `name` and `age`.
  *
  * For more details and usage information on Sort, see the [guide article on sorting](guide:output-sorting).
- *
- * @property array $attributeOrders Sort directions indexed by attribute names. Sort direction can be either `SORT_ASC`
- * for ascending order or `SORT_DESC` for descending order. Note that the type of this property differs in getter and
- * setter. See {@see getAttributeOrders()} and {@see attributeOrders()} for details.
  */
 final class Sort
 {
-    private array $attributeOrders = [];
+    /** @var array|null */
+    private ?array $attributeOrders = null;
     private array $attributes = [];
     private array $defaultOrder = [];
     private array $params = [];
@@ -139,22 +136,22 @@ final class Sort
     /**
      * Sets up the currently sort information.
      *
-     * @param array $attributeOrders sort directions indexed by attribute names. Sort direction can be either `SORT_ASC`
-     * for ascending order or `SORT_DESC` for descending order.
+     * @param array $attributesOrders sort directions indexed by attribute names. Sort direction can be either
+     * `SORT_ASC` for ascending order or `SORT_DESC` for descending order.
      * @param bool $validate whether to validate given attribute orders against {@see attributes}.
      *
      * If validation is enabled incorrect entries will be removed.
      *
      * {@see multiSort}.
      */
-    public function attributeOrders(array $attributeOrders = [], bool $validate = true): void
+    public function attributeOrders(array $attributesOrders = [], bool $validate = true): void
     {
-        if ($attributeOrders === [] || !$validate) {
-            $this->attributeOrders = $attributeOrders;
+        if ($attributesOrders === [] || !$validate) {
+            $this->attributeOrders = $attributesOrders;
         } else {
             $this->attributeOrders = [];
-            /** @var array<string,int> $attributeOrders */
-            foreach ($attributeOrders as $attribute => $order) {
+            /** @var array<string,int> $attributesOrders */
+            foreach ($attributesOrders as $attribute => $order) {
                 if (isset($this->attributes[$attribute])) {
                     $this->attributeOrders[$attribute] = $order;
                     if (!$this->multisort) {
@@ -166,7 +163,8 @@ final class Sort
     }
 
     /**
-     * @param array $value the order that should be used when the current request does not specify any order.
+     * @param array $defaultOrder the order that should be used when the current request does not specify any order.
+     *
      * The array keys are attribute names and the array values are the corresponding sort directions.
      *
      * For example:
@@ -182,30 +180,11 @@ final class Sort
      *
      * {@see attributeOrders}
      */
-    public function defaultOrder(array $value): self
+    public function defaultOrder(array $defaultOrder): self
     {
-        $this->defaultOrder = $value;
+        $this->defaultOrder = $defaultOrder;
 
         return $this;
-    }
-
-    /**
-     * @param bool $value whether the sorting can be applied to multiple attributes simultaneously.
-     *
-     * Defaults to `false`, which means each time the data can only be sorted by one attribute.
-     *
-     * @return $this
-     */
-    public function multiSort(): self
-    {
-        $this->multisort = true;
-
-        return $this;
-    }
-
-    public function isMultiSort(): bool
-    {
-        return $this->multisort;
     }
 
     public function getAttributes(): array
@@ -239,12 +218,15 @@ final class Sort
      */
     public function getAttributeOrders(bool $recalculate = false): array
     {
-        if ($this->attributeOrders === [] || $recalculate) {
+        if ($this->attributeOrders === null || $recalculate) {
+            $this->attributeOrders = [];
+
             if (isset($this->params[$this->sortParam])) {
                 $sortParam = $this->parseSortParam((string) $this->params[$this->sortParam]);
                 /** @var array<array-key,string> $sortParam */
                 foreach ($sortParam as $attribute) {
                     $descending = false;
+
                     if (strncmp($attribute, '-', 1) === 0) {
                         $descending = true;
                         $attribute = substr($attribute, 1);
@@ -252,6 +234,7 @@ final class Sort
 
                     if (isset($this->attributes[$attribute])) {
                         $this->attributeOrders[$attribute] = $descending ? SORT_DESC : SORT_ASC;
+
                         if (!$this->multisort) {
                             return $this->attributeOrders;
                         }
@@ -287,9 +270,13 @@ final class Sort
             $definition = $this->attributes[$attribute];
             /** @var array */
             $columns = $definition[$direction === SORT_ASC ? 'asc' : 'desc'];
-            /** @var array<string,int> $columns */
-            foreach ($columns as $name => $dir) {
-                $orders[$name] = $dir;
+            /** @var array<string,int>|string $columns */
+            if (is_iterable($columns)) {
+                foreach ($columns as $name => $dir) {
+                    $orders[$name] = $dir;
+                }
+            } else {
+                $orders[] = $columns;
             }
         }
 
@@ -316,6 +303,25 @@ final class Sort
     public function hasAttribute(string $name): bool
     {
         return isset($this->attributes[$name]);
+    }
+
+    public function isMultiSort(): bool
+    {
+        return $this->multisort;
+    }
+
+    /**
+     * @param bool $multisort whether the sorting can be applied to multiple attributes simultaneously.
+     *
+     * Defaults to `false`, which means each time the data can only be sorted by one attribute.
+     *
+     * @return $this
+     */
+    public function multiSort(bool $multisort = true): self
+    {
+        $this->multisort = $multisort;
+
+        return $this;
     }
 
     /**

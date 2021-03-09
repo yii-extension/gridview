@@ -52,7 +52,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected Pagination $pagination;
     protected RadioButtonColumn $radioButtonColumn;
     protected Sort $sort;
-    protected UrlMatcherInterface $urlMacther;
+    protected UrlGeneratorInterface $urlGenerator;
+    protected UrlMatcherInterface $urlMatcher;
     private ContainerInterface $container;
 
     protected function setUp(): void
@@ -74,6 +75,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $this->html,
             $this->pagination,
             $this->radioButtonColumn,
+            $this->urlGenerator,
+            $this->urlMatcher,
             $this->sort
         );
     }
@@ -99,10 +102,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         int $pageSize = 10,
         string $frameworkCss = 'bootstrap'
     ): GridView {
-        return GridView::widget()
-            ->columns($columns)
-            ->currentPage($currentPage)
-            ->pageSize($pageSize);
+        return GridView::widget()->columns($columns)->currentPage($currentPage)->pageSize($pageSize);
     }
 
     protected function getArrayData(): array
@@ -192,6 +192,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->pagination = $this->container->get(Pagination::class);
         $this->radioButtonColumn = $this->container->get(RadioButtonColumn::class);
         $this->sort = $this->container->get(Sort::class);
+        $this->urlGenerator = $this->container->get(UrlGeneratorInterface::class);
         $this->urlMatcher = $this->container->get(UrlMatcherInterface::class);
     }
 
