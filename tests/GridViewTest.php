@@ -192,11 +192,30 @@ final class GridViewTest extends TestCase
             ->showFooter();
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
         <tfoot>
         <tr><td>Empty Cell</td></tr>
         </tfoot>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFilterOptions(): void
@@ -223,11 +242,27 @@ final class GridViewTest extends TestCase
             ->filterPosition(GridView::FILTER_POS_HEADER);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
         <thead>
         <tr class="filters"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr><tr><th>Id</th><th>Username</th></tr>
         </thead>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
 
         $gridView = $gridView
             ->dataProvider($dataProvider)
@@ -236,11 +271,30 @@ final class GridViewTest extends TestCase
             ->showFooter();
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th><th>Username</th></tr>
+        </thead>
         <tfoot>
         <tr><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="filters"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
         </tfoot>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFilterRowOptions(): void
@@ -266,9 +320,27 @@ final class GridViewTest extends TestCase
             ->filterRowOptions(['class' => 'text-danger']);
 
         $html = <<<'HTML'
-        <tr class="text-danger"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th><th>Username</th></tr><tr class="text-danger"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
+        </thead>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testFooterRowOptions(): void
@@ -282,11 +354,30 @@ final class GridViewTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->footerRowOptions(['class' => 'text-center'])->showFooter();
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
         <tfoot>
         <tr class="text-center"><td>&nbsp;</td></tr>
         </tfoot>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testHeaderOptions(): void
@@ -302,10 +393,27 @@ final class GridViewTest extends TestCase
             ->headerOptions(['class' => 'text-success']);
 
         $html = <<<'HTML'
-        <header class="text-success">GridView test header.</header>
-        HTML;
+        <div id="w1-gridview" class="grid-view"><header class="text-success">GridView test header.</header>
 
-        $this->assertStringContainsString($html, $gridView->render());
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr data-key="0"></tr>
+        <tr data-key="1"></tr>
+        <tr data-key="2"></tr>
+        <tr data-key="3"></tr>
+        <tr data-key="4"></tr>
+        <tr data-key="5"></tr>
+        <tr data-key="6"></tr>
+        <tr data-key="7"></tr>
+        <tr data-key="8"></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testHeaderRowOptions(): void
@@ -320,11 +428,27 @@ final class GridViewTest extends TestCase
             ->headerRowOptions(['class' => 'text-success']);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
         <thead>
         <tr class="text-success"></tr>
         </thead>
+        <tbody>
+        <tr data-key="0"></tr>
+        <tr data-key="1"></tr>
+        <tr data-key="2"></tr>
+        <tr data-key="3"></tr>
+        <tr data-key="4"></tr>
+        <tr data-key="5"></tr>
+        <tr data-key="6"></tr>
+        <tr data-key="7"></tr>
+        <tr data-key="8"></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testNotShowHeader(): void
@@ -354,11 +478,30 @@ final class GridViewTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->showFooter();
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
         <tfoot>
         <tr><td>&nbsp;</td></tr>
         </tfoot>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testRowOptions(): void
@@ -406,9 +549,27 @@ final class GridViewTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->tableOptions(['class' => 'text-success']);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
         <table class="text-success">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testToolbar(): void
@@ -461,6 +622,7 @@ final class GridViewTest extends TestCase
         $gridView = $gridView->dataProvider($dataProvider)->toolbar($toolbar)->toolbarOptions(['class' => 'toolbar']);
 
         $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
         <div class="toolbar"><div class="flex-fill float-start"><span>Page size:</span>
         <select class="ms-2" name="pageSize">
         <option value="1">1</option>
@@ -473,7 +635,24 @@ final class GridViewTest extends TestCase
         </div><div class="float-end mb-2"><button type="submit" id="button-send" class="btn btn-success me-1" title="Apply changes"><i class="bi bi-check-all"></i></button>
         <a id="button-reset" class="btn btn-dark" href="/admin/index" title="Reset grid"><i class="bi bi-bootstrap-reboot"></i></a>
         </div></div>
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
+        <tbody>
+        <tr data-key="0"><td data-label="Id">1</td></tr>
+        <tr data-key="1"><td data-label="Id">2</td></tr>
+        <tr data-key="2"><td data-label="Id">3</td></tr>
+        <tr data-key="3"><td data-label="Id">4</td></tr>
+        <tr data-key="4"><td data-label="Id">5</td></tr>
+        <tr data-key="5"><td data-label="Id">6</td></tr>
+        <tr data-key="6"><td data-label="Id">7</td></tr>
+        <tr data-key="7"><td data-label="Id">8</td></tr>
+        <tr data-key="8"><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
         HTML;
-        $this->assertStringContainsString($html, $gridView->render());
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 }
