@@ -34,15 +34,15 @@ final class SerialColumnTest extends TestCase
         <tr><th>x</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="x">1</td></tr>
-        <tr data-key="1"><td data-label="x">2</td></tr>
-        <tr data-key="2"><td data-label="x">3</td></tr>
-        <tr data-key="3"><td data-label="x">4</td></tr>
-        <tr data-key="4"><td data-label="x">5</td></tr>
-        <tr data-key="5"><td data-label="x">6</td></tr>
-        <tr data-key="6"><td data-label="x">7</td></tr>
-        <tr data-key="7"><td data-label="x">8</td></tr>
-        <tr data-key="8"><td data-label="x">9</td></tr>
+        <tr><td data-label="x">1</td></tr>
+        <tr><td data-label="x">2</td></tr>
+        <tr><td data-label="x">3</td></tr>
+        <tr><td data-label="x">4</td></tr>
+        <tr><td data-label="x">5</td></tr>
+        <tr><td data-label="x">6</td></tr>
+        <tr><td data-label="x">7</td></tr>
+        <tr><td data-label="x">8</td></tr>
+        <tr><td data-label="x">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>

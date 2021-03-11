@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\Tests\Column;
 
+use Nyholm\Psr7\ServerRequest;
 use Yii\Extension\GridView\Column\ActionColumn;
 use Yii\Extension\GridView\Column\DataColumn;
 use Yii\Extension\GridView\DataProvider\ArrayDataProvider;
@@ -34,35 +35,50 @@ final class GridViewTest extends TestCase
         </thead>
         <tbody>
         <div class="testMe">
-        <tr data-key="0"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="1"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="2"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="3"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="4"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="5"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="6"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="7"></tr>
+        <tr></tr>
         </div>
         <div class="testMe">
-        <tr data-key="8"></tr>
+        <tr></tr>
         </div>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testAutoIdPrefix(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->autoIdPrefix('test');
+
+        $html = <<<'HTML'
+        <div id="test1-gridview" class="grid-view"><div class="empty">No results found.</div></div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
     }
@@ -97,6 +113,11 @@ final class GridViewTest extends TestCase
                                 );
                             },
                         ],
+                        'visibleButtons' => [
+                            'view' => function ($arClass, $key, $index) {
+                                return true;
+                             }
+                        ],
                     ],
                 ],
             )
@@ -110,15 +131,15 @@ final class GridViewTest extends TestCase
         <tr><th>Id</th><th>Username</th><th>Total</th><th>Operations</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/0" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/1" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/2" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/3" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/4" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/5" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/6" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/7" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/8" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/0" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/1" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/2" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/3" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/4" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/5" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/6" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/7" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td><td data-label="Operations">  <a class="text-danger" href="/admin/delete/8" title="Delete" data-method="POST" data-confirm="Are you sure to delete this user?"><span>&#128465;</span></a></td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -155,15 +176,15 @@ final class GridViewTest extends TestCase
         <tr></tr>
         </thead>
         <tbody>
-        <tr data-key="0"></tr>
-        <tr data-key="1"></tr>
-        <tr data-key="2"></tr>
-        <tr data-key="3"></tr>
-        <tr data-key="4"></tr>
-        <tr data-key="5"></tr>
-        <tr data-key="6"></tr>
-        <tr data-key="7"></tr>
-        <tr data-key="8"></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -176,6 +197,43 @@ final class GridViewTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('The "dataProvider" property must be set.');
         GridView::widget()->render();
+    }
+
+    public function testEncloseByContainer(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->encloseByContainer();
+
+        $html = <<<'HTML'
+        <div>
+        <div id="w1-gridview" class="grid-view"><div class="empty">No results found.</div></div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testEncloseByContainerOptions(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()
+            ->dataProvider($dataProvider)
+            ->encloseByContainer()
+            ->encloseByContainerOptions(['class' => 'testMe']);
+
+        $html = <<<'HTML'
+        <div class="testMe">
+        <div id="w1-gridview" class="grid-view"><div class="empty">No results found.</div></div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
     }
 
     public function testEmptyCell(): void
@@ -202,18 +260,63 @@ final class GridViewTest extends TestCase
         <tr><td>Empty Cell</td></tr>
         </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td></tr>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        <tr><td data-label="Id">6</td></tr>
+        <tr><td data-label="Id">7</td></tr>
+        <tr><td data-label="Id">8</td></tr>
+        <tr><td data-label="Id">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testEmptyText(): void
+    {
+        GridView::counter(0);
+
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->emptyText('');
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view"></div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->emptyText('Not Found');
+
+        $html = <<<'HTML'
+        <div id="w2-gridview" class="grid-view"><div class="empty">Not Found</div></div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testEmptyTextOptions(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()
+            ->dataProvider($dataProvider)
+            ->emptyText('Not Found')
+            ->emptyTextOptions(['class' => 'text-danger']);
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view"><div class="text-danger">Not Found</div></div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
     }
@@ -249,15 +352,15 @@ final class GridViewTest extends TestCase
         <tr class="filters"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr><tr><th>Id</th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -281,15 +384,15 @@ final class GridViewTest extends TestCase
         <tr><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="filters"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
         </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -327,15 +430,15 @@ final class GridViewTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr><tr class="text-danger"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -364,20 +467,27 @@ final class GridViewTest extends TestCase
         <tr class="text-center"><td>&nbsp;</td></tr>
         </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td></tr>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        <tr><td data-label="Id">6</td></tr>
+        <tr><td data-label="Id">7</td></tr>
+        <tr><td data-label="Id">8</td></tr>
+        <tr><td data-label="Id">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testFrameworkCssException(): void
+    {
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Invalid framework css. Valid values are: "bootstrap", "bulma".');
+        $gridView = GridView::widget()->frameworkCss('NoExist');
     }
 
     public function testHeaderOptions(): void
@@ -400,15 +510,15 @@ final class GridViewTest extends TestCase
         <tr></tr>
         </thead>
         <tbody>
-        <tr data-key="0"></tr>
-        <tr data-key="1"></tr>
-        <tr data-key="2"></tr>
-        <tr data-key="3"></tr>
-        <tr data-key="4"></tr>
-        <tr data-key="5"></tr>
-        <tr data-key="6"></tr>
-        <tr data-key="7"></tr>
-        <tr data-key="8"></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -435,17 +545,85 @@ final class GridViewTest extends TestCase
         <tr class="text-success"></tr>
         </thead>
         <tbody>
-        <tr data-key="0"></tr>
-        <tr data-key="1"></tr>
-        <tr data-key="2"></tr>
-        <tr data-key="3"></tr>
-        <tr data-key="4"></tr>
-        <tr data-key="5"></tr>
-        <tr data-key="6"></tr>
-        <tr data-key="7"></tr>
-        <tr data-key="8"></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testId(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->id('testMe');
+
+        $html = <<<'HTML'
+        <div id="testMe-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testLayout(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = GridView::widget()
+            ->dataProvider($dataProvider)
+            ->layout("{header}\n{toolbar}\n{summary}\n{items}\n{pager}");
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        </tbody></table>
         </div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
@@ -467,15 +645,70 @@ final class GridViewTest extends TestCase
         $this->assertStringNotContainsString($html, $gridView->render());
     }
 
-    public function testShowFooter(): void
+    public function testRenderEmpty(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider);
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view"><div class="empty">No results found.</div></div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testRenderSummary(): void
     {
         GridView::counter(0);
 
         $dataProvider = new ArrayDataProvider();
         $dataProvider->allData($this->getArrayData());
 
-        $gridView = $this->createGridView(['id']);
-        $gridView = $gridView->dataProvider($dataProvider)->showFooter();
+        $gridView = GridView::widget()->dataProvider($dataProvider)->Summary('Summary');
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        </tbody></table>
+        <div class="summary">Summary</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testRequestAttributes(): void
+    {
+        GridView::counter(0);
+
+        $request = new ServerRequest('GET', '/admin/index');
+        $this->urlMatcher->match($request);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = GridView::widget()
+            ->columns(['id'])
+            ->currentPage(1)
+            ->dataProvider($dataProvider)
+            ->pageSize(5)
+            ->requestAttributes(['filter' => 1]);
 
         $html = <<<'HTML'
         <div id="w1-gridview" class="grid-view">
@@ -484,21 +717,63 @@ final class GridViewTest extends TestCase
         <thead>
         <tr><th>Id</th></tr>
         </thead>
-        <tfoot>
-        <tr><td>&nbsp;</td></tr>
-        </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td></tr>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
         </tbody></table>
-        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        <div class="summary">Showing <b>1-5</b> of <b>9</b> items</div>
+        <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center mt-4">
+        <li class="page-item disabled"><a class="page-link" href="/admin/index?page=1&amp;pagesize=5&amp;filter=1" data-page="1" aria-disabled="true" tabindex="-1">Previous</a></li><li class="page-item active"><a class="page-link" href="/admin/index?page=1&amp;pagesize=5&amp;filter=1" data-page="1">1</a></li>
+        <li class="page-item"><a class="page-link" href="/admin/index?page=2&amp;pagesize=5&amp;filter=1" data-page="2">2</a></li><li class="page-item"><a class="page-link" href="/admin/index?page=2&amp;pagesize=5&amp;filter=1" data-page="2">Next Page</a></li>
+        </ul>
+        </nav>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testRequestQueryParams(): void
+    {
+        GridView::counter(0);
+
+        $request = new ServerRequest('GET', '/admin/index');
+        $this->urlMatcher->match($request);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = GridView::widget()
+            ->columns(['id'])
+            ->currentPage(1)
+            ->dataProvider($dataProvider)
+            ->pageSize(5)
+            ->requestQueryParams(['filter' => 1]);
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
+        <tbody>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-5</b> of <b>9</b> items</div>
+        <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center mt-4">
+        <li class="page-item disabled"><a class="page-link" href="/admin/index?page=1&amp;pagesize=5&amp;filter=1" data-page="1" aria-disabled="true" tabindex="-1">Previous</a></li><li class="page-item active"><a class="page-link" href="/admin/index?page=1&amp;pagesize=5&amp;filter=1" data-page="1">1</a></li>
+        <li class="page-item"><a class="page-link" href="/admin/index?page=2&amp;pagesize=5&amp;filter=1" data-page="2">2</a></li><li class="page-item"><a class="page-link" href="/admin/index?page=2&amp;pagesize=5&amp;filter=1" data-page="2">Next Page</a></li>
+        </ul>
+        </nav>
         </div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
@@ -522,17 +797,115 @@ final class GridViewTest extends TestCase
         <tr><th>Id</th></tr>
         </thead>
         <tbody>
-        <tr class="text-success" data-key="0"><td data-label="Id">1</td></tr>
-        <tr class="text-success" data-key="1"><td data-label="Id">2</td></tr>
-        <tr class="text-success" data-key="2"><td data-label="Id">3</td></tr>
-        <tr class="text-success" data-key="3"><td data-label="Id">4</td></tr>
-        <tr class="text-success" data-key="4"><td data-label="Id">5</td></tr>
-        <tr class="text-success" data-key="5"><td data-label="Id">6</td></tr>
-        <tr class="text-success" data-key="6"><td data-label="Id">7</td></tr>
-        <tr class="text-success" data-key="7"><td data-label="Id">8</td></tr>
-        <tr class="text-success" data-key="8"><td data-label="Id">9</td></tr>
+        <tr class="text-success"><td data-label="Id">1</td></tr>
+        <tr class="text-success"><td data-label="Id">2</td></tr>
+        <tr class="text-success"><td data-label="Id">3</td></tr>
+        <tr class="text-success"><td data-label="Id">4</td></tr>
+        <tr class="text-success"><td data-label="Id">5</td></tr>
+        <tr class="text-success"><td data-label="Id">6</td></tr>
+        <tr class="text-success"><td data-label="Id">7</td></tr>
+        <tr class="text-success"><td data-label="Id">8</td></tr>
+        <tr class="text-success"><td data-label="Id">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testShowFooter(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = $this->createGridView(['id']);
+        $gridView = $gridView->dataProvider($dataProvider)->showFooter();
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr><th>Id</th></tr>
+        </thead>
+        <tfoot>
+        <tr><td>&nbsp;</td></tr>
+        </tfoot>
+        <tbody>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        <tr><td data-label="Id">6</td></tr>
+        <tr><td data-label="Id">7</td></tr>
+        <tr><td data-label="Id">8</td></tr>
+        <tr><td data-label="Id">9</td></tr>
+        </tbody></table>
+        <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testSummaryOptions(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData($this->getArrayData());
+
+        $gridView = GridView::widget()
+            ->dataProvider($dataProvider)
+            ->Summary('Summary')
+            ->SummaryOptions(['class' => 'text-danger']);
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+        </tbody></table>
+        <div class="text-danger">Summary</div>
+        </div>
+        HTML;
+        $this->assertEqualsWithoutLE($html, $gridView->render());
+    }
+
+    public function testShowOnEmpty(): void
+    {
+        GridView::counter(0);
+
+        $dataProvider = new ArrayDataProvider();
+        $dataProvider->allData([]);
+
+        $gridView = GridView::widget()->dataProvider($dataProvider)->showOnEmpty();
+
+        $html = <<<'HTML'
+        <div id="w1-gridview" class="grid-view">
+
+        <table class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="0"><div class="empty">No results found.</div></td></tr>
+        </tbody></table>
+
         </div>
         HTML;
         $this->assertEqualsWithoutLE($html, $gridView->render());
@@ -556,15 +929,15 @@ final class GridViewTest extends TestCase
         <tr><th>Id</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td></tr>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        <tr><td data-label="Id">6</td></tr>
+        <tr><td data-label="Id">7</td></tr>
+        <tr><td data-label="Id">8</td></tr>
+        <tr><td data-label="Id">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -640,15 +1013,15 @@ final class GridViewTest extends TestCase
         <tr><th>Id</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td></tr>
+        <tr><td data-label="Id">1</td></tr>
+        <tr><td data-label="Id">2</td></tr>
+        <tr><td data-label="Id">3</td></tr>
+        <tr><td data-label="Id">4</td></tr>
+        <tr><td data-label="Id">5</td></tr>
+        <tr><td data-label="Id">6</td></tr>
+        <tr><td data-label="Id">7</td></tr>
+        <tr><td data-label="Id">8</td></tr>
+        <tr><td data-label="Id">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>

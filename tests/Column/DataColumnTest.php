@@ -34,15 +34,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -68,15 +68,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -109,15 +109,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">2</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">4</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">6</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">8</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">10</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">12</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">14</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">16</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">18</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">2</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">4</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">6</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">8</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">12</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">14</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">16</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">18</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -150,15 +150,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total"></td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total"></td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total"></td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total"></td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total"></td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total"></td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total"></td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total"></td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total"></td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total"></td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -189,15 +189,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td class="has-text-centered" data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td class="has-text-centered" data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td class="has-text-centered" data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td class="has-text-centered" data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td class="has-text-centered" data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td class="has-text-centered" data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td class="has-text-centered" data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td class="has-text-centered" data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td class="has-text-centered" data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td class="has-text-centered" data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td class="has-text-centered" data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td class="has-text-centered" data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td class="has-text-centered" data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td class="has-text-centered" data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td class="has-text-centered" data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td class="has-text-centered" data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td class="has-text-centered" data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td class="has-text-centered" data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -232,15 +232,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr><tr class="filters"><td><input type="text" class="form-control" name="testMe[id]"></td><td>&nbsp;</td></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -276,15 +276,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr><tr class="filters"><td><input type="text" class="text-center form-control" name="testMe[id]" value="0" maxlength="5"></td><td>&nbsp;</td></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -320,15 +320,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr><tr class="filters"><td class="text-center"><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -363,15 +363,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th></tr><tr class="filters"><td><input type="text" class="form-control" name="testMe[id]" value="0"></td><td>&nbsp;</td></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -445,15 +445,15 @@ final class DataColumnTest extends TestCase
         <tr><td>&nbsp;</td><td>&nbsp;</td><td>90</td></tr>
         </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -488,15 +488,15 @@ final class DataColumnTest extends TestCase
         <tr><td>&nbsp;</td><td>&nbsp;</td><td class="has-text-link">90</td></tr>
         </tfoot>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -581,15 +581,15 @@ final class DataColumnTest extends TestCase
         <tr><th>&lt;id&gt;</th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -620,15 +620,15 @@ final class DataColumnTest extends TestCase
         <tr><th><i class="fas fa-home>id</id></th><th>Username</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="id">1</td><td data-label="Username">tests 1</td></tr>
-        <tr data-key="1"><td data-label="id">2</td><td data-label="Username">tests 2</td></tr>
-        <tr data-key="2"><td data-label="id">3</td><td data-label="Username">tests 3</td></tr>
-        <tr data-key="3"><td data-label="id">4</td><td data-label="Username">tests 4</td></tr>
-        <tr data-key="4"><td data-label="id">5</td><td data-label="Username">tests 5</td></tr>
-        <tr data-key="5"><td data-label="id">6</td><td data-label="Username">tests 6</td></tr>
-        <tr data-key="6"><td data-label="id">7</td><td data-label="Username">tests 7</td></tr>
-        <tr data-key="7"><td data-label="id">8</td><td data-label="Username">tests 8</td></tr>
-        <tr data-key="8"><td data-label="id">9</td><td data-label="Username">tests 9</td></tr>
+        <tr><td data-label="id">1</td><td data-label="Username">tests 1</td></tr>
+        <tr><td data-label="id">2</td><td data-label="Username">tests 2</td></tr>
+        <tr><td data-label="id">3</td><td data-label="Username">tests 3</td></tr>
+        <tr><td data-label="id">4</td><td data-label="Username">tests 4</td></tr>
+        <tr><td data-label="id">5</td><td data-label="Username">tests 5</td></tr>
+        <tr><td data-label="id">6</td><td data-label="Username">tests 6</td></tr>
+        <tr><td data-label="id">7</td><td data-label="Username">tests 7</td></tr>
+        <tr><td data-label="id">8</td><td data-label="Username">tests 8</td></tr>
+        <tr><td data-label="id">9</td><td data-label="Username">tests 9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -662,15 +662,15 @@ final class DataColumnTest extends TestCase
         <tr><th><a class="desc" href="/admin/index?page=1&amp;pagesize=10&amp;sort=id%2Cusername" data-sort="id,username">Id</a></th><th><a class="asc" href="/admin/index?page=1&amp;pagesize=10&amp;sort=-username%2C-id" data-sort="-username,-id">Username</a></th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
-        <tr data-key="1"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="2"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="3"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="6"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="7"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="8"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -699,15 +699,15 @@ final class DataColumnTest extends TestCase
         <tr><th><a href="/admin/index?page=1&amp;pagesize=10&amp;sort=id" data-sort="id">Id</a></th><th>Username</th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -779,15 +779,15 @@ final class DataColumnTest extends TestCase
         <tr><th><a class="testMe" href="/admin/index?page=1&amp;pagesize=10&amp;sort=id" data-sort="id">Id</a></th><th><a href="/admin/index?page=1&amp;pagesize=10&amp;sort=username" data-sort="username">Username</a></th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">50</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -824,15 +824,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">*50*</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">10</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">20</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">30</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">40</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">*50*</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">60</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">70</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">80</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">90</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -863,15 +863,15 @@ final class DataColumnTest extends TestCase
         <tr><th>Id</th><th>Username</th><th>Total</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">1</td></tr>
-        <tr data-key="1"><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">2</td></tr>
-        <tr data-key="2"><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">3</td></tr>
-        <tr data-key="3"><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">4</td></tr>
-        <tr data-key="4"><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">5</td></tr>
-        <tr data-key="5"><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">6</td></tr>
-        <tr data-key="6"><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">7</td></tr>
-        <tr data-key="7"><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">8</td></tr>
-        <tr data-key="8"><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">9</td></tr>
+        <tr><td data-label="Id">1</td><td data-label="Username">tests 1</td><td data-label="Total">1</td></tr>
+        <tr><td data-label="Id">2</td><td data-label="Username">tests 2</td><td data-label="Total">2</td></tr>
+        <tr><td data-label="Id">3</td><td data-label="Username">tests 3</td><td data-label="Total">3</td></tr>
+        <tr><td data-label="Id">4</td><td data-label="Username">tests 4</td><td data-label="Total">4</td></tr>
+        <tr><td data-label="Id">5</td><td data-label="Username">tests 5</td><td data-label="Total">5</td></tr>
+        <tr><td data-label="Id">6</td><td data-label="Username">tests 6</td><td data-label="Total">6</td></tr>
+        <tr><td data-label="Id">7</td><td data-label="Username">tests 7</td><td data-label="Total">7</td></tr>
+        <tr><td data-label="Id">8</td><td data-label="Username">tests 8</td><td data-label="Total">8</td></tr>
+        <tr><td data-label="Id">9</td><td data-label="Username">tests 9</td><td data-label="Total">9</td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>

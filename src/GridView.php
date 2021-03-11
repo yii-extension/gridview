@@ -698,7 +698,8 @@ final class GridView extends BaseListView
      *
      * @param ActiveRecord|array $arClass the data arClass to be rendered
      * @param mixed $key the key associated with the data arClass
-     * @param int $index the zero-based index of the data arClass among the arClass array returned by {@see dataProvider}.
+     * @param int $index the zero-based index of the data arClass among the arClass array returned by
+     * {@see dataProvider}.
      *
      * @return string the rendering result
      */
@@ -712,7 +713,9 @@ final class GridView extends BaseListView
             }
         }
 
-        $this->rowOptions['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
+        if ($cells !== [] && $this->frameworkCss === static::BULMA) {
+            $this->rowOptions['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
+        }
 
         return $this->html->tag('tr', implode('', $cells), $this->rowOptions);
     }

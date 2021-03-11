@@ -107,7 +107,7 @@ abstract class BaseListView extends Widget
             $html =
                 $this->html->beginTag('div', $this->encloseByContainerOptions) . "\n" .
                     $this->html->tag($tag, $content, $options) . "\n" .
-                $this->html->endTag('div') . "\n";
+                $this->html->endTag('div');
         }
 
         return $html;
@@ -198,19 +198,9 @@ abstract class BaseListView extends Widget
         return $new;
     }
 
-    public function getDataProvider(): DataProviderInterface
-    {
-        return $this->dataProvider;
-    }
-
     public function getFrameworkCss(): string
     {
         return $this->frameworkCss;
-    }
-
-    public function getHtml(): Html
-    {
-        return $this->html;
     }
 
     public function getPagination(): Pagination
@@ -240,7 +230,6 @@ abstract class BaseListView extends Widget
      *
      * - `{summary}`: the summary section. {@see renderSummary()}.
      * - `{items}`: the list items. {@see renderItems()}.
-     * - `{sorter}`: the sorter. {@see renderSorter()}.
      * - `{pager}`: the pager. {@see renderPager()}.
      *
      * @return $this
@@ -378,7 +367,7 @@ abstract class BaseListView extends Widget
      */
     private function renderPager(): string
     {
-        if ($this->dataProvider->getCount() < 0) {
+        if ($this->dataProvider->getCount() < 1) {
             return '';
         }
 
@@ -408,29 +397,9 @@ abstract class BaseListView extends Widget
                 return $this->renderItems();
             case '{pager}':
                 return $this->renderPager();
-            case '{sorter}':
-                return $this->renderSorter();
             default:
                 return '';
         }
-    }
-
-    /**
-     * Renders the sorter.
-     *
-     * @throws InvalidConfigException
-     *
-     * @return string the rendering result
-     */
-    private function renderSorter(): string
-    {
-        $sort = $this->dataProvider->getSort();
-
-        if (empty($sort->getAttributeOrders()) || $this->dataProvider->getCount() <= 0) {
-            return '';
-        }
-
-        return LinkSorter::widget()->sort($sort)->frameworkCss($this->frameworkCss)->render();
     }
 
     private function renderSummary(): string
@@ -450,10 +419,6 @@ abstract class BaseListView extends Widget
         $totalCount = $this->dataProvider->getTotalCount();
         $begin = ($this->pagination->getOffset() + 1);
         $end = $begin + $count - 1;
-
-        if ($begin > $end) {
-            $begin = $end;
-        }
 
         $page = $this->pagination->getCurrentPage();
         $pageCount = $this->pagination->getTotalPages();

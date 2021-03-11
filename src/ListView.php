@@ -117,23 +117,6 @@ final class ListView extends BaseListView
     }
 
     /**
-     * @param array $options the HTML attributes for the container tag of the list view.
-     *
-     * The "tag" element specifies the tag name of the container element and defaults to "div".
-     *
-     * @return $this
-     *
-     * {@see Html::renderTagAttributes()} for details on how attributes are being rendered.
-     */
-    public function options(array $options): self
-    {
-        $new = clone $this;
-        $new->options = $options;
-
-        return $new;
-    }
-
-    /**
      * @param string $separator the HTML code to be displayed between any two consecutive items.
      *
      * @return $this
@@ -224,8 +207,10 @@ final class ListView extends BaseListView
         /** @var string */
         $tag = ArrayHelper::remove($this->itemViewOptions, 'tag', 'div');
 
-        $this->itemViewOptions['data-key'] = is_array($key)
-            ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : (string) $key;
+        if ($content !== '' && $this->frameworkCss === static::BULMA) {
+            $this->itemViewOptions['data-key'] = is_array($key)
+                ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : (string) $key;
+        }
 
         return $this->html->tag($tag, $content, $this->itemViewOptions);
     }

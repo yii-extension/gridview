@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yii\Extension\GridView\DataProvider;
 
+use Yii\Extension\GridView\Exception\InvalidConfigException;
 use Yii\Extension\GridView\Helper\Pagination;
 use Yii\Extension\GridView\Helper\Sort;
 use Yiisoft\Arrays\ArraySorter;
@@ -85,6 +86,10 @@ final class ArrayDataProvider extends DataProvider
      */
     public function key($key): self
     {
+        if (!is_string($key) && !is_callable($key)) {
+            throw new InvalidConfigException('The property "key" must be of type "string" or "callable".');
+        }
+
         $this->key = $key;
 
         return $this;

@@ -36,15 +36,15 @@ final class RadioButtonColumnTest extends TestCase
         <tr><th>x</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td data-label="x"></td></tr>
-        <tr data-key="1"><td data-label="x"></td></tr>
-        <tr data-key="2"><td data-label="x"></td></tr>
-        <tr data-key="3"><td data-label="x"></td></tr>
-        <tr data-key="4"><td data-label="x"></td></tr>
-        <tr data-key="5"><td data-label="x"></td></tr>
-        <tr data-key="6"><td data-label="x"></td></tr>
-        <tr data-key="7"><td data-label="x"></td></tr>
-        <tr data-key="8"><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
+        <tr><td data-label="x"></td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -74,15 +74,15 @@ final class RadioButtonColumnTest extends TestCase
         <tr><th>&nbsp;</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td><input type="radio" name="testMe" value="0"></td></tr>
-        <tr data-key="1"><td><input type="radio" name="testMe" value="1"></td></tr>
-        <tr data-key="2"><td><input type="radio" name="testMe" value="2"></td></tr>
-        <tr data-key="3"><td><input type="radio" name="testMe" value="3"></td></tr>
-        <tr data-key="4"><td><input type="radio" name="testMe" value="4"></td></tr>
-        <tr data-key="5"><td><input type="radio" name="testMe" value="5"></td></tr>
-        <tr data-key="6"><td><input type="radio" name="testMe" value="6"></td></tr>
-        <tr data-key="7"><td><input type="radio" name="testMe" value="7"></td></tr>
-        <tr data-key="8"><td><input type="radio" name="testMe" value="8"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="0"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="1"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="2"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="3"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="4"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="5"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="6"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="7"></td></tr>
+        <tr><td><input type="radio" name="testMe" value="8"></td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
@@ -131,15 +131,15 @@ final class RadioButtonColumnTest extends TestCase
         <tr><th>&nbsp;</th></tr>
         </thead>
         <tbody>
-        <tr data-key="0"><td><input type="radio" name="radioButtonSelection" value="0"></td></tr>
-        <tr data-key="1"><td><input type="radio" name="radioButtonSelection" value="1"></td></tr>
-        <tr data-key="2"><td><input type="radio" name="radioButtonSelection" value="2"></td></tr>
-        <tr data-key="3"><td><input type="radio" name="radioButtonSelection" value="3"></td></tr>
-        <tr data-key="4"><td><input type="radio" name="radioButtonSelection" value="4"></td></tr>
-        <tr data-key="5"><td><input type="radio" name="radioButtonSelection" value="5"></td></tr>
-        <tr data-key="6"><td><input type="radio" name="radioButtonSelection" value="6"></td></tr>
-        <tr data-key="7"><td><input type="radio" name="radioButtonSelection" value="7"></td></tr>
-        <tr data-key="8"><td><input type="radio" name="radioButtonSelection" value="8"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="0"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="1"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="2"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="3"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="4"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="5"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="6"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="7"></td></tr>
+        <tr><td><input type="radio" name="radioButtonSelection" value="8"></td></tr>
         </tbody></table>
         <div class="summary">Showing <b>1-9</b> of <b>9</b> items</div>
         </div>
