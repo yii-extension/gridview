@@ -97,7 +97,7 @@ final class GridViewTest extends TestCase
                     'username',
                     'total',
                     [
-                        '__class' => ActionColumn::class,
+                        'class' => ActionColumn::class,
                         'label()' => ['Operations'],
                         'buttons' => [
                             'delete' => function ($url) {

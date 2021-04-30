@@ -21,7 +21,7 @@ final class RadioButtonColumnTest extends TestCase
 
         $gridView = $this->createGridView([
             [
-                '__class' => RadioButtonColumn::class,
+                'class' => RadioButtonColumn::class,
                 'content' => static fn () => '',
                 'label()' => ['x'],
             ],
@@ -60,7 +60,7 @@ final class RadioButtonColumnTest extends TestCase
         $dataProvider->allData($this->getArrayData());
         $gridView = $this->createGridView([
             [
-                '__class' => RadioButtonColumn::class,
+                'class' => RadioButtonColumn::class,
                 'name()' => ['testMe'],
             ],
         ]);
@@ -98,7 +98,7 @@ final class RadioButtonColumnTest extends TestCase
         $dataProvider->allData($this->getArrayData());
         $gridView = $this->createGridView([
             [
-                '__class' => RadioButtonColumn::class,
+                'class' => RadioButtonColumn::class,
                 'name()' => [''],
             ],
         ]);
@@ -118,7 +118,7 @@ final class RadioButtonColumnTest extends TestCase
         $dataProvider->allData($this->getArrayData());
         $gridView = $this->createGridView([
             [
-                '__class' => RadioButtonColumn::class,
+                'class' => RadioButtonColumn::class,
             ],
         ]);
         $gridView = $gridView->dataProvider($dataProvider);

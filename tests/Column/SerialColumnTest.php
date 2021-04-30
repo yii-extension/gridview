@@ -20,7 +20,7 @@ final class SerialColumnTest extends TestCase
 
         $gridView = $this->createGridView([
             [
-                '__class' => SerialColumn::class,
+                'class' => SerialColumn::class,
                 'label()' => ['x'],
             ],
         ]);

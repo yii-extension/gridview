@@ -23,7 +23,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Di\Container;
 use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
 use Yiisoft\EventDispatcher\Provider\Provider;
-use Yiisoft\Factory\Definitions\Reference;
+use Yiisoft\Factory\Definition\Reference;
 use Yiisoft\Router\FastRoute\UrlGenerator;
 use Yiisoft\Router\FastRoute\UrlMatcher;
 use Yiisoft\Router\Group;
@@ -42,6 +42,10 @@ use Yiisoft\Translator\Translator;
 use Yiisoft\Translator\TranslatorInterface;
 use Yiisoft\View\WebView;
 use Yiisoft\Widget\WidgetFactory;
+use Yii\Extension\GridView\Tests\Controllers\TestDelete;
+use Yii\Extension\GridView\Tests\Controllers\TestUpdate;
+use Yii\Extension\GridView\Tests\Controllers\TestView;
+use Yii\Extension\GridView\Tests\Controllers\TestCustom;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -198,9 +202,12 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     private function config(): array
     {
+        $routeCollector = Group::create();
+        $routeCollector->addGroup(Group::create()->routes(...$this->createRoutes()));
+
         return [
             Aliases::class => [
-                '__class' => Aliases::class,
+                'class' => Aliases::class,
                 '__construct()' => [['@grid-view-translation' => dirname(__DIR__) . '/src/Translation']],
             ],
 
@@ -211,7 +218,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             EventDispatcherInterface::class => Dispatcher::class,
 
             WebView::class => [
-                '__class' => WebView::class,
+                'class' => WebView::class,
                 '__construct()' => [
                     'basePath' => __DIR__ . '/runtime',
                 ],
@@ -221,40 +228,26 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
             UrlMatcherInterface::class => UrlMatcher::class,
 
-            RouteCollectorInterface::class => Group::create(
-                null,
-                [
-                    Route::methods(['GET', 'POST'], '/admin/index', [TestDelete::class, 'run'])
-                        ->name('admin'),
-                    Route::methods(['GET', 'POST'], '/admin/delete[/{id}]', [TestDelete::class, 'run'])
-                        ->name('delete'),
-                    Route::methods(['GET', 'POST'], '/admin/update[/{id}]', [TestUpdate::class, 'run'])
-                        ->name('update'),
-                    Route::methods(['GET', 'POST'], '/admin/view[/{id}]', [TestView::class, 'run'])
-                        ->name('view'),
-                    Route::methods(['GET', 'POST'], '/admin/custom[/{id}]', [TestCustom::class, 'run'])
-                        ->name('admin/custom'),
-                ]
-            ),
+            RouteCollectorInterface::class => $routeCollector,
 
             RouteCollectionInterface::class => RouteCollection::class,
 
             MessageReaderInterface::class => [
-                '__class' => MessageSource::class,
+                'class' => MessageSource::class,
                 '__construct()' => [fn (Aliases $aliases) => $aliases->get('@grid-view-translation')],
             ],
 
             MessageFormatterInterface::class => IntlMessageFormatter::class,
 
             CategorySource::class => [
-                '__class' => CategorySource::class,
+                'class' => CategorySource::class,
                 '__construct()' => [
                     'name' => 'yii-gridview',
                 ],
             ],
 
             TranslatorInterface::class => [
-                '__class' => Translator:: class,
+                'class' => Translator:: class,
                 '__construct()' => [
                     'locale' => 'en',
                 ],
@@ -262,4 +255,26 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    private function createRoutes(): array
+    {
+        return [
+            Route::methods(['GET', 'POST'], '/admin/index')
+                ->action([TestDelete::class, 'run'])
+                ->name('admin'),
+            Route::methods(['GET', 'POST'], '/admin/delete[/{id}]')
+                ->action([TestDelete::class, 'run'])
+                ->name('delete'),
+            Route::methods(['GET', 'POST'], '/admin/update[/{id}]')
+                ->action([TestUpdate::class, 'run'])
+                ->name('update'),
+            Route::methods(['GET', 'POST'], '/admin/view[/{id}]')
+                ->action([TestView::class, 'run'])
+                ->name('view'),
+            Route::methods(['GET', 'POST'], '/admin/custom[/{id}]')
+                ->action([TestCustom::class, 'run'])
+                ->name('admin/custom'),
+        ];
+    }
+
 }
