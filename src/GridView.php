@@ -118,16 +118,16 @@ final class GridView extends BaseListView
      * ```php
      * [
      *     [
-     *         '__class' => SerialColumn::class,
+     *         'class' => SerialColumn::class,
      *     ],
      *     [
-     *         '__class' => DataColumn::class, // this line is optional
+     *         'class' => DataColumn::class, // this line is optional
      *         'attribute()' => ['name'],
      *         'format()' => ['text'],
      *         'label()' => ['Name'],
      *     ],
      *     [
-     *         '__class' => CheckboxColumn::class,
+     *         'class' => CheckboxColumn::class,
      *     ],
      * ]
      * ```
@@ -451,7 +451,7 @@ final class GridView extends BaseListView
 
         /** @var DataColumn $dataColumn */
         $dataColumn = $this->gridViewFactory->createColumnClass(
-            ['__class' => $this->dataColumnClass, 'grid()' => [$this]]
+            ['class' => $this->dataColumnClass, 'grid()' => [$this]]
         );
 
         $dataColumn->attribute($matches[1]);
@@ -501,7 +501,7 @@ final class GridView extends BaseListView
 
                 $config = array_merge(
                     [
-                        '__class' => $this->dataColumnClass,
+                        'class' => $this->dataColumnClass,
                         'grid()' => [$this],
                     ],
                     $column,
