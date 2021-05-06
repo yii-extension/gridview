@@ -415,7 +415,6 @@ final class GridView extends BaseListView
         $tableBody = $this->renderTableBody();
 
         $tableFooter = false;
-        $tableFooterAfterBody = false;
 
         if ($this->showFooter) {
             $tableFooter = $this->renderTableFooter();
@@ -607,7 +606,6 @@ final class GridView extends BaseListView
     {
         $arClasses = array_values($this->dataProvider->getARClasses());
 
-        /** @var array */
         $keys = $this->dataProvider->getKeys();
         $rows = [];
 

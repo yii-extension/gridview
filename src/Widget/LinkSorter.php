@@ -223,7 +223,6 @@ final class LinkSorter extends Widget
      * then the URL created will lead to a page that sorts the data by the specified attribute in descending order.
      *
      * @param string $attribute the attribute name
-     * @param bool $absolute whether to create an absolute URL. Defaults to `false`.
      *
      * @throws InvalidConfigException if the attribute is unknown
      *
@@ -232,7 +231,7 @@ final class LinkSorter extends Widget
      * {@see attributeOrders}
      * {@see params}
      */
-    private function createUrl(string $attribute, bool $absolute = false): string
+    private function createUrl(string $attribute): string
     {
         $action = '';
         $page = $this->pagination->getCurrentPage();

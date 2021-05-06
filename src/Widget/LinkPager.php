@@ -98,8 +98,6 @@ final class LinkPager extends Widget
      */
     protected function run(): string
     {
-        $html = '';
-
         $this->buildWidget();
 
         if ($this->registerLinkTags) {
@@ -650,8 +648,6 @@ final class LinkPager extends Widget
      */
     private function renderPageButtons(): string
     {
-        $buttons = [];
-        $links = [];
         $currentPage = $this->pagination->getCurrentPage();
         $pageCount = $this->pagination->getTotalPages();
 

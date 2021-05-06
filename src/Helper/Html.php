@@ -1031,7 +1031,7 @@ final class Html
                  *  @var string $content
                  *  @var array $attrTemp
                  */
-                [$content, $attrTemp] = $this->renderSelectOptions($selection, $value, $attrs);
+                [$content, $_attrTemp] = $this->renderSelectOptions($selection, $value, $attrs);
 
                 $lines[] = $this->tag('optgroup', "\n" . $content . "\n", $groupAttrs);
             } else {

@@ -28,6 +28,7 @@ final class GridViewFactory
      */
     public function createColumnClass(array $config): Column
     {
+        /** @var object $columnClass */
         $columnClass = $this->factory->create($config);
 
         if (!($columnClass instanceof Column)) {
